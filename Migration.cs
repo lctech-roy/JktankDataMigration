@@ -24,23 +24,7 @@ public class Migration
 
         await using var cn2 = new NpgsqlConnection(Setting.NEW_LOOK_CONNECTION);
         cn2.ExecuteAllCopyFiles(memberProfilePath);
-        
-        // var memberTask = new Task(() =>
-        //                               {
-        //                                   using var cn = new NpgsqlConnection(Setting.NEW_LOOK_CONNECTION);
-        //                                   cn.ExecuteAllCopyFiles(memberPath);
-        //                               });
-        //
-        // var memberProfileTask = new Task(() =>
-        //                                   {
-        //                                       using var cn = new NpgsqlConnection(Setting.NEW_LOOK_CONNECTION);
-        //                                       cn.ExecuteAllCopyFiles(memberProfilePath);
-        //                                   });
-        //
-        // memberTask.Start();
-        // memberProfileTask.Start();
-        // await Task.WhenAll(memberTask, memberProfileTask);
-        
+
         await using (var cn = new NpgsqlConnection(Setting.NEW_LOOK_CONNECTION))
             await cn.ExecuteCommandByPathAsync($"{schemaPath}/{AFTER_FILE_NAME}", token);
     }
