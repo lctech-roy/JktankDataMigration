@@ -15,14 +15,14 @@ public class MemberMigration
     private static readonly Dictionary<long, DateTimeOffset> MemberFirstPostDateDic = MemberHelper.GetMemberFirstPostDateDic();
 
     private const string COPY_MEMBER_PREFIX = $"COPY \"{nameof(Member)}\" " +
-                                      $"(\"{nameof(Member.Id)}\",\"{nameof(Member.DisplayName)}\",\"{nameof(Member.NormalizedDisplayName)}\",\"{nameof(Member.RoleId)}\"" +
-                                      $",\"{nameof(Member.ParentId)}\",\"{nameof(Member.PrivacyType)}\",\"{nameof(Member.Birthday)}\",\"{nameof(Member.Avatar)}\"" +
-                                      $",\"{nameof(Member.Cover)}\",\"{nameof(Member.IsSensitiveCover)}\",\"{nameof(Member.PersonalProfile)}\",\"{nameof(Member.WarningCount)}\"" +
-                                      $",\"{nameof(Member.WarningExpirationDate)}\",\"{nameof(Member.FirstPostDate)}\"" + Setting.COPY_ENTITY_SUFFIX;
+                                              $"(\"{nameof(Member.Id)}\",\"{nameof(Member.DisplayName)}\",\"{nameof(Member.NormalizedDisplayName)}\",\"{nameof(Member.RoleId)}\"" +
+                                              $",\"{nameof(Member.ParentId)}\",\"{nameof(Member.PrivacyType)}\",\"{nameof(Member.Birthday)}\",\"{nameof(Member.Avatar)}\"" +
+                                              $",\"{nameof(Member.Cover)}\",\"{nameof(Member.IsSensitiveCover)}\",\"{nameof(Member.PersonalProfile)}\",\"{nameof(Member.WarningCount)}\"" +
+                                              $",\"{nameof(Member.WarningExpirationDate)}\",\"{nameof(Member.FirstPostDate)}\"" + Setting.COPY_ENTITY_SUFFIX;
 
     private const string COPY_MEMBER_PROFILE_PREFIX = $"COPY \"{nameof(MemberProfile)}\" " +
-                                              $"(\"{nameof(MemberProfile.Id)}\",\"{nameof(MemberProfile.PhoneNumber)}\",\"{nameof(MemberProfile.Email)}\",\"{nameof(MemberProfile.PhoneId)}\"" +
-                                              $",\"{nameof(MemberProfile.ObjectId)}\",\"{nameof(MemberProfile.RegisterIp)}\"" + Setting.COPY_ENTITY_SUFFIX;
+                                                      $"(\"{nameof(MemberProfile.Id)}\",\"{nameof(MemberProfile.PhoneNumber)}\",\"{nameof(MemberProfile.Email)}\",\"{nameof(MemberProfile.PhoneId)}\"" +
+                                                      $",\"{nameof(MemberProfile.ObjectId)}\",\"{nameof(MemberProfile.RegisterIp)}\"" + Setting.COPY_ENTITY_SUFFIX;
 
     private const string QUERY_BLOG_MEMBER_UID = @"SELECT DISTINCT uid FROM pre_home_blog
                                                    UNION
@@ -30,7 +30,9 @@ public class MemberMigration
                                                    UNION
                                                    SELECT DISTINCT uid FROM pre_home_follow
                                                    UNION
-                                                   SELECT DISTINCT uid FROM pre_home_favorite";
+                                                   SELECT DISTINCT uid FROM pre_home_favorite
+                                                   UNION
+                                                   SELECT DISTINCT uid FROM pre_home_class";
 
     private const string QUERY_MEMBER = @"SELECT pum.uid AS Id, pum.username AS DisplayName,pcm.avatarstatus,pum.email,pum.regdate,pum.regip
                                             FROM pre_ucenter_members pum 
@@ -42,13 +44,13 @@ public class MemberMigration
     {
         long[] uids;
 
-        using (var cn = new MySqlConnection(Setting.OLD_FORUM_CONNECTION))
+        await using (var cn = new MySqlConnection(Setting.OLD_FORUM_CONNECTION))
         {
             uids = cn.Query<long>(QUERY_BLOG_MEMBER_UID).ToArray();
         }
 
         var offset = 0;
-        var limit = 50000;
+        const int limit = 50000;
 
         var uidGroups = new List<long[]>();
 
@@ -143,7 +145,7 @@ public class MemberMigration
                                             memberProfile.PhoneId.ToCopyValue(), memberProfile.ObjectId.ToCopyValue(), memberProfile.RegisterIp.ToCopyValue(),
                                             createDate, 0, createDate, 0, 0);
         }
-        
+
         FileHelper.WriteToFile($"{Setting.INSERT_DATA_PATH}/{nameof(Member)}", $"{uids[0]}-{uids[^1]}.sql", COPY_MEMBER_PREFIX, memberSb);
         FileHelper.WriteToFile($"{Setting.INSERT_DATA_PATH}/{nameof(MemberProfile)}", $"{uids[0]}-{uids[^1]}.sql", COPY_MEMBER_PROFILE_PREFIX, memberProfileSb);
     }
