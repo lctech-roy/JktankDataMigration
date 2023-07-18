@@ -39,4 +39,17 @@ public class Migration
 
         connection.ExecuteCommandByPath($"{SCHEMA_PATH}/{nameof(MemberBlogCategory)}/{AFTER_FILE_NAME}");
     }
+
+    public async Task ExecuteBlogAsync()
+    {
+        const string blogPath = $"{Setting.INSERT_DATA_PATH}/{nameof(Blog)}";
+        const string blogStatisticPath = $"{Setting.INSERT_DATA_PATH}/{nameof(BlogStatistic)}";
+        
+        await using var connection = new NpgsqlConnection(Setting.NEW_LOOK_CONNECTION);
+        connection.ExecuteAllCopyFiles(blogPath);
+        connection.ExecuteAllCopyFiles(blogStatisticPath);
+        
+        connection.ExecuteAllTexts($"{Setting.INSERT_DATA_PATH}/{nameof(Hashtag)}.sql");
+        
+    }
 }

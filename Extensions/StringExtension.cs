@@ -40,6 +40,11 @@ public static class StringExtension
         return sb.ToString();
     }
 
+    public static string ToCopyArray(this string[] strs)
+    {
+        return !strs.Any() ? string.Empty : $"{{{string.Join(",", strs).ToCopyText()}}}";
+    }
+
     public static string ToNewTags(this string tagStr)
     {
         if (string.IsNullOrWhiteSpace(tagStr) || tagStr == "0")

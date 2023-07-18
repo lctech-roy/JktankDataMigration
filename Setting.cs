@@ -10,6 +10,7 @@ public static class Setting
     
     // v1 dev
     public const string OLD_FORUM_CONNECTION = "Host=35.194.153.253;Port=3306;Username=testuser;Password=b5GbvjRKXhrXcuW;Database=newjk;Pooling=True;maximumpoolsize=80;default command timeout=300;TreatTinyAsBoolean=false;sslmode=none;";
+    
     // v1 stage
     // public const string OLD_FORUM_CONNECTION = "Host=34.80.4.149;Port=3306;Username=migrationUser;Password=A|5~9R}Olfs}@)/M;Database=newjk;Pooling=True;maximumpoolsize=80;default command timeout=300;TreatTinyAsBoolean=false;sslmode=none;";
     

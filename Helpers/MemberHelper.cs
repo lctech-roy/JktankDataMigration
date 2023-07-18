@@ -23,4 +23,22 @@ public class MemberHelper
 
         return dic;
     }
+    
+    public static HashSet<long> GetLifeStyleMemberHash()
+    {
+        const string sql = @"SELECT * from pre_hidespace";
+
+        var memberHash = CommonHelper.WatchTime(nameof(GetMemberFirstPostDateDic)
+                                              , () =>
+                                                {
+                                                    using var conn = new MySqlConnection(Setting.OLD_FORUM_CONNECTION);
+
+                                                    var memberHash = conn.Query<long>(sql)
+                                                                         .ToHashSet();
+
+                                                    return memberHash;
+                                                });
+
+        return memberHash;
+    }
 }
