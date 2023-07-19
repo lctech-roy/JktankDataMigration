@@ -18,5 +18,5 @@ public class OldBlog : Blog
     public int FlowerReactCount { get; set; }
     public int ConfuseReactCount { get; set; }
     public long Uid { get; set; }
-    public long DateLine { get; set; }
+    public uint DateLine { get; set; }
 }

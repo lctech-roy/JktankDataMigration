@@ -43,12 +43,12 @@ public class BlogMigration
                                                 Setting.COPY_ENTITY_SUFFIX;
 
     private static readonly string QueryBlogSql = @$"SELECT 
-                                            b.blogid AS Id, b.subject AS title ,b.classid AS categoryId, status AS isReview, 
-                                            friend AS oldVisibleType, bf.message AS oldContent, bf.pic AS oldCover, bf.tag as oldTags,
-                                            b.viewnum AS ViewCount, b.favtimes AS FavoriteCount, b.replynum AS CommentCount,
-                                            b.click1 AS ComeByReactCount, b.click2 AS AmazingReactCount, b.click3 AS ShakeHandsReactCount,
-                                            b.click4 AS FlowerReactCount, b.click5 AS ConfuseReactCount,
-                                            b.uid, b.dateline
+                                            b.blogid AS {nameof(OldBlog.Id)}, b.subject AS {nameof(OldBlog.Title)} ,b.classid AS {nameof(OldBlog.CategoryId)}, status AS {nameof(OldBlog.IsReview)}, 
+                                            friend AS {nameof(OldBlog.OldVisibleType)}, bf.message AS {nameof(OldBlog.OldContent)}, bf.pic AS {nameof(OldBlog.OldCover)}, 
+                                            bf.tag as {nameof(OldBlog.OldTags)}, b.viewnum AS {nameof(OldBlog.ViewCount)}, b.favtimes AS {nameof(OldBlog.FavoriteCount)}, 
+                                            b.replynum AS {nameof(OldBlog.CommentCount)}, b.click1 AS {nameof(OldBlog.ComeByReactCount)}, b.click2 AS {nameof(OldBlog.AmazingReactCount)}, 
+                                            b.click3 AS {nameof(OldBlog.ShakeHandsReactCount)}, b.click4 AS {nameof(OldBlog.FlowerReactCount)}, b.click5 AS {nameof(OldBlog.ConfuseReactCount)},
+                                            b.uid AS {nameof(OldBlog.Uid)}, b.dateline AS {nameof(OldBlog.DateLine)}
                                             FROM pre_home_blog b
                                             INNER JOIN pre_home_blogfield bf ON b.blogid = bf.blogid
                                             WHERE b.blogid >= @Id and b.blogid = 1538990

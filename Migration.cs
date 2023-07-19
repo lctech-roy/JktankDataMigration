@@ -50,6 +50,13 @@ public class Migration
         connection.ExecuteAllCopyFiles(blogStatisticPath);
         
         connection.ExecuteAllTexts($"{Setting.INSERT_DATA_PATH}/{nameof(Hashtag)}.sql");
+    }
+    
+    public async Task ExecuteBlogReactAsync()
+    {
+        const string blogPath = $"{Setting.INSERT_DATA_PATH}/{nameof(BlogReact)}";
         
+        await using var connection = new NpgsqlConnection(Setting.NEW_LOOK_CONNECTION);
+        connection.ExecuteAllCopyFiles(blogPath);
     }
 }

@@ -8,7 +8,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Netcorext.Algorithms;
 
-
 // 1. 建立依賴注入的容器
 var serviceCollection = new ServiceCollection();
 
@@ -21,6 +20,7 @@ serviceCollection.AddSingleton<Migration>();
 serviceCollection.AddSingleton<MemberMigration>();
 serviceCollection.AddSingleton<MemberBlogCategoryMigration>();
 serviceCollection.AddSingleton<BlogMigration>();
+serviceCollection.AddSingleton<BlogReactMigration>();
 
 serviceCollection.AddSingleton<FileExtensionContentTypeProvider>(_ =>
                                                                  {
@@ -43,6 +43,7 @@ var migration = serviceProvider.GetRequiredService<Migration>();
 var blogCategoryMigration = serviceProvider.GetRequiredService<MemberBlogCategoryMigration>();
 var memberMigration = serviceProvider.GetRequiredService<MemberMigration>();
 var blogMigration = serviceProvider.GetRequiredService<BlogMigration>();
+var blogReactMigration = serviceProvider.GetRequiredService<BlogReactMigration>();
 
 var token = new CancellationTokenSource().Token;
 
@@ -58,7 +59,11 @@ Thread.CurrentThread.CurrentUICulture = CultureInfo.InvariantCulture;
 // await CommonHelper.WatchTimeAsync(nameof(migration.ExecuteMemberBlogCategoryAsync), () => migration.ExecuteMemberBlogCategoryAsync());
 
 // 日誌
-await CommonHelper.WatchTimeAsync(nameof(blogMigration), async () => await blogMigration.MigrationAsync(token));
-await CommonHelper.WatchTimeAsync(nameof(migration.ExecuteBlogAsync), () => migration.ExecuteBlogAsync());
+// await CommonHelper.WatchTimeAsync(nameof(blogMigration), async () => await blogMigration.MigrationAsync(token));
+// await CommonHelper.WatchTimeAsync(nameof(migration.ExecuteBlogAsync), () => migration.ExecuteBlogAsync());
+
+// 日誌-會員表態
+await CommonHelper.WatchTimeAsync(nameof(blogReactMigration), async () => await blogReactMigration.MigrationAsync(token));
+await CommonHelper.WatchTimeAsync(nameof(migration.ExecuteBlogReactAsync), () => migration.ExecuteBlogReactAsync());
 
 Console.WriteLine("Hello, World!");
