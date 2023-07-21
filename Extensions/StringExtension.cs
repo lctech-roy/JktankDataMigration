@@ -42,7 +42,7 @@ public static class StringExtension
 
     public static string ToCopyArray(this string[] strs)
     {
-        return !strs.Any() ? string.Empty : $"{{{string.Join(",", strs).ToCopyText()}}}";
+        return !strs.Any() ? "{}" : $"{{{string.Join(",", strs).ToCopyText()}}}";
     }
 
     public static string ToNewTags(this string tagStr)

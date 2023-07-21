@@ -1,4 +1,5 @@
 using JLookDataMigration.Extensions;
+using Lctech.Attachment.Core.Domain.Entities;
 using Lctech.JLook.Core.Domain.Entities;
 using Npgsql;
 
@@ -44,19 +45,27 @@ public class Migration
     {
         const string blogPath = $"{Setting.INSERT_DATA_PATH}/{nameof(Blog)}";
         const string blogStatisticPath = $"{Setting.INSERT_DATA_PATH}/{nameof(BlogStatistic)}";
+        const string blogMediaPath = $"{Setting.INSERT_DATA_PATH}/{nameof(BlogMedia)}";
+        const string attachmentPath = $"{Setting.INSERT_DATA_PATH}/{nameof(Attachment)}";
+        const string attachmentExtendDataPath = $"{Setting.INSERT_DATA_PATH}/{nameof(AttachmentExtendData)}";
         
         await using var connection = new NpgsqlConnection(Setting.NEW_LOOK_CONNECTION);
         connection.ExecuteAllCopyFiles(blogPath);
         connection.ExecuteAllCopyFiles(blogStatisticPath);
+        connection.ExecuteAllCopyFiles(blogMediaPath);
+        
+        await using var connection2 = new NpgsqlConnection(Setting.NEW_ATTACHMENT_CONNECTION);
+        connection2.ExecuteAllCopyFiles(attachmentPath);
+        connection2.ExecuteAllCopyFiles(attachmentExtendDataPath);
         
         connection.ExecuteAllTexts($"{Setting.INSERT_DATA_PATH}/{nameof(Hashtag)}.sql");
     }
     
     public async Task ExecuteBlogReactAsync()
     {
-        const string blogPath = $"{Setting.INSERT_DATA_PATH}/{nameof(BlogReact)}";
+        const string blogReactPath = $"{Setting.INSERT_DATA_PATH}/{nameof(BlogReact)}";
         
         await using var connection = new NpgsqlConnection(Setting.NEW_LOOK_CONNECTION);
-        connection.ExecuteAllCopyFiles(blogPath);
+        connection.ExecuteAllCopyFiles(blogReactPath);
     }
 }

@@ -1,14 +1,17 @@
 using System.Collections.Concurrent;
 using System.Text;
+using System.Text.RegularExpressions;
 using Dapper;
 using JLookDataMigration.Extensions;
 using JLookDataMigration.Helpers;
 using JLookDataMigration.Models;
+using Lctech.Attachment.Core.Domain.Entities;
 using Lctech.JLook.Core.Domain.Entities;
 using Lctech.JLook.Core.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
 using Netcorext.Algorithms;
 using Polly;
+using static System.Int32;
 
 namespace JLookDataMigration;
 
@@ -29,6 +32,14 @@ public class BlogMigration
                                                   $"(\"{nameof(BlogMedia.Id)}\",\"{nameof(BlogMedia.AttachmentId)}\",\"{nameof(BlogMedia.Type)}\",\"{nameof(BlogMedia.Status)}\"" +
                                                   $",\"{nameof(BlogMedia.IsCover)}\",\"{nameof(BlogMedia.SortingIndex)}\",\"{nameof(BlogMedia.Width)}\",\"{nameof(BlogMedia.Height)}\"" +
                                                   Setting.COPY_ENTITY_SUFFIX;
+
+    private const string COPY_ATTACHMENT_PREFIX = $"COPY \"{nameof(Attachment)}\" " +
+                                                  $"(\"{nameof(Attachment.Id)}\",\"{nameof(Attachment.Size)}\",\"{nameof(Attachment.ExternalLink)}\",\"{nameof(Attachment.Bucket)}\"" +
+                                                  $",\"{nameof(Attachment.DownloadCount)}\",\"{nameof(Attachment.ProcessingState)}\",\"{nameof(Attachment.DeleteStatus)}\",\"{nameof(Attachment.IsPublic)}\"" +
+                                                  $",\"{nameof(Attachment.StoragePath)}\",\"{nameof(Attachment.Name)}\",\"{nameof(Attachment.ContentType)}\",\"{nameof(Attachment.Extension)}\",\"{nameof(Attachment.ParentId)}\"" +
+                                                  Setting.COPY_ENTITY_SUFFIX;
+
+    private const string COPY_ATTACHMENT_EXTEND_DATA_PREFIX = $"COPY \"{nameof(AttachmentExtendData)}\" (\"{nameof(AttachmentExtendData.Id)}\",\"{nameof(AttachmentExtendData.Key)}\",\"{nameof(AttachmentExtendData.Value)}\"" + Setting.COPY_ENTITY_SUFFIX;
 
     private const string COPY_BLOG_STATISTIC_PREFIX = $"COPY \"{nameof(BlogStatistic)}\" " +
                                                       $"(\"{nameof(BlogStatistic.Id)}\",\"{nameof(BlogStatistic.HotScore)}\",\"{nameof(BlogStatistic.ViewCount)}\",\"{nameof(BlogStatistic.DonateCount)}\",\"{nameof(BlogStatistic.DonorCount)}\"" +
@@ -51,17 +62,27 @@ public class BlogMigration
                                             b.uid AS {nameof(OldBlog.Uid)}, b.dateline AS {nameof(OldBlog.DateLine)}
                                             FROM pre_home_blog b
                                             INNER JOIN pre_home_blogfield bf ON b.blogid = bf.blogid
-                                            WHERE b.blogid >= @Id and b.blogid = 1538990
+                                            WHERE b.blogid >= @Id and b.blogid = 1550633
+                                            ORDER BY b.blogid
                                             LIMIT {LIMIT}";
 
     private static readonly ConcurrentDictionary<string, int> HashTagCountDic = new();
 
     private static readonly ISnowflake HashTagSnowflake = new SnowflakeJavaScriptSafeInteger(1);
 
+    private const string BLOG_PATH = $"{Setting.INSERT_DATA_PATH}/{nameof(Blog)}";
+    private const string BLOG_STATISTIC_PATH = $"{Setting.INSERT_DATA_PATH}/{nameof(BlogStatistic)}";
+    private const string BLOG_MEDIA_PATH = $"{Setting.INSERT_DATA_PATH}/{nameof(BlogMedia)}";
+    private const string ATTACHMENT_PATH = $"{Setting.INSERT_DATA_PATH}/{nameof(Attachment)}";
+    private const string ATTACHMENT_EXTEND_DATA_PATH = $"{Setting.INSERT_DATA_PATH}/{nameof(AttachmentExtendData)}";
+    private const string HASH_TAG_PATH = $"{Setting.INSERT_DATA_PATH}/{nameof(Hashtag)}.sql";
+
     public async Task MigrationAsync(CancellationToken cancellationToken)
     {
         var firstIds = PagingHelper.GetPagingFirstIds("pre_home_blog", "blogid", LIMIT);
 
+        FileHelper.RemoveFiles(new[] { BLOG_PATH,BLOG_STATISTIC_PATH,BLOG_MEDIA_PATH,ATTACHMENT_PATH,ATTACHMENT_EXTEND_DATA_PATH,HASH_TAG_PATH });
+        
         await Parallel.ForEachAsync(firstIds,
                                     CommonHelper.GetParallelOptions(cancellationToken), async (id, token) =>
                                                                                         {
@@ -97,10 +118,11 @@ public class BlogMigration
 
         var dateNow = DateTimeOffset.UtcNow;
         var hashTagSb = new StringBuilder();
+        var id = 1;
 
         foreach (var keyValuePair in HashTagCountDic)
         {
-            hashTagSb.AppendValueLine(HashTagSnowflake.Generate(), keyValuePair.Key.ToCopyText(), keyValuePair.Value,
+            hashTagSb.AppendValueLine(id++, keyValuePair.Key.ToCopyText(), keyValuePair.Value,
                                       dateNow, 0, dateNow, 0, 0);
         }
 
@@ -112,6 +134,9 @@ public class BlogMigration
     {
         var blogSb = new StringBuilder();
         var blogStatisticSb = new StringBuilder();
+        var blogMediaSb = new StringBuilder();
+        var attachmentSb = new StringBuilder();
+        var attachmentExtentDataSb = new StringBuilder();
 
         foreach (var oldBlog in oldBlogs)
         {
@@ -119,6 +144,119 @@ public class BlogMigration
             var memberId = oldBlog.Uid;
             var blogId = oldBlog.Id;
             var subject = LifeStyleMemberHash.Contains(memberId) ? BlogSubject.LifeStyle : BlogSubject.Massage;
+
+            var content = oldBlog.OldContent;
+
+            content = RegexHelper.ImgSmileyRegex.Replace(content, innerMatch =>
+                                                               {
+                                                                   TryParse(innerMatch.Groups[1].Value, out var emojiId);
+
+                                                                   var emoji = EmojiHelper.EmojiDic.GetValueOrDefault(emojiId, string.Empty);
+
+                                                                   return emoji;
+                                                               });
+
+
+            var matchCount = 0;
+            long? coverId = null;
+
+            content = RegexHelper.ImgSrcRegex.Replace(content, innerMatch =>
+                                                     {
+                                                         var matchCollection = RegexHelper.ImgAttrRegex.Matches(innerMatch.Value);
+
+                                                         var path = string.Empty;
+                                                         int? height = null;
+                                                         int? width = null;
+
+                                                         foreach (Match match in matchCollection)
+                                                         {
+                                                             var matchPath = match.Groups[RegexHelper.PATH_GROUP].Value;
+
+                                                             if (!string.IsNullOrEmpty(matchPath))
+                                                             {
+                                                                 path = matchPath;
+
+                                                                 continue;
+                                                             }
+
+                                                             var matchHeight = match.Groups[RegexHelper.HEIGHT_GROUP].Value;
+
+                                                             if (!string.IsNullOrEmpty(matchHeight))
+                                                             {
+                                                                 height = Convert.ToInt32(matchHeight);
+
+                                                                 continue;
+                                                             }
+
+                                                             var matchWidth = match.Groups[RegexHelper.WIDTH_GROUP].Value;
+
+                                                             if (!string.IsNullOrEmpty(matchWidth))
+                                                             {
+                                                                 width = Convert.ToInt32(matchWidth);
+
+                                                                 continue;
+                                                             }
+                                                         }
+
+                                                         if(string.IsNullOrEmpty(path))
+                                                             return string.Empty;
+                                                         
+                                                         var isCover = ++matchCount == 1;
+                                                         var attachmentId = blogId * 100L + matchCount;
+
+                                                         if (isCover)
+                                                             coverId = blogId * 100L + matchCount;
+
+                                                         var blogMedia = new BlogMedia
+                                                                         {
+                                                                             Id = blogId,
+                                                                             AttachmentId = attachmentId,
+                                                                             Type = MediaType.Image,
+                                                                             Status = MediaStatus.Normal,
+                                                                             Width = width,
+                                                                             Height = height,
+                                                                             IsCover = isCover,
+                                                                             SortingIndex = matchCount
+                                                                         };
+
+                                                         var attachment = new Attachment
+                                                                          {
+                                                                              Id = attachmentId,
+                                                                              ExternalLink = path,
+                                                                              IsPublic = true
+                                                                          };
+
+                                                         blogMediaSb.AppendValueLine(blogMedia.Id, blogMedia.AttachmentId, (int)blogMedia.Type, (int)blogMedia.Status,
+                                                                                     blogMedia.IsCover, blogMedia.SortingIndex, blogMedia.Width.ToCopyValue(), blogMedia.Height.ToCopyValue(),
+                                                                                     createDate, memberId, createDate, memberId, 0);
+
+                                                         attachmentSb.AppendValueLine(attachment.Id, attachment.Size.ToCopyValue(), attachment.ExternalLink, attachment.Bucket.ToCopyValue(),
+                                                                                      attachment.DownloadCount, (int)attachment.ProcessingState, (int)attachment.DeleteStatus, attachment.IsPublic,
+                                                                                      attachment.StoragePath.ToCopyValue(), attachment.Name.ToCopyText(), attachment.ContentType.ToCopyText(),
+                                                                                      attachment.Extension.ToCopyText(), attachment.ParentId.ToCopyValue(),
+                                                                                      createDate, memberId, createDate, memberId, 0);
+
+                                                         attachmentExtentDataSb.AppendValueLine(attachment.Id, Setting.BLOG_ID, blogId,
+                                                                                                createDate, memberId, createDate, memberId, 0);
+
+                                                         return string.Empty;
+                                                     });
+
+            content = RegexHelper.FontSizeRegex.Replace(content, innerMatch =>
+                                                                {
+                                                                    TryParse(innerMatch.Groups[RegexHelper.SIZE_GROUP].Value, out var fontSize);
+
+                                                                    var newFontSize = RegexHelper.FontSizeDic.GetValueOrDefault(fontSize, "1.87em");
+
+                                                                    return innerMatch.Groups[1].Value + newFontSize + innerMatch.Groups[2].Value;
+                                                                });
+
+            content = RegexHelper.FontFaceRegex.Replace(content, innerMatch => innerMatch.Groups[1].Value + innerMatch.Groups[2].Value);
+
+            var matchMassageIds = RegexHelper.MassageUrlRegex.Matches(content)
+                                             .Select(x => x.Groups[RegexHelper.TID_GROUP].Value)
+                                             .Where(x => !string.IsNullOrEmpty(x))
+                                             .Distinct().ToArray();
 
             var blog = new Blog
                        {
@@ -134,13 +272,13 @@ public class BlogMigration
                                          },
                            Title = oldBlog.Title,
                            IsPinned = false,
-                           Content = oldBlog.OldContent,
-                           Cover = null,
+                           Content = content,
+                           Cover = coverId,
                            IsSensitiveCover = false,
                            Price = 0,
                            Conclusion = null,
-                           MassageBlogId = null,
-                           Hashtags = oldBlog.OldTags.Split(' '),
+                           MassageBlogId = (matchMassageIds.Length == 1) ? Convert.ToInt64(matchMassageIds.First()) : null,
+                           Hashtags = string.IsNullOrEmpty(oldBlog.OldTags) ? Array.Empty<string>() : oldBlog.OldTags.Split(' '),
                            LastStatusModificationDate = null,
                            Disabled = false
                        };
@@ -149,6 +287,9 @@ public class BlogMigration
 
             foreach (var blogHashtag in blog.Hashtags)
             {
+                if(string.IsNullOrEmpty(blogHashtag))
+                    continue;
+                
                 if (HashTagCountDic.ContainsKey(blogHashtag))
                     HashTagCountDic[blogHashtag] += 1;
                 else
@@ -192,7 +333,18 @@ public class BlogMigration
                                             createDate, 0, createDate, 0, 0);
         }
 
-        FileHelper.WriteToFile($"{Setting.INSERT_DATA_PATH}/{nameof(Blog)}", $"{oldBlogs.First().Id}.sql", COPY_BLOG_PREFIX, blogSb);
-        FileHelper.WriteToFile($"{Setting.INSERT_DATA_PATH}/{nameof(BlogStatistic)}", $"{oldBlogs.First().Id}.sql", COPY_BLOG_STATISTIC_PREFIX, blogStatisticSb);
+        var fileName = $"{oldBlogs.First().Id}.sql";
+
+        FileHelper.WriteToFile(BLOG_PATH, fileName, COPY_BLOG_PREFIX, blogSb);
+        FileHelper.WriteToFile(BLOG_STATISTIC_PATH, fileName, COPY_BLOG_STATISTIC_PREFIX, blogStatisticSb);
+
+        if (blogMediaSb.Length > 0)
+            FileHelper.WriteToFile(BLOG_MEDIA_PATH, fileName, COPY_BLOG_MEDIA_PREFIX, blogMediaSb);
+
+        if (attachmentSb.Length > 0)
+            FileHelper.WriteToFile(ATTACHMENT_PATH, fileName, COPY_ATTACHMENT_PREFIX, attachmentSb);
+
+        if (attachmentExtentDataSb.Length > 0)
+            FileHelper.WriteToFile(ATTACHMENT_EXTEND_DATA_PATH, fileName, COPY_ATTACHMENT_EXTEND_DATA_PREFIX, attachmentExtentDataSb);
     }
 }

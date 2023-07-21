@@ -4,6 +4,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JLookDataMigration", "JLook
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lctech.JLook.Core", "..\Lctech.JLook\src\Lctech.JLook.Core\Lctech.JLook.Core.csproj", "{85486C43-E90E-4100-A5BB-AD7273092301}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lctech.Attachment.Core", "..\Lctech.Attachment\src\Lctech.Attachment.Core\Lctech.Attachment.Core.csproj", "{E422637E-4C52-4F17-9B0D-1BAEA72E709C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,6 +20,10 @@ Global
 		{85486C43-E90E-4100-A5BB-AD7273092301}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{85486C43-E90E-4100-A5BB-AD7273092301}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{85486C43-E90E-4100-A5BB-AD7273092301}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E422637E-4C52-4F17-9B0D-1BAEA72E709C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E422637E-4C52-4F17-9B0D-1BAEA72E709C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E422637E-4C52-4F17-9B0D-1BAEA72E709C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E422637E-4C52-4F17-9B0D-1BAEA72E709C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 	EndGlobalSection

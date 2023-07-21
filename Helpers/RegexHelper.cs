@@ -1,0 +1,39 @@
+using System.Text.RegularExpressions;
+
+namespace JLookDataMigration.Helpers;
+
+public class RegexHelper
+{
+    public const string PATH_GROUP = "path";
+    public const string WIDTH_GROUP = "width";
+    public const string HEIGHT_GROUP = "height";
+    public const string SIZE_GROUP = "size";
+    private const string FACE_GROUP = "face";
+    public const string TID_GROUP = "tid";
+
+    private const string IMG_SMILEY_PATTERN = @"<img src=[""']https://www.jkf.io/static/image/smiley/comcom/(\d+).gif[""'].*?>";
+    private const string IMG_SRC_PATTERN = @"<img.+?src=[""'].+?[""'].*?>";
+    private const string IMG_ATTR_PATTERN = $@"src=[""'](?<{PATH_GROUP}>.*?)[""']|width=[""'](?<{WIDTH_GROUP}>\d*?)[""']|height=[""'](?<{HEIGHT_GROUP}>\d*?)[""']";
+    private const string FONT_SIZE_PATTERN = $@"(<font.+?size=[""'])(?<{SIZE_GROUP}>\d+)([""'].*?>)";
+    private const string FONT_FACE_PATTERN = $@"(<font.+?)(?<{FACE_GROUP}>face=[""'].+?[""'])(.*?>)";
+    // include href
+    // private const string MASSAGE_URL_PATTERN = $@"(<a\b|(?!^)\G)[^>]*?\bhref=([""']?)(https?://www\.jkforum\.net/(thread-(?<{TID_GROUP}>\d+)-\d+-\d+\.html|forum\.php\?mod=(misc|post|viewthread)\S*&tid=(?<{TID_GROUP}>\d+)|group\/\d+\?action=preview&tid=(?<{TID_GROUP}>\d+)))([""']?)\2";
+    private const string MASSAGE_URL_PATTERN = $@"https?://www\.jkforum\.net/(thread-(?<{TID_GROUP}>\d+)-\d+-\d+\.html|forum\.php\?mod=(misc|post|viewthread)\S*&tid=(?<{TID_GROUP}>\d+)|group\/\d+\?action=preview&tid=(?<{TID_GROUP}>\d+))";
+    
+    public static readonly Regex ImgSmileyRegex = new(IMG_SMILEY_PATTERN, RegexOptions.Compiled | RegexOptions.IgnoreCase);
+    public static readonly Regex ImgSrcRegex = new(IMG_SRC_PATTERN, RegexOptions.Compiled | RegexOptions.IgnoreCase);
+    public static readonly Regex ImgAttrRegex = new(IMG_ATTR_PATTERN, RegexOptions.Compiled | RegexOptions.IgnoreCase);
+    public static readonly Regex FontSizeRegex = new(FONT_SIZE_PATTERN, RegexOptions.Compiled | RegexOptions.IgnoreCase);
+    public static readonly Regex FontFaceRegex = new(FONT_FACE_PATTERN, RegexOptions.Compiled | RegexOptions.IgnoreCase);
+    public static readonly Regex MassageUrlRegex = new(MASSAGE_URL_PATTERN, RegexOptions.Compiled | RegexOptions.IgnoreCase);
+
+    public static readonly Dictionary<int, string> FontSizeDic = new()
+                                                                 {
+                                                                     { 0, "0.8em" },
+                                                                     { 1, "0.8em" },
+                                                                     { 2, "0.8em" },
+                                                                     { 3, "1em" },
+                                                                     { 4, "1.33em" },
+                                                                     { 5, "1.87em" },
+                                                                 };
+}
