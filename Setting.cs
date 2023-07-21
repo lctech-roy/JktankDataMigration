@@ -27,6 +27,7 @@ public static class Setting
     private const string PORT = "5432";
     public const string NEW_LOOK_CONNECTION = $"Host={HOST};Port={PORT};Username={USER_NAME};Password={PASSWORD};Database=lctech_jlook;Timeout=1024;CommandTimeout=1800;Maximum Pool Size=80;SSL Mode=Require;Trust Server Certificate=true;Include Error Detail=true";
     public const string NEW_ATTACHMENT_CONNECTION = $"Host={HOST};Port={PORT};Username={USER_NAME};Password={PASSWORD};Database=lctech_attachment_look;Timeout=1024;CommandTimeout=1800;Maximum Pool Size=80;SSL Mode=Require;Trust Server Certificate=true;Include Error Detail=true";
+    public const string NEW_FORUM_CONNECTION = $"Host={HOST};Port={PORT};Username={USER_NAME};Password={PASSWORD};Database=lctech_jkf_forum;Timeout=1024;CommandTimeout=1800;Maximum Pool Size=80;SSL Mode=Require;Trust Server Certificate=true;Include Error Detail=true";
 
     public const string D = "";
     public const string INSERT_DATA_PATH = "../../../ScriptInsert";

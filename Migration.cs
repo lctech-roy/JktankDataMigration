@@ -50,6 +50,7 @@ public class Migration
         const string attachmentExtendDataPath = $"{Setting.INSERT_DATA_PATH}/{nameof(AttachmentExtendData)}";
         
         await using var connection = new NpgsqlConnection(Setting.NEW_LOOK_CONNECTION);
+        connection.ExecuteAllTexts($"{Setting.INSERT_DATA_PATH}/{nameof(MassageBlog)}.sql");
         connection.ExecuteAllCopyFiles(blogPath);
         connection.ExecuteAllCopyFiles(blogStatisticPath);
         connection.ExecuteAllCopyFiles(blogMediaPath);
