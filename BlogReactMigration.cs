@@ -1,13 +1,9 @@
 using System.Text;
-using Dapper;
 using JLookDataMigration.Extensions;
 using JLookDataMigration.Helpers;
-using JLookDataMigration.Models;
 using Lctech.JLook.Core.Domain.Entities;
 using Lctech.JLook.Core.Domain.Enums;
-using Microsoft.EntityFrameworkCore;
 using MySql.Data.MySqlClient;
-using Polly;
 
 namespace JLookDataMigration;
 
@@ -28,6 +24,8 @@ public class BlogReactMigration
 
         var blogReactSb = new StringBuilder();
 
+        var blogIdHash = BlogHelper.GetBlogIdHash();
+        
         await using var conn = new MySqlConnection(Setting.OLD_FORUM_CONNECTION);
 
         await conn.OpenAsync(cancellationToken);
@@ -42,6 +40,9 @@ public class BlogReactMigration
         {
             var memberId = reader.GetInt64(0);
             var id = reader.GetInt64(1);
+            
+            if(!blogIdHash.Contains(id))
+                continue;
             
             if(distinctHash.Contains((id,memberId)))
                 continue;
