@@ -11,7 +11,7 @@ public class RegexHelper
     private const string FACE_GROUP = "face";
     public const string TID_GROUP = "tid";
 
-    private const string IMG_SMILEY_PATTERN = @"<img src=[""']https?://www.(jkf\.io|jkforum\.net)/static/image/smiley/comcom/(\d+)\.gif[""'].*?>";
+    private const string IMG_SMILEY_PATTERN = @"<img src=[""'](?:https?://www.(?:jkf\.io|jkforum\.net)/)?(?:static/image/smiley/comcom|image/face)/(\d+)\.gif[""'].*?>";
     private const string IMG_SRC_PATTERN = @"<img.+?src=[""']https?:.+?[""'].*?>";
     private const string IMG_ATTR_PATTERN = $@"src=[""'](?<{PATH_GROUP}>https?:.*?)[""']|width=[""'](?<{WIDTH_GROUP}>\d*?)[""']|height=[""'](?<{HEIGHT_GROUP}>\d*?)[""']";
     private const string EMBED_SRC_PATTERN = @"<embed.+?src=[""'](https?:.+?)[""'].*?>";

@@ -186,7 +186,7 @@ public class BlogMigration
 
             content = RegexHelper.ImgSmileyRegex.Replace(content, innerMatch =>
                                                                   {
-                                                                      TryParse(innerMatch.Groups[2].Value, out var emojiId);
+                                                                      TryParse(innerMatch.Groups[1].Value, out var emojiId);
 
                                                                       var emoji = EmojiHelper.EmojiDic.GetValueOrDefault(emojiId, string.Empty);
 
