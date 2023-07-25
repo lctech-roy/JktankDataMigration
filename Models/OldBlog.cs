@@ -6,9 +6,8 @@ public class OldBlog : Blog
 {
     public bool IsReview { get; set; }
     public int OldVisibleType { get; set; }
-    public string OldContent { get; set; } = default!;
-    public string OldCover { get; set; } = default!;
-    public string OldTags { get; set; } = default!;
+    public string? OldContent { get; set; }
+    public string? OldTags { get; set; }
     public int ViewCount { get; set; }
     public int FavoriteCount { get; set; }
     public int CommentCount { get; set; }

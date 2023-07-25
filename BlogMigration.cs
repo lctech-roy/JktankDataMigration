@@ -61,13 +61,13 @@ public class BlogMigration
 
     private static readonly string QueryBlogSql = @$"SELECT 
                                             b.blogid AS {nameof(OldBlog.Id)}, b.subject AS {nameof(OldBlog.Title)} ,b.classid AS {nameof(OldBlog.CategoryId)}, status AS {nameof(OldBlog.IsReview)}, 
-                                            friend AS {nameof(OldBlog.OldVisibleType)}, bf.message AS {nameof(OldBlog.OldContent)}, bf.pic AS {nameof(OldBlog.OldCover)}, 
+                                            friend AS {nameof(OldBlog.OldVisibleType)}, bf.message AS {nameof(OldBlog.OldContent)}, 
                                             bf.tag as {nameof(OldBlog.OldTags)}, b.viewnum AS {nameof(OldBlog.ViewCount)}, b.favtimes AS {nameof(OldBlog.FavoriteCount)}, 
                                             b.replynum AS {nameof(OldBlog.CommentCount)}, b.click1 AS {nameof(OldBlog.ComeByReactCount)}, b.click2 AS {nameof(OldBlog.AmazingReactCount)}, 
                                             b.click3 AS {nameof(OldBlog.ShakeHandsReactCount)}, b.click4 AS {nameof(OldBlog.FlowerReactCount)}, b.click5 AS {nameof(OldBlog.ConfuseReactCount)},
                                             b.uid AS {nameof(OldBlog.Uid)}, b.dateline AS {nameof(OldBlog.DateLine)}
                                             FROM pre_home_blog b
-                                            INNER JOIN pre_home_blogfield bf ON b.blogid = bf.blogid
+                                            LEFT JOIN pre_home_blogfield bf ON b.blogid = bf.blogid
                                             WHERE b.blogid >= @Id{(Setting.TestBlogId.HasValue ? ($@" AND b.blogid = {Setting.TestBlogId}") : "")}
                                             ORDER BY b.blogid 
                                             LIMIT {LIMIT}";
@@ -182,7 +182,7 @@ public class BlogMigration
             var blogId = oldBlog.Id;
             var subject = LifeStyleMemberHash.Contains(memberId) ? BlogSubject.LifeStyle : BlogSubject.Massage;
 
-            var content = oldBlog.OldContent;
+            var content = oldBlog.OldContent ?? string.Empty;
 
             content = RegexHelper.ImgSmileyRegex.Replace(content, innerMatch =>
                                                                   {
@@ -412,7 +412,7 @@ public class BlogMigration
             FileHelper.WriteToFile(ATTACHMENT_EXTEND_DATA_PATH, fileName, COPY_ATTACHMENT_EXTEND_DATA_PREFIX, attachmentExtentDataSb);
     }
 
-    public static string[] GetTags(string tagStr)
+    public static string[] GetTags(string? tagStr)
     {
         if (string.IsNullOrWhiteSpace(tagStr) || tagStr.Contains('{'))
             return Array.Empty<string>();
