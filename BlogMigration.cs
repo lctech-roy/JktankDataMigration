@@ -16,8 +16,9 @@ namespace JLookDataMigration;
 
 public class BlogMigration
 {
+    private static readonly HashSet<long> ProhibitMemberIdHash = MemberHelper.GetProhibitMemberIdHash();
     private static readonly HashSet<long> LifeStyleMemberHash = MemberHelper.GetLifeStyleMemberHash();
-    private static readonly HashSet<long> MassageArticleIdHash = MassageHelper.GetMassageArticleIdHash();
+    private HashSet<long>? _massageArticleIdHash;
 
     private const int LIMIT = 20000;
 
@@ -67,8 +68,8 @@ public class BlogMigration
                                             b.uid AS {nameof(OldBlog.Uid)}, b.dateline AS {nameof(OldBlog.DateLine)}
                                             FROM pre_home_blog b
                                             INNER JOIN pre_home_blogfield bf ON b.blogid = bf.blogid
-                                            WHERE b.blogid >= @Id -- and b.blogid = 1550633
-                                            ORDER BY b.blogid
+                                            WHERE b.blogid >= @Id{(Setting.TestBlogId.HasValue ? ($@" AND b.blogid = {Setting.TestBlogId}") : "")}
+                                            ORDER BY b.blogid 
                                             LIMIT {LIMIT}";
 
     private static readonly ConcurrentDictionary<string, int> HashTagCountDic = new();
@@ -86,13 +87,15 @@ public class BlogMigration
 
     public async Task MigrationAsync(CancellationToken cancellationToken)
     {
-        var firstIds = PagingHelper.GetPagingFirstIds("pre_home_blog", "blogid", LIMIT);
+        _massageArticleIdHash = !Setting.TestBlogId.HasValue ? MassageHelper.GetMassageArticleIdHash(null) : null;
 
         FileHelper.RemoveFiles(new[]
                                {
                                    BLOG_PATH, BLOG_STATISTIC_PATH, BLOG_MEDIA_PATH,
                                    ATTACHMENT_PATH, ATTACHMENT_EXTEND_DATA_PATH, HASH_TAG_PATH, MASSAGE_BLOG_PATH
                                });
+
+        var firstIds = Setting.TestBlogId.HasValue ? new long[] { 0 } : PagingHelper.GetPagingFirstIds("pre_home_blog", "blogid", LIMIT);
 
         await Parallel.ForEachAsync(firstIds,
                                     CommonHelper.GetParallelOptions(cancellationToken),
@@ -183,7 +186,7 @@ public class BlogMigration
 
             content = RegexHelper.ImgSmileyRegex.Replace(content, innerMatch =>
                                                                   {
-                                                                      TryParse(innerMatch.Groups[1].Value, out var emojiId);
+                                                                      TryParse(innerMatch.Groups[2].Value, out var emojiId);
 
                                                                       var emoji = EmojiHelper.EmojiDic.GetValueOrDefault(emojiId, string.Empty);
 
@@ -235,11 +238,12 @@ public class BlogMigration
                                                                    if (string.IsNullOrEmpty(path))
                                                                        return string.Empty;
 
-                                                                   var isCover = ++matchCount == 1;
-                                                                   var attachmentId = blogId * 100L + matchCount;
+                                                                   var attachmentId = blogId * 1000L + ++matchCount;
+
+                                                                   var isCover = matchCount == 1;
 
                                                                    if (isCover)
-                                                                       coverId = blogId * 100L + matchCount;
+                                                                       coverId = attachmentId;
 
                                                                    var blogMedia = new BlogMedia
                                                                                    {
@@ -276,6 +280,13 @@ public class BlogMigration
                                                                    return string.Empty;
                                                                });
 
+            content = RegexHelper.EmbedRegex.Replace(content, innerMatch =>
+                                                              {
+                                                                  var url = innerMatch.Groups[1].Value;
+
+                                                                  return $"[url={url}]{url}[/url]";
+                                                              });
+
             content = RegexHelper.FontSizeRegex.Replace(content, innerMatch =>
                                                                  {
                                                                      TryParse(innerMatch.Groups[RegexHelper.SIZE_GROUP].Value, out var fontSize);
@@ -293,14 +304,20 @@ public class BlogMigration
                                              .Distinct().ToArray();
 
             long? articleId = (matchMassageIds.Length == 1) ? Convert.ToInt64(matchMassageIds.First()) : null;
-            var massageId = articleId.HasValue && MassageArticleIdHash.Contains(articleId.Value) ? articleId : null;
 
-            if (massageId.HasValue)
+            if (Setting.TestBlogId.HasValue && articleId.HasValue)
+                _massageArticleIdHash = MassageHelper.GetMassageArticleIdHash(articleId.Value);
+
+            var massageArticleId = articleId.HasValue && _massageArticleIdHash != null && _massageArticleIdHash.Contains(articleId.Value)
+                                       ? articleId
+                                       : null;
+
+            if (massageArticleId.HasValue)
             {
-                if (MassageBlogCountDic.ContainsKey(massageId.Value))
-                    MassageBlogCountDic[massageId.Value] += 1;
+                if (MassageBlogCountDic.ContainsKey(massageArticleId.Value))
+                    MassageBlogCountDic[massageArticleId.Value] += 1;
                 else
-                    MassageBlogCountDic.TryAdd(massageId.Value, 1);
+                    MassageBlogCountDic.TryAdd(massageArticleId.Value, 1);
             }
 
             var blog = new Blog
@@ -308,7 +325,9 @@ public class BlogMigration
                            Id = blogId,
                            Subject = subject,
                            CategoryId = oldBlog.CategoryId == 0 ? null : oldBlog.CategoryId,
-                           Status = oldBlog.IsReview ? new[] { BlogStatus.PendingReview } : new[] { BlogStatus.Normal },
+                           Status = ProhibitMemberIdHash.Contains(memberId) ? new[] { BlogStatus.Block } :
+                                    oldBlog.IsReview ? new[] { BlogStatus.PendingReview } :
+                                    new[] { BlogStatus.Normal },
                            VisibleType = oldBlog.OldVisibleType switch
                                          {
                                              0 => VisibleType.Public,
@@ -322,8 +341,8 @@ public class BlogMigration
                            IsSensitiveCover = false,
                            Price = 0,
                            Conclusion = null,
-                           MassageBlogId = (matchMassageIds.Length == 1) ? Convert.ToInt64(matchMassageIds.First()) : null,
-                           Hashtags = string.IsNullOrEmpty(oldBlog.OldTags) || oldBlog.OldTags.Contains('{') ? Array.Empty<string>() : oldBlog.OldTags.Split(' ').ToArray(),
+                           MassageBlogId = massageArticleId,
+                           Hashtags = GetTags(oldBlog.OldTags),
                            LastStatusModificationDate = null,
                            Disabled = false
                        };
@@ -391,5 +410,27 @@ public class BlogMigration
 
         if (attachmentExtentDataSb.Length > 0)
             FileHelper.WriteToFile(ATTACHMENT_EXTEND_DATA_PATH, fileName, COPY_ATTACHMENT_EXTEND_DATA_PREFIX, attachmentExtentDataSb);
+    }
+
+    public static string[] GetTags(string tagStr)
+    {
+        if (string.IsNullOrWhiteSpace(tagStr) || tagStr.Contains('{'))
+            return Array.Empty<string>();
+
+        var tags = new List<string>();
+        var starPoint = 0;
+
+        for (var i = 0; i < tagStr.Length; i++)
+        {
+            if (tagStr[i] == ',')
+                starPoint = i + 1;
+
+            if (tagStr[i] != '\t') continue;
+
+            var tag = tagStr.Substring(starPoint, i - starPoint);
+            tags.Add(tag);
+        }
+
+        return tags.ToArray();
     }
 }

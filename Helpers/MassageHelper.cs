@@ -6,11 +6,14 @@ namespace JLookDataMigration.Helpers;
 
 public class MassageHelper
 {
-    public static HashSet<long> GetMassageArticleIdHash()
-    {
-        const string sql = @"SELECT ""Id"" FROM ""Article""
+    public static HashSet<long>? GetMassageArticleIdHash(long? articleId)
+    { 
+        var sql = @"SELECT ""Id"" FROM ""Article""
         WHERE ""BoardId"" = 1128 AND ""VisibleTime"" <= (select extract(epoch from now()))";
 
+        if (articleId.HasValue)
+            sql += @$" AND ""Id"" = {articleId}";
+        
         var idHash = CommonHelper.WatchTime(nameof(GetMassageArticleIdHash)
                                           , () =>
                                             {

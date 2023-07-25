@@ -55,11 +55,11 @@ public class Migration
         connection.ExecuteAllCopyFiles(blogStatisticPath);
         connection.ExecuteAllCopyFiles(blogMediaPath);
         
+        connection.ExecuteAllTexts($"{Setting.INSERT_DATA_PATH}/{nameof(Hashtag)}.sql");
+        
         await using var connection2 = new NpgsqlConnection(Setting.NEW_ATTACHMENT_CONNECTION);
         connection2.ExecuteAllCopyFiles(attachmentPath);
         connection2.ExecuteAllCopyFiles(attachmentExtendDataPath);
-        
-        connection.ExecuteAllTexts($"{Setting.INSERT_DATA_PATH}/{nameof(Hashtag)}.sql");
     }
     
     public async Task ExecuteBlogReactAsync()
