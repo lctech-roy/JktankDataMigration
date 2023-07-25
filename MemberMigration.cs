@@ -35,10 +35,14 @@ public class MemberMigration
                                                    SELECT DISTINCT uid FROM pre_home_class";
 
     private const string QUERY_MEMBER = @"SELECT pum.uid AS Id, pum.username AS DisplayName,pcm.avatarstatus,pum.email,pum.regdate,pum.regip
-                                            FROM pre_ucenter_members pum 
-                                            LEFT JOIN pre_common_member pcm ON pcm.uid = pum.uid 
-                                            LEFT JOIN pre_common_member_status pcms ON pcms.uid = pum.uid
-                                            WHERE pum.uid IN @ids";
+                                          FROM pre_ucenter_members pum 
+                                          LEFT JOIN pre_common_member pcm ON pcm.uid = pum.uid
+                                          WHERE pum.uid IN @ids";
+    
+    private const string QUERY_ADDITIONAL_MEMBER = @"SELECT pcm.uid AS Id, pcm.username AS DisplayName,pcm.avatarstatus,pcm.email,pcm.regdate,pcms.regip
+                                                     FROM pre_common_member pcm 
+                                                     LEFT JOIN pre_common_member_status pcms ON pcms.uid = pcm.uid
+                                                     WHERE pcm.uid IN @ids";
 
     public async Task MigrationAsync(CancellationToken cancellationToken)
     {
@@ -95,6 +99,20 @@ public class MemberMigration
                                                                                                                    Execute(uidGroup, members);
                                                                                                                });
                                                                                         });
+
+        var notInCenterMemberIds = MemberHelper.GetNotInCenterMemberIds();
+        var uidHash = uids.ToHashSet();
+
+        var additionMemberIds = notInCenterMemberIds.Where(uidHash.Contains).ToArray();
+        
+        await using var cnn = new MySqlConnection(Setting.OLD_FORUM_CONNECTION);
+        var command = new CommandDefinition(QUERY_ADDITIONAL_MEMBER, new { ids = additionMemberIds }, cancellationToken: cancellationToken);
+        var members = (await cnn.QueryAsync<OldMember>(command)).ToArray();
+
+        if (!members.Any())
+            return;
+
+        Execute(members.Select(x=>x.Id).ToArray(),members);
     }
 
     private void Execute(IReadOnlyList<long> uids, IEnumerable<OldMember> members)

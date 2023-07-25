@@ -7,5 +7,5 @@ public class OldMember
     public bool? AvatarStatus { get; set; }
     public string Email { get; set; } = default!;
     public long RegDate { get; set; }
-    public string RegIp { get; set; } = default!;
+    public string? RegIp { get; set; }
 }

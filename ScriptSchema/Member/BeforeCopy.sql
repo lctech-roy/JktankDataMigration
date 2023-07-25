@@ -1,7 +1,13 @@
 TRUNCATE "Member" CASCADE;
 TRUNCATE "MemberProfile" CASCADE;
 
--- ALTER TABLE "Member"
---     SET UNLOGGED;
--- ALTER TABLE "MemberProfile"
---     SET UNLOGGED;
+ALTER TABLE "MemberStatistic"
+    SET UNLOGGED;
+ALTER TABLE "MemberFollower"
+    SET UNLOGGED;
+ALTER TABLE "MemberBlogCategory"
+    SET UNLOGGED;
+ALTER TABLE "MemberProfile"
+    SET UNLOGGED;
+ALTER TABLE "Member"
+    SET UNLOGGED;

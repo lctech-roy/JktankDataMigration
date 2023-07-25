@@ -42,6 +42,28 @@ public class MemberHelper
         return memberHash;
     }
     
+    public static long[] GetNotInCenterMemberIds()
+    {
+        const string sql = @"SELECT pcm.uid FROM pre_common_member pcm
+                             LEFT JOIN pre_ucenter_members pum ON pum.uid = pcm.uid
+                             WHERE pum.uid is null";
+
+        var memberIds = CommonHelper.WatchTime(nameof(GetNotInCenterMemberIds)
+                                              , () =>
+                                                {
+                                                    using var conn = new MySqlConnection(Setting.OLD_FORUM_CONNECTION);
+
+                                                    var memberIds = conn.Query<long>(sql)
+                                                                         .ToArray();
+
+                                                    return memberIds;
+                                                });
+
+        return memberIds;
+    }
+    
+
+    
     ///<summary>
     ///封鎖帳號
     ///</summary>
