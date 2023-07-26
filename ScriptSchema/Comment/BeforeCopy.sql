@@ -1,0 +1,6 @@
+TRUNCATE "Comment" CASCADE;
+
+ALTER TABLE "MemberTimeline"
+    SET UNLOGGED;
+ALTER TABLE "Comment"
+    SET UNLOGGED;

@@ -4,7 +4,6 @@ using System.Globalization;
 using JLookDataMigration;
 using JLookDataMigration.Helpers;
 using Microsoft.AspNetCore.StaticFiles;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Netcorext.Algorithms;
 
@@ -21,6 +20,7 @@ serviceCollection.AddSingleton<MemberMigration>();
 serviceCollection.AddSingleton<MemberBlogCategoryMigration>();
 serviceCollection.AddSingleton<BlogMigration>();
 serviceCollection.AddSingleton<BlogReactMigration>();
+serviceCollection.AddSingleton<CommentMigration>();
 
 serviceCollection.AddSingleton<FileExtensionContentTypeProvider>(_ =>
                                                                  {
@@ -44,6 +44,7 @@ var blogCategoryMigration = serviceProvider.GetRequiredService<MemberBlogCategor
 var memberMigration = serviceProvider.GetRequiredService<MemberMigration>();
 var blogMigration = serviceProvider.GetRequiredService<BlogMigration>();
 var blogReactMigration = serviceProvider.GetRequiredService<BlogReactMigration>();
+var commentMigration = serviceProvider.GetRequiredService<CommentMigration>();
 
 var token = new CancellationTokenSource().Token;
 
@@ -63,7 +64,11 @@ Thread.CurrentThread.CurrentUICulture = CultureInfo.InvariantCulture;
 // await CommonHelper.WatchTimeAsync(nameof(migration.ExecuteBlogAsync), () => migration.ExecuteBlogAsync());
 
 // 日誌-會員表態
-await CommonHelper.WatchTimeAsync(nameof(blogReactMigration), async () => await blogReactMigration.MigrationAsync(token));
-await CommonHelper.WatchTimeAsync(nameof(migration.ExecuteBlogReactAsync), () => migration.ExecuteBlogReactAsync());
+// await CommonHelper.WatchTimeAsync(nameof(blogReactMigration), async () => await blogReactMigration.MigrationAsync(token));
+// await CommonHelper.WatchTimeAsync(nameof(migration.ExecuteBlogReactAsync), () => migration.ExecuteBlogReactAsync());
+
+// 日誌-留言
+await CommonHelper.WatchTimeAsync(nameof(commentMigration), async () => await commentMigration.MigrationAsync(token));
+await CommonHelper.WatchTimeAsync(nameof(migration.ExecuteCommentAsync), () => migration.ExecuteCommentAsync());
 
 Console.WriteLine("Hello, World!");

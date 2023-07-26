@@ -69,4 +69,12 @@ public class Migration
         await using var connection = new NpgsqlConnection(Setting.NEW_LOOK_CONNECTION);
         connection.ExecuteAllCopyFiles(blogReactPath);
     }
+    
+    public async Task ExecuteCommentAsync()
+    {
+        const string commentPath = $"{Setting.INSERT_DATA_PATH}/{nameof(Comment)}";
+        
+        await using var connection = new NpgsqlConnection(Setting.NEW_LOOK_CONNECTION);
+        connection.ExecuteAllCopyFiles(commentPath);
+    }
 }

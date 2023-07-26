@@ -45,6 +45,13 @@ public static class StringExtension
         return !strs.Any() ? "{}" : $"{{{string.Join(",", strs.Where(x=>!string.IsNullOrWhiteSpace(x))).ToCopyText()}}}";
     }
 
+    public static string ToCopyArray(this long[] longs)
+    {
+        var stringArray = longs.Select(x => x.ToString()).ToArray();
+
+        return stringArray.ToCopyArray();
+    }
+    
     public static string ToNewTags(this string tagStr)
     {
         if (string.IsNullOrWhiteSpace(tagStr) || tagStr == "0")
