@@ -21,6 +21,7 @@ serviceCollection.AddSingleton<MemberBlogCategoryMigration>();
 serviceCollection.AddSingleton<BlogMigration>();
 serviceCollection.AddSingleton<BlogReactMigration>();
 serviceCollection.AddSingleton<CommentMigration>();
+serviceCollection.AddSingleton<MemberFavoriteMigration>();
 
 serviceCollection.AddSingleton<FileExtensionContentTypeProvider>(_ =>
                                                                  {
@@ -45,6 +46,7 @@ var memberMigration = serviceProvider.GetRequiredService<MemberMigration>();
 var blogMigration = serviceProvider.GetRequiredService<BlogMigration>();
 var blogReactMigration = serviceProvider.GetRequiredService<BlogReactMigration>();
 var commentMigration = serviceProvider.GetRequiredService<CommentMigration>();
+var memberFavoriteMigration = serviceProvider.GetRequiredService<MemberFavoriteMigration>();
 
 var token = new CancellationTokenSource().Token;
 
@@ -68,7 +70,11 @@ Thread.CurrentThread.CurrentUICulture = CultureInfo.InvariantCulture;
 // await CommonHelper.WatchTimeAsync(nameof(migration.ExecuteBlogReactAsync), () => migration.ExecuteBlogReactAsync());
 
 // 日誌-留言
-await CommonHelper.WatchTimeAsync(nameof(commentMigration), async () => await commentMigration.MigrationAsync(token));
-await CommonHelper.WatchTimeAsync(nameof(migration.ExecuteCommentAsync), () => migration.ExecuteCommentAsync());
+// await CommonHelper.WatchTimeAsync(nameof(commentMigration), async () => await commentMigration.MigrationAsync(token));
+// await CommonHelper.WatchTimeAsync(nameof(migration.ExecuteCommentAsync), () => migration.ExecuteCommentAsync());
+
+// Blog會員-收藏日誌
+await CommonHelper.WatchTimeAsync(nameof(memberFavoriteMigration), async () => await memberFavoriteMigration.MigrationAsync(token));
+await CommonHelper.WatchTimeAsync(nameof(migration.ExecuteMemberFavoriteAsync), () => migration.ExecuteMemberFavoriteAsync());
 
 Console.WriteLine("Hello, World!");

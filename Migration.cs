@@ -77,4 +77,12 @@ public class Migration
         await using var connection = new NpgsqlConnection(Setting.NEW_LOOK_CONNECTION);
         connection.ExecuteAllCopyFiles(commentPath);
     }
+    
+    public async Task ExecuteMemberFavoriteAsync()
+    {
+        const string memberFavoritePath = $"{Setting.INSERT_DATA_PATH}/{nameof(MemberFavorite)}";
+        
+        await using var connection = new NpgsqlConnection(Setting.NEW_LOOK_CONNECTION);
+        connection.ExecuteAllCopyFiles(memberFavoritePath);
+    }
 }
