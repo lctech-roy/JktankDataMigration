@@ -20,6 +20,7 @@ public class Migration
 
         const string userSchemaPath = $"{SCHEMA_PATH}/{nameof(User)}";
         const string userPath = $"{Setting.INSERT_DATA_PATH}/{nameof(User)}";
+        const string userRolePath = $"{Setting.INSERT_DATA_PATH}/{nameof(UserRole)}";
         const string userExtendDataPath = $"{Setting.INSERT_DATA_PATH}/{nameof(UserExtendData)}";
         const string userExternalLoginPath = $"{Setting.INSERT_DATA_PATH}/{nameof(UserExternalLogin)}";
 
@@ -41,6 +42,7 @@ public class Migration
                                       cn1.ExecuteCommandByPath($"{userSchemaPath}/{BEFORE_FILE_NAME}");
                                       
                                       cn1.ExecuteAllCopyFiles(userPath);
+                                      cn1.ExecuteAllCopyFiles(userRolePath);
                                       cn1.ExecuteAllCopyFiles(userExtendDataPath);
                                       cn1.ExecuteAllCopyFiles(userExternalLoginPath);
                                       
@@ -48,9 +50,10 @@ public class Migration
                                   });
         
         userTask.Start();
-        memberTask.Start();
+        //memberTask.Start();
 
-        await Task.WhenAll(memberTask, userTask);
+        //await Task.WhenAll(memberTask, userTask);
+        await userTask;
     }
 
     public async Task ExecuteMemberBlogCategoryAsync()

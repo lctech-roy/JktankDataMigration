@@ -1,4 +1,5 @@
 TRUNCATE "User" CASCADE;
+TRUNCATE "UserRole" CASCADE;
 TRUNCATE "UserExtendData" CASCADE;
 TRUNCATE "UserExternalLogin" CASCADE;
 
