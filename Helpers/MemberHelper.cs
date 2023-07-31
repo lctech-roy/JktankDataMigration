@@ -70,7 +70,7 @@ public class MemberHelper
     public static HashSet<long> GetProhibitMemberIdHash()
     {
         const string sql = @"SELECT m.""Id"" FROM ""MemberGroup"" mg 
-        INNER JOIN ""Member"" m ON m.""Id""  = mg.""Id"" 
+        INNER JOIN ""Member"" m ON m.""Id""  = mg.""Id""
         WHERE ""GroupId"" = 202359554410496";
 
         var hashSet = CommonHelper.WatchTime(nameof(GetProhibitMemberIdHash)

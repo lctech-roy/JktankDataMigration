@@ -1,3 +1,4 @@
+using System.Security.AccessControl;
 using System.Text;
 using Dapper;
 using JLookDataMigration.Extensions;
@@ -12,6 +13,11 @@ namespace JLookDataMigration;
 
 public class MemberMigration
 {
+    private const string USER_EXTEND_DATA_KEY = "SOURCE";
+    private const string USER_EXTEND_DATA_VALUE = "LCTECH.JKF.MEMBER";
+    private const string EXTERNAL_LOGIN_PROVIDER = "Pan";
+    private const string PASSWORD = "37248859E0EA71CF30B6BC4ACCD1F113F8F02439E55A473EAA7BF0ABB4D6242B";
+    
     private static readonly Dictionary<long, DateTimeOffset> MemberFirstPostDateDic = MemberHelper.GetMemberFirstPostDateDic();
 
     private const string COPY_MEMBER_PREFIX = $"COPY \"{nameof(Member)}\" " +
@@ -23,6 +29,24 @@ public class MemberMigration
     private const string COPY_MEMBER_PROFILE_PREFIX = $"COPY \"{nameof(MemberProfile)}\" " +
                                                       $"(\"{nameof(MemberProfile.Id)}\",\"{nameof(MemberProfile.PhoneNumber)}\",\"{nameof(MemberProfile.Email)}\",\"{nameof(MemberProfile.PhoneId)}\"" +
                                                       $",\"{nameof(MemberProfile.ObjectId)}\",\"{nameof(MemberProfile.RegisterIp)}\"" + Setting.COPY_ENTITY_SUFFIX;
+
+    private const string COPY_USER_PREFIX = $"COPY \"{nameof(User)}\" " +
+                                              $"(\"{nameof(User.Id)}\",\"{nameof(User.Username)}\",\"{nameof(User.NormalizedUsername)}\"" +
+                                              $",\"{nameof(User.DisplayName)}\",\"{nameof(User.NormalizedDisplayName)}\",\"{nameof(User.Password)}\"" +
+                                              $",\"{nameof(User.Email)}\",\"{nameof(User.NormalizedEmail)}\",\"{nameof(User.EmailConfirmed)}\",\"{nameof(User.PhoneNumber)}\"" +
+                                              $",\"{nameof(User.PhoneNumberConfirmed)}\",\"{nameof(User.Otp)}\",\"{nameof(User.OtpBound)}\",\"{nameof(User.TwoFactorEnabled)}\"" +
+                                              $",\"{nameof(User.RequiredChangePassword)}\",\"{nameof(User.AllowedRefreshToken)}\",\"{nameof(User.TokenExpireSeconds)}\"" +
+                                              $",\"{nameof(User.RefreshTokenExpireSeconds)}\",\"{nameof(User.CodeExpireSeconds)}\",\"{nameof(User.AccessFailedCount)}\"" +
+                                              $",\"{nameof(User.LastSignInDate)}\",\"{nameof(User.LastSignInIp)}\",\"{nameof(User.Disabled)}\"" +
+                                              Setting.COPY_ENTITY_SUFFIX;
+    
+    private const string COPY_USER_EXTEND_DATA_PREFIX = $"COPY \"{nameof(UserExtendData)}\"" +
+                                                        $"(\"{nameof(UserExtendData.Id)}\",\"{nameof(UserExtendData.Key)}\",\"{nameof(UserExtendData.Value)}\"" 
+                                                      + Setting.COPY_ENTITY_SUFFIX;
+    
+    private const string COPY_USER_EXTERNAL_LOGIN_PREFIX = $"COPY \"{nameof(UserExternalLogin)}\"" +
+                                                        $"(\"{nameof(UserExternalLogin.Id)}\",\"{nameof(UserExternalLogin.Provider)}\",\"{nameof(UserExternalLogin.UniqueId)}\"" 
+                                                      + Setting.COPY_ENTITY_SUFFIX;
 
     private const string QUERY_BLOG_MEMBER_UID = @"SELECT DISTINCT uid FROM pre_home_blog
                                                    UNION
@@ -38,7 +62,7 @@ public class MemberMigration
                                           FROM pre_ucenter_members pum 
                                           LEFT JOIN pre_common_member pcm ON pcm.uid = pum.uid
                                           WHERE pum.uid IN @ids";
-    
+
     private const string QUERY_ADDITIONAL_MEMBER = @"SELECT pcm.uid AS Id, pcm.username AS DisplayName,pcm.avatarstatus,pcm.email,pcm.regdate,pcms.regip
                                                      FROM pre_common_member pcm 
                                                      LEFT JOIN pre_common_member_status pcms ON pcms.uid = pcm.uid
@@ -70,6 +94,15 @@ public class MemberMigration
             offset += limit;
         }
 
+        FileHelper.RemoveFiles(new[]
+                               {
+                                   $"{Setting.INSERT_DATA_PATH}/{nameof(Member)}",
+                                   $"{Setting.INSERT_DATA_PATH}/{nameof(MemberProfile)}",
+                                   $"{Setting.INSERT_DATA_PATH}/{nameof(User)}",
+                                   $"{Setting.INSERT_DATA_PATH}/{nameof(UserExtendData)}",
+                                   $"{Setting.INSERT_DATA_PATH}/{nameof(UserExternalLogin)}"
+                               });
+        
         await Parallel.ForEachAsync(uidGroups,
                                     CommonHelper.GetParallelOptions(cancellationToken), async (uidGroup, token) =>
                                                                                         {
@@ -104,7 +137,7 @@ public class MemberMigration
         var uidHash = uids.ToHashSet();
 
         var additionMemberIds = notInCenterMemberIds.Where(uidHash.Contains).ToArray();
-        
+
         await using var cnn = new MySqlConnection(Setting.OLD_FORUM_CONNECTION);
         var command = new CommandDefinition(QUERY_ADDITIONAL_MEMBER, new { ids = additionMemberIds }, cancellationToken: cancellationToken);
         var members = (await cnn.QueryAsync<OldMember>(command)).ToArray();
@@ -112,14 +145,17 @@ public class MemberMigration
         if (!members.Any())
             return;
 
-        Execute(members.Select(x=>x.Id).ToArray(),members);
+        Execute(members.Select(x => x.Id).ToArray(), members);
     }
 
     private void Execute(IReadOnlyList<long> uids, IEnumerable<OldMember> members)
     {
         var memberSb = new StringBuilder();
         var memberProfileSb = new StringBuilder();
-
+        var userSb = new StringBuilder();
+        var userExtendDataSb = new StringBuilder();
+        var userExternalLoginSb = new StringBuilder();
+        
         foreach (var oldMember in members)
         {
             var createDate = DateTimeOffset.FromUnixTimeSeconds(oldMember.RegDate);
@@ -127,7 +163,6 @@ public class MemberMigration
 
             var member = new Member
                          {
-                             Id = memberId,
                              DisplayName = oldMember.DisplayName,
                              NormalizedDisplayName = oldMember.DisplayName.ToUpper(),
                              RoleId = 1,
@@ -145,7 +180,6 @@ public class MemberMigration
 
             var memberProfile = new MemberProfile
                                 {
-                                    Id = memberId,
                                     PhoneNumber = null,
                                     Email = oldMember.Email,
                                     PhoneId = null,
@@ -153,19 +187,65 @@ public class MemberMigration
                                     RegisterIp = oldMember.RegIp
                                 };
 
-            memberSb.AppendValueLine(member.Id, member.DisplayName.ToCopyText(), member.NormalizedDisplayName.ToCopyText(), member.RoleId,
+            var userName = oldMember.DisplayName + "-" + memberId;
+            
+            var user = new User
+                       {
+                           Username = userName,
+                           NormalizedUsername = userName.ToUpper(),
+                           DisplayName = oldMember.DisplayName,
+                           NormalizedDisplayName = oldMember.DisplayName.ToUpper(),
+                           Password = PASSWORD,
+                           Email = oldMember.Email,
+                           NormalizedEmail = oldMember.Email.ToUpper(),
+                           EmailConfirmed = false,
+                           PhoneNumber = null,
+                           PhoneNumberConfirmed = false,
+                           Otp = null,
+                           OtpBound = false,
+                           TwoFactorEnabled = false,
+                           RequiredChangePassword = false,
+                           AllowedRefreshToken = true,
+                           TokenExpireSeconds = 3600,
+                           RefreshTokenExpireSeconds = 21600,
+                           CodeExpireSeconds = 600,
+                           AccessFailedCount = 0,
+                           LastSignInDate = null,
+                           LastSignInIp = null,
+                           Disabled = false
+                       };
+
+            memberSb.AppendValueLine(memberId, member.DisplayName.ToCopyText(), member.NormalizedDisplayName.ToCopyText(), member.RoleId,
                                      member.ParentId.ToCopyValue(), (int)member.PrivacyType, member.Birthday.ToCopyValue(), member.Avatar.ToCopyText(),
                                      member.Cover.ToCopyValue(), member.IsSensitiveCover, member.PersonalProfile.ToCopyValue(), member.WarningCount,
                                      member.WarningExpirationDate.ToCopyValue(), member.FirstPostDate.ToCopyValue(),
                                      createDate, 0, createDate, 0, 0);
 
-            memberProfileSb.AppendValueLine(memberProfile.Id, memberProfile.PhoneNumber.ToCopyValue(), memberProfile.Email.ToCopyText(),
+            memberProfileSb.AppendValueLine(memberId, memberProfile.PhoneNumber.ToCopyValue(), memberProfile.Email.ToCopyText(),
                                             memberProfile.PhoneId.ToCopyValue(), memberProfile.ObjectId.ToCopyValue(), memberProfile.RegisterIp.ToCopyValue(),
                                             createDate, 0, createDate, 0, 0);
+
+            userSb.AppendValueLine(memberId,user.Username.ToCopyText(),user.NormalizedUsername.ToCopyText(),
+                                   user.DisplayName.ToCopyText(),user.NormalizedDisplayName.ToCopyText(),user.Password,
+                                   user.Email.ToCopyText(),user.NormalizedEmail.ToCopyText(),user.EmailConfirmed,user.PhoneNumber.ToCopyText(),
+                                   user.PhoneNumberConfirmed,user.Otp.ToCopyText(), user.OtpBound, user.TwoFactorEnabled,
+                                   user.RequiredChangePassword,user.AllowedRefreshToken,user.TokenExpireSeconds,
+                                   user.RefreshTokenExpireSeconds,user.CodeExpireSeconds,user.AccessFailedCount,
+                                   user.LastSignInDate.ToCopyValue(),user.LastSignInIp.ToCopyText(),user.Disabled,
+                                   createDate, 0, createDate, 0, 0);
+            
+            userExtendDataSb.AppendValueLine(memberId, USER_EXTEND_DATA_KEY, USER_EXTEND_DATA_VALUE,
+                                                   createDate, 0, createDate, 0, 0);
+            
+            userExternalLoginSb.AppendValueLine(memberId,EXTERNAL_LOGIN_PROVIDER,memberId.ToString(),
+                                                createDate, 0, createDate, 0, 0);
         }
 
         FileHelper.WriteToFile($"{Setting.INSERT_DATA_PATH}/{nameof(Member)}", $"{uids[0]}-{uids[^1]}.sql", COPY_MEMBER_PREFIX, memberSb);
         FileHelper.WriteToFile($"{Setting.INSERT_DATA_PATH}/{nameof(MemberProfile)}", $"{uids[0]}-{uids[^1]}.sql", COPY_MEMBER_PROFILE_PREFIX, memberProfileSb);
+        FileHelper.WriteToFile($"{Setting.INSERT_DATA_PATH}/{nameof(User)}", $"{uids[0]}-{uids[^1]}.sql", COPY_USER_PREFIX, userSb);
+        FileHelper.WriteToFile($"{Setting.INSERT_DATA_PATH}/{nameof(UserExtendData)}", $"{uids[0]}-{uids[^1]}.sql", COPY_USER_EXTEND_DATA_PREFIX, userExtendDataSb);
+        FileHelper.WriteToFile($"{Setting.INSERT_DATA_PATH}/{nameof(UserExternalLogin)}", $"{uids[0]}-{uids[^1]}.sql", COPY_USER_EXTERNAL_LOGIN_PREFIX, userExternalLoginSb);
     }
 
     private string? GetAvatar(long jkfId, bool? avatarStatus = null)

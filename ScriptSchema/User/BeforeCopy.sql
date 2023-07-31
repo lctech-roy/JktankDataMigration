@@ -1,0 +1,14 @@
+TRUNCATE "User" CASCADE;
+TRUNCATE "UserExtendData" CASCADE;
+TRUNCATE "UserExternalLogin" CASCADE;
+
+ALTER TABLE "UserRole"
+    SET UNLOGGED;
+ALTER TABLE "UserPermissionCondition"
+    SET UNLOGGED;
+ALTER TABLE "UserExtendData"
+    SET UNLOGGED;
+ALTER TABLE "UserExternalLogin"
+    SET UNLOGGED;
+ALTER TABLE "User"
+    SET UNLOGGED;
