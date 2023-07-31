@@ -50,10 +50,9 @@ public class Migration
                                   });
         
         userTask.Start();
-        //memberTask.Start();
+        memberTask.Start();
 
-        //await Task.WhenAll(memberTask, userTask);
-        await userTask;
+        await Task.WhenAll(memberTask, userTask);
     }
 
     public async Task ExecuteMemberBlogCategoryAsync()
