@@ -8,6 +8,12 @@ namespace JLookDataMigration;
 
 public class MemberFollowerMigration
 {
+    private static readonly HashSet<long> ProhibitMemberIdHash = MemberHelper.GetProhibitMemberIdHash();
+    
+    private static readonly HashSet<long> BlogCreatorMemberIdHash = MemberHelper.GetBlogCreatorMemberIdHash();
+    
+    private static readonly HashSet<long> LookMemberIdHash = LookMemberHelper.GetLookMemberIdHash();
+    
     private const string COPY_MEMBER_FOLLOWER_PREFIX = $"COPY \"{nameof(MemberFollower)}\" " +
                                                        $"(\"{nameof(MemberFollower.Id)}\",\"{nameof(MemberFollower.FollowerId)}\",\"{nameof(MemberFollower.IsFriend)}\"" 
                                                      + Setting.COPY_ENTITY_SUFFIX;
@@ -34,9 +40,18 @@ public class MemberFollowerMigration
         while (await reader.ReadAsync(cancellationToken))
         {
             var memberId = reader.GetInt64(0);
+            
+            if(!BlogCreatorMemberIdHash.Contains(memberId) || !LookMemberIdHash.Contains(memberId))
+                continue;
 
             var followerId = reader.GetInt64(1);
-
+            
+            if(!LookMemberIdHash.Contains(followerId))
+                continue;
+            
+            if(ProhibitMemberIdHash.Contains(memberId) || ProhibitMemberIdHash.Contains(followerId))
+                continue;
+            
             var dateLine = reader.GetInt64(2);
 
             var createDate = DateTimeOffset.FromUnixTimeSeconds(dateLine);
