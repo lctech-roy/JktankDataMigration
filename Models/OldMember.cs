@@ -8,4 +8,5 @@ public class OldMember
     public string Email { get; set; } = default!;
     public long RegDate { get; set; }
     public string? RegIp { get; set; }
+    public long? GroupId  { get; set; }
 }

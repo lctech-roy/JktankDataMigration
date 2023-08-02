@@ -19,6 +19,8 @@ public class MemberMigration
     private const string USER_EXTEND_DATA_VALUE = "LCTECH.JLOOK.MEMBER";
     private const string EXTERNAL_LOGIN_PROVIDER = "Pan";
     private const long DEFAULT_ROLE_ID = 1;
+    private const long PROHIBIT_ROLE_ID = 99;
+    private const long NO_SPEAK_ROLE_ID = 98;
 
     private static readonly DateTimeOffset DefaultRoleExpireDate = DateTimeOffset.MaxValue;
     private static readonly Dictionary<long, DateTimeOffset> MemberFirstPostDateDic = MemberHelper.GetMemberFirstPostDateDic();
@@ -65,12 +67,18 @@ public class MemberMigration
                                                    UNION
                                                    SELECT DISTINCT uid FROM pre_home_class";
 
-    private const string QUERY_MEMBER = @"SELECT pum.uid AS Id, pum.username AS DisplayName,pcm.avatarstatus,pum.email,pum.regdate,pum.regip
-                                          FROM pre_ucenter_members pum 
-                                          LEFT JOIN pre_common_member pcm ON pcm.uid = pum.uid
-                                          WHERE pum.uid IN @ids";
+    private const string QUERY_MEMBER = $@"SELECT pum.uid AS {nameof(OldMember.Id)}, pum.username AS {nameof(OldMember.DisplayName)},
+                                           pcm.avatarstatus AS {nameof(OldMember.AvatarStatus)},pum.email AS {nameof(OldMember.Email)},
+                                           pum.regdate AS {nameof(OldMember.RegDate)},pum.regip AS {nameof(OldMember.RegIp)},
+                                           pcm.groupid AS {nameof(OldMember.GroupId)}
+                                           FROM pre_ucenter_members pum 
+                                           LEFT JOIN pre_common_member pcm ON pcm.uid = pum.uid
+                                           WHERE pum.uid IN @ids";
 
-    private const string QUERY_ADDITIONAL_MEMBER = @"SELECT pcm.uid AS Id, pcm.username AS DisplayName,pcm.avatarstatus,pcm.email,pcm.regdate,pcms.regip
+    private const string QUERY_ADDITIONAL_MEMBER = $@"SELECT pcm.uid AS {nameof(OldMember.Id)}, pcm.username AS {nameof(OldMember.DisplayName)},
+                                                     pcm.avatarstatus AS {nameof(OldMember.AvatarStatus)},pcm.email AS {nameof(OldMember.Email)},
+                                                     pcm.regdate AS {nameof(OldMember.RegDate)},pcms.regip AS {nameof(OldMember.RegIp)},
+                                                     pcm.groupid AS {nameof(OldMember.GroupId)}
                                                      FROM pre_common_member pcm 
                                                      LEFT JOIN pre_common_member_status pcms ON pcms.uid = pcm.uid
                                                      WHERE pcm.uid IN @ids";
@@ -245,6 +253,21 @@ public class MemberMigration
 
             userRoleSb.AppendValueLine(memberId, DEFAULT_ROLE_ID, DefaultRoleExpireDate,
                                        createDate, 0, createDate, 0, 0);
+
+
+            switch (oldMember.GroupId)
+            {
+                case 4:
+                    userRoleSb.AppendValueLine(memberId, NO_SPEAK_ROLE_ID, DefaultRoleExpireDate,
+                                               createDate, 0, createDate, 0, 0);
+
+                    break;
+                case 5:
+                    userRoleSb.AppendValueLine(memberId, PROHIBIT_ROLE_ID, DefaultRoleExpireDate,
+                                               createDate, 0, createDate, 0, 0);
+
+                    break;
+            }
 
             userExtendDataSb.AppendValueLine(memberId, USER_EXTEND_DATA_KEY, USER_EXTEND_DATA_VALUE,
                                              createDate, 0, createDate, 0, 0);
