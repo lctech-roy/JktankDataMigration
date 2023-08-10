@@ -118,4 +118,12 @@ public class Migration
         await using var connection = new NpgsqlConnection(Setting.NEW_LOOK_CONNECTION);
         connection.ExecuteAllCopyFiles(memberFollowerPath);
     }
+    
+    public async Task ExecuteStatisticAsync()
+    {
+        const string memberStatisticPath = $"{Setting.INSERT_DATA_PATH}/{nameof(MemberStatistic)}";
+
+        await using var connection = new NpgsqlConnection(Setting.NEW_LOOK_CONNECTION);
+        connection.ExecuteAllCopyFiles(memberStatisticPath);
+    }
 }
