@@ -2,16 +2,12 @@
 
 using System.Globalization;
 using JLookDataMigration;
-using JLookDataMigration.Helpers;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.DependencyInjection;
 using Netcorext.Algorithms;
 
 // 1. 建立依賴注入的容器
 var serviceCollection = new ServiceCollection();
-
-// serviceCollection.AddDbContext<DbContext>
-//     (options => { options.UseMySql(Setting.OLD_FORUM_CONNECTION, ServerVersion.AutoDetect(Setting.OLD_FORUM_CONNECTION)); },ServiceLifetime.Transient);
 
 // 2. 註冊服務
 serviceCollection.AddSingleton<ISnowflake>(_ => new SnowflakeJavaScriptSafeInteger((uint)new Random().Next(1, 31)));
@@ -23,6 +19,7 @@ serviceCollection.AddSingleton<BlogReactMigration>();
 serviceCollection.AddSingleton<CommentMigration>();
 serviceCollection.AddSingleton<MemberFavoriteMigration>();
 serviceCollection.AddSingleton<MemberFollowerMigration>();
+serviceCollection.AddSingleton<MemberStatisticMigration>();
 
 serviceCollection.AddSingleton<FileExtensionContentTypeProvider>(_ =>
                                                                  {
@@ -49,6 +46,7 @@ var blogReactMigration = serviceProvider.GetRequiredService<BlogReactMigration>(
 var commentMigration = serviceProvider.GetRequiredService<CommentMigration>();
 var memberFavoriteMigration = serviceProvider.GetRequiredService<MemberFavoriteMigration>();
 var memberFollowerMigration = serviceProvider.GetRequiredService<MemberFollowerMigration>();
+var memberStatisticMigration =  serviceProvider.GetRequiredService<MemberStatisticMigration>();
 
 var token = new CancellationTokenSource().Token;
 
@@ -56,8 +54,8 @@ Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
 Thread.CurrentThread.CurrentUICulture = CultureInfo.InvariantCulture;
 
 // Blog會員
-// await CommonHelper.WatchTimeAsync(nameof(memberMigration), async () => await memberMigration.MigrationAsync(token));
-// await CommonHelper.WatchTimeAsync(nameof(migration.ExecuteMemberAsync), () => migration.ExecuteMemberAsync(token));
+//await CommonHelper.WatchTimeAsync(nameof(memberMigration), async () => await memberMigration.MigrationAsync(token));
+// await CommonHelper.WatchTimeAsync(nameof(migration.ExecuteMemberAsync), () => migration.ExecuteMemberAsync());
 
 // 日誌分類
 // CommonHelper.WatchTime(nameof(blogCategoryMigration),  () =>  blogCategoryMigration.Migration());
@@ -76,11 +74,15 @@ Thread.CurrentThread.CurrentUICulture = CultureInfo.InvariantCulture;
 // await CommonHelper.WatchTimeAsync(nameof(migration.ExecuteCommentAsync), () => migration.ExecuteCommentAsync());
 
 // Blog會員-收藏日誌
-await CommonHelper.WatchTimeAsync(nameof(memberFavoriteMigration), async () => await memberFavoriteMigration.MigrationAsync(token));
-await CommonHelper.WatchTimeAsync(nameof(migration.ExecuteMemberFavoriteAsync), () => migration.ExecuteMemberFavoriteAsync());
+// await CommonHelper.WatchTimeAsync(nameof(memberFavoriteMigration), async () => await memberFavoriteMigration.MigrationAsync(token));
+// await CommonHelper.WatchTimeAsync(nameof(migration.ExecuteMemberFavoriteAsync), () => migration.ExecuteMemberFavoriteAsync());
 
 // Blog會員-追蹤會員
-await CommonHelper.WatchTimeAsync(nameof(memberFollowerMigration), async () => await memberFollowerMigration.MigrationAsync(token));
-await CommonHelper.WatchTimeAsync(nameof(migration.ExecuteMemberFollowerAsync), () => migration.ExecuteMemberFollowerAsync());
+// await CommonHelper.WatchTimeAsync(nameof(memberFollowerMigration), async () => await memberFollowerMigration.MigrationAsync(token));
+// await CommonHelper.WatchTimeAsync(nameof(migration.ExecuteMemberFollowerAsync), () => migration.ExecuteMemberFollowerAsync());
+
+// Blog會員-統計資料
+// await CommonHelper.WatchTimeAsync(nameof(memberStatisticMigration), async () => await memberStatisticMigration.MigrationAsync(token));
+// await CommonHelper.WatchTimeAsync(nameof(migration.ExecuteStatisticAsync), () => migration.ExecuteStatisticAsync());
 
 Console.WriteLine("Hello, World!");
