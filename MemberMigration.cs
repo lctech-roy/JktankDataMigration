@@ -1,4 +1,3 @@
-using System.Security.AccessControl;
 using System.Text;
 using Dapper;
 using JLookDataMigration.Extensions;
@@ -8,7 +7,6 @@ using Lctech.JLook.Core.Domain.Entities;
 using Lctech.JLook.Core.Domain.Enums;
 using MySql.Data.MySqlClient;
 using Netcorext.Extensions.Hash;
-using Org.BouncyCastle.Bcpg;
 using Polly;
 
 namespace JLookDataMigration;
@@ -26,7 +24,7 @@ public class MemberMigration
     private static readonly Dictionary<long, DateTimeOffset> MemberFirstPostDateDic = MemberHelper.GetMemberFirstPostDateDic();
 
     private const string COPY_MEMBER_PREFIX = $"COPY \"{nameof(Member)}\" " +
-                                              $"(\"{nameof(Member.Id)}\",\"{nameof(Member.DisplayName)}\",\"{nameof(Member.NormalizedDisplayName)}\",\"{nameof(Member.RoleId)}\"" +
+                                              $"(\"{nameof(Member.Id)}\",\"{nameof(Member.DisplayName)}\",\"{nameof(Member.NormalizedDisplayName)}\"" +
                                               $",\"{nameof(Member.ParentId)}\",\"{nameof(Member.PrivacyType)}\",\"{nameof(Member.Birthday)}\",\"{nameof(Member.Avatar)}\"" +
                                               $",\"{nameof(Member.Cover)}\",\"{nameof(Member.IsSensitiveCover)}\",\"{nameof(Member.PersonalProfile)}\",\"{nameof(Member.WarningCount)}\"" +
                                               $",\"{nameof(Member.WarningExpirationDate)}\",\"{nameof(Member.FirstPostDate)}\"" + Setting.COPY_ENTITY_SUFFIX;
@@ -182,7 +180,6 @@ public class MemberMigration
                          {
                              DisplayName = oldMember.DisplayName,
                              NormalizedDisplayName = oldMember.DisplayName.ToUpper(),
-                             RoleId = 1,
                              ParentId = null,
                              PrivacyType = PrivacyType.Public,
                              Birthday = null,
@@ -232,7 +229,7 @@ public class MemberMigration
                            Disabled = false
                        };
 
-            memberSb.AppendValueLine(memberId, member.DisplayName.ToCopyText(), member.NormalizedDisplayName.ToCopyText(), member.RoleId,
+            memberSb.AppendValueLine(memberId, member.DisplayName.ToCopyText(), member.NormalizedDisplayName.ToCopyText(),
                                      member.ParentId.ToCopyValue(), (int)member.PrivacyType, member.Birthday.ToCopyValue(), member.Avatar.ToCopyText(),
                                      member.Cover.ToCopyValue(), member.IsSensitiveCover, member.PersonalProfile.ToCopyValue(), member.WarningCount,
                                      member.WarningExpirationDate.ToCopyValue(), member.FirstPostDate.ToCopyValue(),
