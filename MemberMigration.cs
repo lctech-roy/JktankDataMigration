@@ -17,9 +17,9 @@ public class MemberMigration
     private const string USER_EXTEND_DATA_VALUE = "LCTECH.JLOOK.MEMBER";
     private const string EXTERNAL_LOGIN_PROVIDER = "Pan";
     private const long DEFAULT_ROLE_ID = 1;
-    private const long PROHIBIT_ROLE_ID = 99;
-    private const long NO_SPEAK_ROLE_ID = 98;
-
+    private const long BANNED_TO_POST_ROLE_ID = 98;
+    private const long BLOCK_ROLE_ID = 99;
+    
     private static readonly DateTimeOffset DefaultRoleExpireDate = DateTimeOffset.MaxValue;
     private static readonly Dictionary<long, DateTimeOffset> MemberFirstPostDateDic = MemberHelper.GetMemberFirstPostDateDic();
 
@@ -254,12 +254,12 @@ public class MemberMigration
             switch (oldMember.GroupId)
             {
                 case 4:
-                    userRoleSb.AppendValueLine(memberId, NO_SPEAK_ROLE_ID, DefaultRoleExpireDate,
+                    userRoleSb.AppendValueLine(memberId, BANNED_TO_POST_ROLE_ID, DefaultRoleExpireDate,
                                                createDate, 0, createDate, 0, 0);
 
                     break;
                 case 5:
-                    userRoleSb.AppendValueLine(memberId, PROHIBIT_ROLE_ID, DefaultRoleExpireDate,
+                    userRoleSb.AppendValueLine(memberId, BLOCK_ROLE_ID, DefaultRoleExpireDate,
                                                createDate, 0, createDate, 0, 0);
 
                     break;
