@@ -25,7 +25,7 @@ public class BlogMigration
     private const string COPY_BLOG_PREFIX = $"COPY \"{nameof(Blog)}\" " +
                                             $"(\"{nameof(Blog.Id)}\",\"{nameof(Blog.Subject)}\",\"{nameof(Blog.CategoryId)}\",\"{nameof(Blog.Status)}\"" +
                                             $",\"{nameof(Blog.VisibleType)}\",\"{nameof(Blog.Title)}\",\"{nameof(Blog.Content)}\",\"{nameof(Blog.Cover)}\"" +
-                                            $",\"{nameof(Blog.IsSensitiveCover)}\",\"{nameof(Blog.IsPinned)}\",\"{nameof(Blog.Price)}\",\"{nameof(Blog.Conclusion)}\"" +
+                                            $",\"{nameof(Blog.IsPinned)}\",\"{nameof(Blog.Price)}\",\"{nameof(Blog.Conclusion)}\"" +
                                             $",\"{nameof(Blog.MassageBlogId)}\",\"{nameof(Blog.Hashtags)}\",\"{nameof(Blog.LastStatusModificationDate)}\",\"{nameof(Blog.Disabled)}\"" +
                                             Setting.COPY_ENTITY_SUFFIX;
 
@@ -338,7 +338,6 @@ public class BlogMigration
                            IsPinned = false,
                            Content = content,
                            Cover = coverId,
-                           IsSensitiveCover = false,
                            Price = 0,
                            Conclusion = null,
                            MassageBlogId = massageArticleId,
@@ -363,8 +362,8 @@ public class BlogMigration
 
             blogSb.AppendValueLine(blog.Id, (int)blog.Subject, blog.CategoryId.ToCopyValue(), copyStatusArrayStr,
                                    (int)blog.VisibleType, blog.Title.ToCopyText(), blog.Content.ToCopyText(), blog.Cover.ToCopyValue(),
-                                   blog.IsSensitiveCover, blog.IsPinned, blog.Price, blog.Conclusion.ToCopyText(),
-                                   blog.MassageBlogId.ToCopyValue(), blog.Hashtags.ToCopyArray(), blog.LastStatusModificationDate.ToCopyValue(), blog.Disabled,
+                                   blog.IsPinned, blog.Price, blog.Conclusion.ToCopyText(), blog.MassageBlogId.ToCopyValue(), 
+                                   blog.Hashtags.ToCopyArray(), blog.LastStatusModificationDate.ToCopyValue(), blog.Disabled,
                                    createDate, memberId, createDate, memberId, 0);
 
             var blogStatistic = new BlogStatistic

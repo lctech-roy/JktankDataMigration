@@ -26,7 +26,7 @@ public class MemberMigration
     private const string COPY_MEMBER_PREFIX = $"COPY \"{nameof(Member)}\" " +
                                               $"(\"{nameof(Member.Id)}\",\"{nameof(Member.DisplayName)}\",\"{nameof(Member.NormalizedDisplayName)}\"" +
                                               $",\"{nameof(Member.ParentId)}\",\"{nameof(Member.PrivacyType)}\",\"{nameof(Member.Birthday)}\",\"{nameof(Member.Avatar)}\"" +
-                                              $",\"{nameof(Member.Cover)}\",\"{nameof(Member.IsSensitiveCover)}\",\"{nameof(Member.PersonalProfile)}\",\"{nameof(Member.WarningCount)}\"" +
+                                              $",\"{nameof(Member.Cover)}\",\"{nameof(Member.PersonalProfile)}\",\"{nameof(Member.WarningCount)}\"" +
                                               $",\"{nameof(Member.WarningExpirationDate)}\",\"{nameof(Member.FirstPostDate)}\"" + Setting.COPY_ENTITY_SUFFIX;
 
     private const string COPY_MEMBER_PROFILE_PREFIX = $"COPY \"{nameof(MemberProfile)}\" " +
@@ -185,7 +185,6 @@ public class MemberMigration
                              Birthday = null,
                              Avatar = GetAvatar(memberId, oldMember.AvatarStatus),
                              Cover = null,
-                             IsSensitiveCover = false,
                              PersonalProfile = null,
                              WarningCount = 0,
                              WarningExpirationDate = null,
@@ -231,7 +230,7 @@ public class MemberMigration
 
             memberSb.AppendValueLine(memberId, member.DisplayName.ToCopyText(), member.NormalizedDisplayName.ToCopyText(),
                                      member.ParentId.ToCopyValue(), (int)member.PrivacyType, member.Birthday.ToCopyValue(), member.Avatar.ToCopyText(),
-                                     member.Cover.ToCopyValue(), member.IsSensitiveCover, member.PersonalProfile.ToCopyValue(), member.WarningCount,
+                                     member.Cover.ToCopyValue(), member.PersonalProfile.ToCopyValue(), member.WarningCount,
                                      member.WarningExpirationDate.ToCopyValue(), member.FirstPostDate.ToCopyValue(),
                                      createDate, 0, createDate, 0, 0);
 
