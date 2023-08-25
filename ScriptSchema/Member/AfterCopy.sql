@@ -1,3 +1,16 @@
+ALTER TABLE "Member"
+    SET LOGGED;
+ALTER TABLE "MemberStatistic"
+    SET LOGGED;
+ALTER TABLE "MemberFollower"
+    SET LOGGED;
+ALTER TABLE "MemberProfile"
+    SET LOGGED;
+ALTER TABLE "MemberTopic"
+    SET LOGGED;
+ALTER TABLE "MemberTimeline"
+    SET LOGGED;
+
 ALTER TABLE "Blog"
     ADD CONSTRAINT "FK_Blog_Member_CreatorId" FOREIGN KEY ("CreatorId") REFERENCES "public"."Member"("Id") ON DELETE CASCADE;
 ALTER TABLE "Comment"
@@ -17,23 +30,11 @@ ALTER TABLE "MemberJPointsHistory"
 ALTER TABLE "MemberStatistic"
     ADD CONSTRAINT "FK_MemberStatistic_Member_Id" FOREIGN KEY ("Id") REFERENCES "public"."Member"("Id") ON DELETE CASCADE;
 ALTER TABLE "MemberTimeline"
-    ADD CONSTRAINT "FK_MemberTimeline_Member_Id" FOREIGN KEY ("Id") REFERENCES "public"."Member"("Id") ON DELETE CASCADE,
-    ADD CONSTRAINT "FK_MemberTimeline_Member_TargetMemberId" FOREIGN KEY ("TargetMemberId") REFERENCES "public"."Member"("Id") ON DELETE CASCADE;
+    ADD CONSTRAINT "FK_MemberTimeline_Member_Id" FOREIGN KEY ("Id") REFERENCES "public"."Member"("Id") ON DELETE CASCADE;
 ALTER TABLE "MemberViewHistory"
     ADD CONSTRAINT "FK_MemberViewHistory_Member_Id" FOREIGN KEY ("Id") REFERENCES "public"."Member"("Id") ON DELETE CASCADE;
 ALTER TABLE "Order"
     ADD CONSTRAINT "FK_Order_Member_CreatorId" FOREIGN KEY ("CreatorId") REFERENCES "public"."Member"("Id") ON DELETE CASCADE;
-
-ALTER TABLE "Member"
-    SET LOGGED;
-ALTER TABLE "MemberStatistic"
-    SET LOGGED;
-ALTER TABLE "MemberFollower"
-    SET LOGGED;
-ALTER TABLE "MemberBlogCategory"
-    SET LOGGED;
-ALTER TABLE "MemberProfile"
-    SET LOGGED;
 
 ANALYZE "Member";
 ANALYZE "MemberProfile";

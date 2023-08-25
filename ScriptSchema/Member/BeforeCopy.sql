@@ -17,8 +17,7 @@ ALTER TABLE "MemberJPointsHistory"
 ALTER TABLE "MemberStatistic"
     DROP CONSTRAINT IF EXISTS "FK_MemberStatistic_Member_Id";
 ALTER TABLE "MemberTimeline"
-    DROP CONSTRAINT IF EXISTS "FK_MemberTimeline_Member_Id",
-    DROP CONSTRAINT IF EXISTS "FK_MemberTimeline_Member_TargetMemberId";
+    DROP CONSTRAINT IF EXISTS "FK_MemberTimeline_Member_Id";
 ALTER TABLE "MemberViewHistory"
     DROP CONSTRAINT IF EXISTS "FK_MemberViewHistory_Member_Id";
 ALTER TABLE "Order"
@@ -31,9 +30,11 @@ ALTER TABLE "MemberStatistic"
     SET UNLOGGED;
 ALTER TABLE "MemberFollower"
     SET UNLOGGED;
-ALTER TABLE "MemberBlogCategory"
-    SET UNLOGGED;
 ALTER TABLE "MemberProfile"
+    SET UNLOGGED;
+ALTER TABLE "MemberTopic"
+    SET UNLOGGED;
+ALTER TABLE "MemberTimeline"
     SET UNLOGGED;
 ALTER TABLE "Member"
     SET UNLOGGED;
