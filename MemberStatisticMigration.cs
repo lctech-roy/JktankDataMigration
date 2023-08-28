@@ -14,8 +14,8 @@ public class MemberStatisticMigration
     private static readonly Dictionary<long, int> LookMemberFollowerCountDic = LookMemberHelper.GetLookMemberFollowerCountDic();
 
     private const string COPY_MEMBER_STATISTIC_PREFIX = $"COPY \"{nameof(MemberStatistic)}\" " +
-                                                        $"(\"{nameof(MemberStatistic.Id)}\",\"{nameof(MemberStatistic.HotScore)}\",\"{nameof(MemberStatistic.ViewCount)}\",\"{nameof(MemberStatistic.DonateCount)}\"" +
-                                                        $",\"{nameof(MemberStatistic.PurchaseCount)}\",\"{nameof(MemberStatistic.DonateJPoints)}\",\"{nameof(MemberStatistic.PurchaseJPoints)}\",\"{nameof(MemberStatistic.ObtainTotalJPoints)}\"" +
+                                                        $"(\"{nameof(MemberStatistic.Id)}\",\"{nameof(MemberStatistic.HotScore)}\",\"{nameof(MemberStatistic.ViewCount)}\",\"{nameof(MemberStatistic.ObtainDonateCount)}\"" +
+                                                        $",\"{nameof(MemberStatistic.ObtainPurchaseCount)}\",\"{nameof(MemberStatistic.ObtainDonateJPoints)}\",\"{nameof(MemberStatistic.ObtainPurchaseJPoints)}\",\"{nameof(MemberStatistic.ObtainTotalJPoints)}\"" +
                                                         $",\"{nameof(MemberStatistic.CommentCount)}\",\"{nameof(MemberStatistic.ReactCount)}\",\"{nameof(MemberStatistic.FavoriteCount)}\",\"{nameof(MemberStatistic.FollowerCount)}\"" +
                                                         $",\"{nameof(MemberStatistic.MassageBlogCount)}\",\"{nameof(MemberStatistic.PricingBlogCount)}\",\"{nameof(MemberStatistic.TotalBlogCount)}\"" +
                                                         Setting.COPY_ENTITY_SUFFIX;
@@ -58,10 +58,10 @@ public class MemberStatisticMigration
                                   {
                                       Id = lookMemberId,
                                       ViewCount = filterBlogStatistics?.Sum(x => x.Statistic.ViewCount) ?? 0,
-                                      DonateCount = filterBlogStatistics?.Sum(x => x.Statistic.DonateCount) ?? 0,
-                                      PurchaseCount = totalBlogStatistics?.Sum(x => x.Statistic.PurchaseCount) ?? 0,
-                                      DonateJPoints = totalBlogStatistics?.Sum(x => x.Statistic.DonateJPoints) ?? 0,
-                                      PurchaseJPoints = totalBlogStatistics?.Sum(x => x.Statistic.PurchaseJPoints) ?? 0,
+                                      ObtainDonateCount = filterBlogStatistics?.Sum(x => x.Statistic.DonateCount) ?? 0,
+                                      ObtainPurchaseCount = totalBlogStatistics?.Sum(x => x.Statistic.PurchaseCount) ?? 0,
+                                      ObtainDonateJPoints = totalBlogStatistics?.Sum(x => x.Statistic.DonateJPoints) ?? 0,
+                                      ObtainPurchaseJPoints = totalBlogStatistics?.Sum(x => x.Statistic.PurchaseJPoints) ?? 0,
                                       ObtainTotalJPoints = totalBlogStatistics?.Sum(x => x.Statistic.ObtainTotalJPoints) ?? 0,
                                       CommentCount = filterBlogStatistics?.Sum(x => x.Statistic.CommentCount) ?? 0,
                                       ReactCount = filterBlogStatistics?.Sum(x => x.Statistic.TotalReactCount) ?? 0,
@@ -74,8 +74,8 @@ public class MemberStatisticMigration
 
             memberStatistic.HotScore = Convert.ToDecimal(memberStatistic.CommentCount * 0.1 + memberStatistic.ReactCount * 0.033);
             
-            memberStatisticSb.AppendValueLine(memberStatistic.Id, memberStatistic.HotScore, memberStatistic.ViewCount, memberStatistic.DonateCount
-                                            , memberStatistic.PurchaseCount, memberStatistic.DonateJPoints, memberStatistic.PurchaseJPoints, memberStatistic.ObtainTotalJPoints
+            memberStatisticSb.AppendValueLine(memberStatistic.Id, memberStatistic.HotScore, memberStatistic.ViewCount, memberStatistic.ObtainDonateCount
+                                            , memberStatistic.ObtainPurchaseCount, memberStatistic.ObtainDonateJPoints, memberStatistic.ObtainPurchaseJPoints, memberStatistic.ObtainTotalJPoints
                                             , memberStatistic.CommentCount, memberStatistic.ReactCount, memberStatistic.FavoriteCount, memberStatistic.FollowerCount
                                             , memberStatistic.MassageBlogCount, memberStatistic.PricingBlogCount, memberStatistic.TotalBlogCount
                                             , dateNow, 0, dateNow, 0, 0);

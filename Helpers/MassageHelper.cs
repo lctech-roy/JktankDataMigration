@@ -35,9 +35,8 @@ public class MassageHelper
                                      a.""PinExpirationDate"" AS {nameof(MassageBlog.ExpirationDate)},
                                      a.""CreationDate"" AS {nameof(MassageBlog.CreationDate)},
                                      a.""CreatorId"" AS {nameof(MassageBlog.CreatorId)},
-                                     asm.""ContentSummary"" AS {nameof(MassageBlog.Description)} 
+                                     a.""ContentSummary"" AS {nameof(MassageBlog.Description)} 
                                      FROM ""Article"" a
-                                     INNER JOIN ""ArticleSummary"" asm ON a.""Id"" = asm.""Id""
                                      WHERE a.""Id"" = ANY(@Ids)";
 
         using var cn = new NpgsqlConnection(Setting.NEW_FORUM_CONNECTION);
