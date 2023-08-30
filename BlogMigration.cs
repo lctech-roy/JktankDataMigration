@@ -68,7 +68,7 @@ public class BlogMigration
                                             b.uid AS {nameof(OldBlog.Uid)}, b.dateline AS {nameof(OldBlog.DateLine)}
                                             FROM pre_home_blog b
                                             LEFT JOIN pre_home_blogfield bf ON b.blogid = bf.blogid
-                                            WHERE b.blogid >= @Id{(Setting.TestBlogId.HasValue ? ($@" AND b.blogid = {Setting.TestBlogId}") : "")}
+                                            WHERE b.blogid >= @Id{(Setting.TestBlogId.HasValue ? ($" AND b.blogid = {Setting.TestBlogId}") : "")}
                                             ORDER BY b.blogid 
                                             LIMIT {LIMIT}";
 
@@ -411,12 +411,12 @@ public class BlogMigration
             FileHelper.WriteToFile(ATTACHMENT_EXTEND_DATA_PATH, fileName, COPY_ATTACHMENT_EXTEND_DATA_PREFIX, attachmentExtentDataSb);
     }
 
-    public static string[] GetTags(string? tagStr)
+    private static string[] GetTags(string? tagStr)
     {
         if (string.IsNullOrWhiteSpace(tagStr) || tagStr.Contains('{'))
             return Array.Empty<string>();
 
-        var tags = new List<string>();
+        var tags = new HashSet<string>();
         var starPoint = 0;
 
         for (var i = 0; i < tagStr.Length; i++)
@@ -427,7 +427,7 @@ public class BlogMigration
             if (tagStr[i] != '\t') continue;
 
             var tag = tagStr.Substring(starPoint, i - starPoint);
-            tags.Add(tag);
+            tags.Add(tag.Trim());
         }
 
         return tags.ToArray();
