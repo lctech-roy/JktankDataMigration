@@ -348,18 +348,6 @@ public class BlogMigration
 
             var copyStatusArrayStr = $"{{{string.Join(",", blog.Status.Select(x => (int)x))}}}";
 
-            foreach (var blogHashtag in blog.Hashtags)
-            {
-                if (string.IsNullOrWhiteSpace(blogHashtag))
-                    continue;
-
-                if (HashTagCountDic.ContainsKey(blogHashtag))
-                    HashTagCountDic[blogHashtag] += 1;
-                else
-                    HashTagCountDic.TryAdd(blogHashtag, 1);
-            }
-
-
             blogSb.AppendValueLine(blog.Id, (int)blog.Subject, blog.CategoryId.ToCopyValue(), copyStatusArrayStr,
                                    (int)blog.VisibleType, blog.Title.ToCopyText(), blog.Content.ToCopyText(), blog.Cover.ToCopyValue(),
                                    blog.IsPinned, blog.Price, blog.Conclusion.ToCopyText(), blog.MassageBlogId.ToCopyValue(), 
@@ -428,6 +416,14 @@ public class BlogMigration
 
             var tag = tagStr.Substring(starPoint, i - starPoint);
             tags.Add(tag.Trim());
+            
+            if (string.IsNullOrWhiteSpace(tag))
+                continue;
+
+            if (HashTagCountDic.ContainsKey(tag))
+                HashTagCountDic[tag] += 1;
+            else
+                HashTagCountDic.TryAdd(tag, 1);
         }
 
         return tags.ToArray();
