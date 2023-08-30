@@ -21,6 +21,7 @@ serviceCollection.AddSingleton<CommentMigration>();
 serviceCollection.AddSingleton<MemberFavoriteMigration>();
 serviceCollection.AddSingleton<MemberFollowerMigration>();
 serviceCollection.AddSingleton<MemberStatisticMigration>();
+serviceCollection.AddSingleton<BlogPinMigration>();
 
 serviceCollection.AddSingleton<FileExtensionContentTypeProvider>(_ =>
                                                                  {
@@ -48,6 +49,7 @@ var commentMigration = serviceProvider.GetRequiredService<CommentMigration>();
 var memberFavoriteMigration = serviceProvider.GetRequiredService<MemberFavoriteMigration>();
 var memberFollowerMigration = serviceProvider.GetRequiredService<MemberFollowerMigration>();
 var memberStatisticMigration =  serviceProvider.GetRequiredService<MemberStatisticMigration>();
+var blogPinMigration =  serviceProvider.GetRequiredService<BlogPinMigration>();
 
 var token = new CancellationTokenSource().Token;
 
@@ -55,8 +57,8 @@ Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
 Thread.CurrentThread.CurrentUICulture = CultureInfo.InvariantCulture;
 
 // Blog會員
-await CommonHelper.WatchTimeAsync(nameof(memberMigration), async () => await memberMigration.MigrationAsync(token));
-await CommonHelper.WatchTimeAsync(nameof(migration.ExecuteMemberAsync), () => migration.ExecuteMemberAsync());
+// await CommonHelper.WatchTimeAsync(nameof(memberMigration), async () => await memberMigration.MigrationAsync(token));
+// await CommonHelper.WatchTimeAsync(nameof(migration.ExecuteMemberAsync), () => migration.ExecuteMemberAsync());
 
 // 日誌分類
 // CommonHelper.WatchTime(nameof(blogCategoryMigration),  () =>  blogCategoryMigration.Migration());
@@ -85,5 +87,8 @@ await CommonHelper.WatchTimeAsync(nameof(migration.ExecuteMemberAsync), () => mi
 // Blog會員-統計資料
 // await CommonHelper.WatchTimeAsync(nameof(memberStatisticMigration), async () => await memberStatisticMigration.MigrationAsync(token));
 // await CommonHelper.WatchTimeAsync(nameof(migration.ExecuteStatisticAsync), () => migration.ExecuteStatisticAsync());
+
+// Blog-更新置頂
+await CommonHelper.WatchTimeAsync(nameof(blogPinMigration), async () => await blogPinMigration.MigrationAsync(token));
 
 Console.WriteLine("Hello, World!");
