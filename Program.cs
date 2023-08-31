@@ -29,6 +29,7 @@ serviceCollection.AddSingleton<BlogPinMigration>();
 
 serviceCollection.AddSingleton<MemberDocumentMigration>();
 serviceCollection.AddSingleton<BlogDocumentMigration>();
+serviceCollection.AddSingleton<HashTagDocumentMigration>();
 
 serviceCollection.AddSingleton<FileExtensionContentTypeProvider>(_ =>
                                                                  {
@@ -66,6 +67,7 @@ var blogPinMigration =  serviceProvider.GetRequiredService<BlogPinMigration>();
 
 var memberDocumentMigration =  serviceProvider.GetRequiredService<MemberDocumentMigration>();
 var blogDocumentMigration =  serviceProvider.GetRequiredService<BlogDocumentMigration>();
+var hashTagDocumentMigration =  serviceProvider.GetRequiredService<HashTagDocumentMigration>();
 
 var token = new CancellationTokenSource().Token;
 
@@ -111,6 +113,10 @@ Thread.CurrentThread.CurrentUICulture = CultureInfo.InvariantCulture;
 // await CommonHelper.WatchTimeAsync(nameof(memberDocumentMigration), async () => await memberDocumentMigration.MigrationAsync(token));
 
 // es-日誌
-await CommonHelper.WatchTimeAsync(nameof(blogDocumentMigration), async () => await blogDocumentMigration.MigrationAsync(token));
+// await CommonHelper.WatchTimeAsync(nameof(blogDocumentMigration), async () => await blogDocumentMigration.MigrationAsync(token));
+
+// es-日誌標籤
+await CommonHelper.WatchTimeAsync(nameof(hashTagDocumentMigration), async () => await hashTagDocumentMigration.MigrationAsync(token));
+
 
 Console.WriteLine("Hello, World!");
