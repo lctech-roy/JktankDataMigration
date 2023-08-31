@@ -60,6 +60,16 @@ public class Migration
         connection.ExecuteCommandByPath($"{SCHEMA_PATH}/{nameof(MemberBlogCategory)}/{AFTER_FILE_NAME}");
     }
 
+    public async Task ExecuteMassageBlogRegionAsync()
+    {
+        const string massageBlogRegionPath = $"{Setting.INSERT_DATA_PATH}/{nameof(MassageBlogRegion)}";
+        
+        await using var connection = new NpgsqlConnection(Setting.NEW_LOOK_CONNECTION);
+        connection.ExecuteCommandByPath($"{SCHEMA_PATH}/{nameof(MassageBlogRegion)}/{BEFORE_FILE_NAME}");
+        connection.ExecuteAllCopyFiles(massageBlogRegionPath);
+        connection.ExecuteCommandByPath($"{SCHEMA_PATH}/{nameof(MassageBlogRegion)}/{AFTER_FILE_NAME}");
+    }
+
     public async Task ExecuteBlogAsync()
     {
         const string blogPath = $"{Setting.INSERT_DATA_PATH}/{nameof(Blog)}";

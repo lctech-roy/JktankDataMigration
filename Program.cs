@@ -19,6 +19,7 @@ serviceCollection.AddSingleton<ISnowflake>(_ => new SnowflakeJavaScriptSafeInteg
 serviceCollection.AddSingleton<Migration>();
 serviceCollection.AddSingleton<MemberMigration>();
 serviceCollection.AddSingleton<MemberBlogCategoryMigration>();
+serviceCollection.AddSingleton<MassageBlogRegionMigration>();
 serviceCollection.AddSingleton<BlogMigration>();
 serviceCollection.AddSingleton<BlogReactMigration>();
 serviceCollection.AddSingleton<CommentMigration>();
@@ -57,6 +58,7 @@ var migration = serviceProvider.GetRequiredService<Migration>();
 
 var blogCategoryMigration = serviceProvider.GetRequiredService<MemberBlogCategoryMigration>();
 var memberMigration = serviceProvider.GetRequiredService<MemberMigration>();
+var massageBlogRegionMigration = serviceProvider.GetRequiredService<MassageBlogRegionMigration>();
 var blogMigration = serviceProvider.GetRequiredService<BlogMigration>();
 var blogReactMigration = serviceProvider.GetRequiredService<BlogReactMigration>();
 var commentMigration = serviceProvider.GetRequiredService<CommentMigration>();
@@ -81,6 +83,10 @@ Thread.CurrentThread.CurrentUICulture = CultureInfo.InvariantCulture;
 // 日誌分類
 // CommonHelper.WatchTime(nameof(blogCategoryMigration),  () =>  blogCategoryMigration.Migration());
 // await CommonHelper.WatchTimeAsync(nameof(migration.ExecuteMemberBlogCategoryAsync), () => migration.ExecuteMemberBlogCategoryAsync());
+
+// 日誌-1128地區分類
+CommonHelper.WatchTime(nameof(massageBlogRegionMigration),  () =>  massageBlogRegionMigration.Migration());
+await CommonHelper.WatchTimeAsync(nameof(migration.ExecuteMassageBlogRegionAsync), () => migration.ExecuteMassageBlogRegionAsync());
 
 // 日誌
 // await CommonHelper.WatchTimeAsync(nameof(blogMigration), async () => await blogMigration.MigrationAsync(token));
@@ -116,7 +122,7 @@ Thread.CurrentThread.CurrentUICulture = CultureInfo.InvariantCulture;
 // await CommonHelper.WatchTimeAsync(nameof(blogDocumentMigration), async () => await blogDocumentMigration.MigrationAsync(token));
 
 // es-日誌標籤
-await CommonHelper.WatchTimeAsync(nameof(hashTagDocumentMigration), async () => await hashTagDocumentMigration.MigrationAsync(token));
+// await CommonHelper.WatchTimeAsync(nameof(hashTagDocumentMigration), async () => await hashTagDocumentMigration.MigrationAsync(token));
 
 
 Console.WriteLine("Hello, World!");

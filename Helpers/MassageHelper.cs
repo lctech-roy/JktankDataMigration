@@ -27,11 +27,12 @@ public class MassageHelper
         return idHash;
     }
 
-    public static MassageBlog[] QueryBlogMassages(IEnumerable<long> articleIds)
+    public static IEnumerable<MassageBlog> QueryBlogMassages(IEnumerable<long> articleIds)
     {
         const string sql = $@"SELECT a.""Id"" AS {nameof(MassageBlog.Id)}, 
                                      a.""Title"" AS {nameof(MassageBlog.Title)}, 
                                      a.""Cover"" AS {nameof(MassageBlog.CoverId)}, 
+                                     a.""CategoryId"" AS {nameof(MassageBlog.RegionId)}, 
                                      a.""PinExpirationDate"" AS {nameof(MassageBlog.ExpirationDate)},
                                      a.""CreationDate"" AS {nameof(MassageBlog.CreationDate)},
                                      a.""CreatorId"" AS {nameof(MassageBlog.CreatorId)},
