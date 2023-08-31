@@ -10,7 +10,9 @@ public class LookSpecialTagHelper
     ///</summary>
     public static Dictionary<long,string[]> GetBlogSpecialTagsDic()
     {
-        const string sql = @"SELECT ""Id"",""Name"" FROM ""SpecialTag""";
+        const string sql = @"SELECT bst.""BlogsId"",st.""Name"" 
+                             FROM ""BlogSpecialTag"" bst
+                             INNER JOIN ""SpecialTag"" st ON bst.""SpecialTagsId"" = st.""Id""";
 
         var blogSpecialTagsDic = CommonHelper.WatchTime(nameof(GetBlogSpecialTagsDic)
                                                       , () =>

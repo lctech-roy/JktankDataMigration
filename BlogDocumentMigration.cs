@@ -106,7 +106,7 @@ public class BlogDocumentMigration
                                                                           if (UserRoleDic.TryGetValue(blogDocument.CreatorId, out var roleIds))
                                                                               blogDocument.CreatorRoleIds = roleIds;
 
-                                                                          if (BlogSpecialTagsDic.TryGetValue(blogDocument.CreatorId, out var specialTags))
+                                                                          if (BlogSpecialTagsDic.TryGetValue(blogDocument.Id, out var specialTags))
                                                                               blogDocument.SpecialTags = specialTags;
                                                                           
                                                                           return blogDocument;
