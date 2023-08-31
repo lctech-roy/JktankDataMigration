@@ -29,6 +29,8 @@
     <PackageReference Include="Netcorext.Extensions.Linq" Version="1.0.1-dev.*" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="7.0.*" />
     <PackageReference Include="NEST" Version="7.17.*" />
+    <PackageReference Include="Mapster" Version="7.3.*" />
+    <PackageReference Include="Netcorext.Extensions.Mapster.Protobufs" Version="1.0.0-dev.*" />
   </ItemGroup>
 
   <ItemGroup>
