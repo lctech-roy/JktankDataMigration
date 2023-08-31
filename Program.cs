@@ -1,10 +1,13 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
 using System.Globalization;
+using Elasticsearch.Net;
 using JLookDataMigration;
 using JLookDataMigration.Helpers;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
+using Nest;
 using Netcorext.Algorithms;
 
 // 1. 建立依賴注入的容器
@@ -23,6 +26,8 @@ serviceCollection.AddSingleton<MemberFollowerMigration>();
 serviceCollection.AddSingleton<MemberStatisticMigration>();
 serviceCollection.AddSingleton<BlogPinMigration>();
 
+serviceCollection.AddSingleton<MemberDocumentMigration>();
+
 serviceCollection.AddSingleton<FileExtensionContentTypeProvider>(_ =>
                                                                  {
                                                                      var fileExtensionContentTypeProvider = new FileExtensionContentTypeProvider();
@@ -31,6 +36,12 @@ serviceCollection.AddSingleton<FileExtensionContentTypeProvider>(_ =>
 
                                                                      return fileExtensionContentTypeProvider;
                                                                  });
+serviceCollection.AddSingleton<IElasticClient>(_ =>
+                                               {
+                                                   return new ElasticClient(new ConnectionSettings(new Uri(Setting.LOOK_ES_CONNECTION))
+                                                                           .ApiKeyAuthentication(new ApiKeyAuthenticationCredentials(Setting.LOOK_ES_PASSWORD))
+                                                                           .DisableDirectStreaming());
+                                               });
 
 // 建立依賴服務提供者
 var serviceProvider = serviceCollection.BuildServiceProvider();
@@ -50,6 +61,9 @@ var memberFavoriteMigration = serviceProvider.GetRequiredService<MemberFavoriteM
 var memberFollowerMigration = serviceProvider.GetRequiredService<MemberFollowerMigration>();
 var memberStatisticMigration =  serviceProvider.GetRequiredService<MemberStatisticMigration>();
 var blogPinMigration =  serviceProvider.GetRequiredService<BlogPinMigration>();
+
+var memberDocumentMigration =  serviceProvider.GetRequiredService<MemberDocumentMigration>();
+
 
 var token = new CancellationTokenSource().Token;
 
@@ -89,6 +103,10 @@ Thread.CurrentThread.CurrentUICulture = CultureInfo.InvariantCulture;
 // await CommonHelper.WatchTimeAsync(nameof(migration.ExecuteStatisticAsync), () => migration.ExecuteStatisticAsync());
 
 // Blog-更新置頂
-await CommonHelper.WatchTimeAsync(nameof(blogPinMigration), async () => await blogPinMigration.MigrationAsync(token));
+// await CommonHelper.WatchTimeAsync(nameof(blogPinMigration), async () => await blogPinMigration.MigrationAsync(token));
+
+// es-會員
+await CommonHelper.WatchTimeAsync(nameof(memberDocumentMigration), async () => await memberDocumentMigration.MigrationAsync(token));
+
 
 Console.WriteLine("Hello, World!");

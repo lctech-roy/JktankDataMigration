@@ -28,6 +28,7 @@
     <PackageReference Include="Slapper.AutoMapper" Version="2.0.5" />
     <PackageReference Include="Netcorext.Extensions.Linq" Version="1.0.1-dev.*" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="7.0.*" />
+    <PackageReference Include="NEST" Version="7.17.*" />
   </ItemGroup>
 
   <ItemGroup>

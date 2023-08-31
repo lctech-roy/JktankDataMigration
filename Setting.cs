@@ -52,5 +52,10 @@ public static class Setting
     
     public const string BLOG_ID = "BlogId";
 
+    public const string LOOK_ES_INDEX = "lctech-jlook-dev";
+    public const string LOOK_ES_CONNECTION = "https://es-jkforum-dev.es.asia-east1.gcp.elastic-cloud.com";
+    public const string LOOK_ES_PASSWORD = "NXRvZDVvY0JDd284cFNTREM2U2Y6WHJpU3VIWnhTRUdHdmE2YkVqc0xkdw==";
+    public const int LOOK_ES_BATCH_SIZE = 5000;
+    
     public static readonly long? TestBlogId = null;
 }
