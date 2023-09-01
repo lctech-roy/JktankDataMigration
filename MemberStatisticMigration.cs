@@ -16,10 +16,11 @@ public class MemberStatisticMigration
     private const string COPY_MEMBER_STATISTIC_PREFIX = $"COPY \"{nameof(MemberStatistic)}\" " +
                                                         $"(\"{nameof(MemberStatistic.Id)}\",\"{nameof(MemberStatistic.HotScore)}\",\"{nameof(MemberStatistic.ViewCount)}\",\"{nameof(MemberStatistic.ObtainDonateCount)}\"" +
                                                         $",\"{nameof(MemberStatistic.ObtainPurchaseCount)}\",\"{nameof(MemberStatistic.ObtainDonateJPoints)}\",\"{nameof(MemberStatistic.ObtainPurchaseJPoints)}\",\"{nameof(MemberStatistic.ObtainTotalJPoints)}\"" +
+                                                        $",\"{nameof(MemberStatistic.DonateCount)}\",\"{nameof(MemberStatistic.PurchaseCount)}\",\"{nameof(MemberStatistic.DonateJPoints)}\",\"{nameof(MemberStatistic.PurchaseJPoints)}\",\"{nameof(MemberStatistic.ConsumeTotalJPoints)}\"" +
                                                         $",\"{nameof(MemberStatistic.CommentCount)}\",\"{nameof(MemberStatistic.ReactCount)}\",\"{nameof(MemberStatistic.FavoriteCount)}\",\"{nameof(MemberStatistic.FollowerCount)}\"" +
                                                         $",\"{nameof(MemberStatistic.MassageBlogCount)}\",\"{nameof(MemberStatistic.PricingBlogCount)}\",\"{nameof(MemberStatistic.TotalBlogCount)}\"" +
                                                         Setting.COPY_ENTITY_SUFFIX;
-    
+
     private const string MEMBER_STATISTIC_PATH = $"{Setting.INSERT_DATA_PATH}/{nameof(MemberStatistic)}";
 
     public async Task MigrationAsync(CancellationToken cancellationToken)
@@ -50,11 +51,20 @@ public class MemberStatisticMigration
             var totalBlogStatistics = memberBlogDic.GetValueOrDefault(lookMemberId);
             var filterBlogStatistics = totalBlogStatistics?.Where(x => x.VisibleType != VisibleType.OnlyMe && !x.Disabled).ToArray();
             var followerCount = LookMemberFollowerCountDic.GetValueOrDefault(lookMemberId);
-            
-            if(totalBlogStatistics  == null  && followerCount == default)
-                continue;
-            
-            var memberStatistic = new MemberStatistic
+
+            MemberStatistic memberStatistic;
+
+            if (totalBlogStatistics == null)
+            {
+                memberStatistic = new MemberStatistic
+                                  {
+                                      Id = lookMemberId,
+                                      FollowerCount = followerCount
+                                  };
+            }
+            else
+            {
+                memberStatistic = new MemberStatistic
                                   {
                                       Id = lookMemberId,
                                       ViewCount = filterBlogStatistics?.Sum(x => x.Statistic.ViewCount) ?? 0,
@@ -66,21 +76,23 @@ public class MemberStatisticMigration
                                       CommentCount = filterBlogStatistics?.Sum(x => x.Statistic.CommentCount) ?? 0,
                                       ReactCount = filterBlogStatistics?.Sum(x => x.Statistic.TotalReactCount) ?? 0,
                                       FavoriteCount = totalBlogStatistics?.Sum(x => x.Statistic.FavoriteCount) ?? 0,
-                                      FollowerCount = LookMemberFollowerCountDic.GetValueOrDefault(lookMemberId),
+                                      FollowerCount = followerCount,
                                       MassageBlogCount = filterBlogStatistics?.Count(x => x.MassageBlogId.HasValue) ?? 0,
                                       PricingBlogCount = filterBlogStatistics?.Count(x => x.Price > 0) ?? 0,
                                       TotalBlogCount = filterBlogStatistics?.Length ?? 0,
                                   };
-
-            memberStatistic.HotScore = Convert.ToDecimal(memberStatistic.CommentCount * 0.1 + memberStatistic.ReactCount * 0.033);
+            }
             
+            memberStatistic.HotScore = Convert.ToDecimal(memberStatistic.CommentCount * 0.1 + memberStatistic.ReactCount * 0.033);
+
             memberStatisticSb.AppendValueLine(memberStatistic.Id, memberStatistic.HotScore, memberStatistic.ViewCount, memberStatistic.ObtainDonateCount
                                             , memberStatistic.ObtainPurchaseCount, memberStatistic.ObtainDonateJPoints, memberStatistic.ObtainPurchaseJPoints, memberStatistic.ObtainTotalJPoints
+                                            , memberStatistic.DonateCount, memberStatistic.PurchaseCount, memberStatistic.DonateJPoints, memberStatistic.PurchaseJPoints, memberStatistic.ConsumeTotalJPoints
                                             , memberStatistic.CommentCount, memberStatistic.ReactCount, memberStatistic.FavoriteCount, memberStatistic.FollowerCount
                                             , memberStatistic.MassageBlogCount, memberStatistic.PricingBlogCount, memberStatistic.TotalBlogCount
                                             , dateNow, 0, dateNow, 0, 0);
         }
-        
+
         FileHelper.WriteToFile(MEMBER_STATISTIC_PATH, $"{nameof(MemberStatistic)}.sql", COPY_MEMBER_STATISTIC_PREFIX, memberStatisticSb);
     }
 }
