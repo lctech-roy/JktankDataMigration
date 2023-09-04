@@ -49,6 +49,7 @@ public class BlogDocumentMigration
                                                     bs.""AverageScore"",
                                                     b.""Hashtags"",
                                                     b.""CreatorId"",
+                                                    m.""DisplayName"" AS CreatorName,
                                                     b.""CreationDate"",
                                                     b.""LastEditDate"",
                                                     b.""MassageBlogId"",
