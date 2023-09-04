@@ -55,21 +55,27 @@ public class MemberDocumentMigration
 
         while (offset < documents.Length)
         {
-            var length = offset + Setting.LOOK_ES_BATCH_SIZE;
+            await CommonHelper.WatchTimeAsync
+                (
+                 $"{nameof(_elasticClient.BulkAsync)}({Setting.LOOK_ES_BATCH_SIZE}) offset:{offset}",
+                 async () =>
+                 {
+                     var length = offset + Setting.LOOK_ES_BATCH_SIZE;
 
-            if (length > documents.Length)
-                length = documents.Length;
+                     if (length > documents.Length)
+                         length = documents.Length;
 
-            var response = await _elasticClient.BulkAsync(descriptor => descriptor.IndexMany(documents[offset..length], (des, doc) => des.Index(_elasticIndex)
-                                                                                                                                         .Id(doc.Id)
-                                                                                                                                         .Document(doc)), cancellationToken);
+                     var response = await _elasticClient.BulkAsync(descriptor => descriptor.IndexMany(documents[offset..length], (des, doc) => des.Index(_elasticIndex)
+                                                                                                                                                  .Id(doc.Id)
+                                                                                                                                                  .Document(doc)), cancellationToken);
 
-            if (!response.IsValid && response.OriginalException is not null)
-            {
-                throw new Exception(response.OriginalException.Message);
-            }
+                     if (!response.IsValid && response.OriginalException is not null)
+                     {
+                         throw new Exception(response.OriginalException.Message);
+                     }
 
-            offset += Setting.LOOK_ES_BATCH_SIZE;
+                     offset += Setting.LOOK_ES_BATCH_SIZE;
+                 });
         }
     }
 }

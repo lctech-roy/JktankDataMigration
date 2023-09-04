@@ -50,6 +50,7 @@ public class BlogDocumentMigration
                                                     b.""Hashtags"",
                                                     b.""CreatorId"",
                                                     b.""CreationDate"",
+                                                    b.""LastEditDate"",
                                                     b.""MassageBlogId"",
                                                     msb.""RegionId"" AS MassageBlogRegionId,
                                                     msb.""RelationBlogCount"" AS MassageBlogRelationBlogCount,
@@ -79,10 +80,10 @@ public class BlogDocumentMigration
         var documentGroup = documents.GroupBy(x => x.Disabled).ToArray();
 
         var deleteDocuments = documentGroup.FirstOrDefault(x => x.Key)?.Select(x => new Blog
-                                                                          {
-                                                                              Id = x.Id,
-                                                                              CreationDate = x.CreationDate
-                                                                          }).ToArray();
+                                                                                    {
+                                                                                        Id = x.Id,
+                                                                                        CreationDate = x.CreationDate
+                                                                                    }).ToArray();
 
         if (!deleteDocuments.IsEmpty())
         {
@@ -95,7 +96,7 @@ public class BlogDocumentMigration
                 throw deleteRep.OriginalException;
             }
         }
-        
+
         var updateDocuments = documentGroup.First(x => !x.Key).Select(x =>
                                                                       {
                                                                           var blogDocument = (Blog)x;
@@ -108,7 +109,7 @@ public class BlogDocumentMigration
 
                                                                           if (BlogSpecialTagsDic.TryGetValue(blogDocument.Id, out var specialTags))
                                                                               blogDocument.SpecialTags = specialTags;
-                                                                          
+
                                                                           return blogDocument;
                                                                       }).ToArray();
 
@@ -116,21 +117,28 @@ public class BlogDocumentMigration
 
         while (offset < updateDocuments.Length)
         {
-            var length = offset + Setting.LOOK_ES_BATCH_SIZE;
+            await CommonHelper.WatchTimeAsync
+                (
+                 $"{nameof(_elasticClient.BulkAsync)}({Setting.LOOK_ES_BATCH_SIZE}) offset:{offset}",
+                 async () =>
+                 {
+                     var length = offset + Setting.LOOK_ES_BATCH_SIZE;
 
-            if (length > updateDocuments.Length)
-                length = updateDocuments.Length;
+                     if (length > updateDocuments.Length)
+                         length = updateDocuments.Length;
 
-            var response = await _elasticClient.BulkAsync(descriptor => descriptor.IndexMany(updateDocuments[offset..length], (des, doc) => des.Index(_elasticIndex)
-                                                                                                                                               .Id(doc.Id)
-                                                                                                                                               .Document(doc)), cancellationToken);
-
-            if (!response.IsValid && response.OriginalException is not null)
-            {
-                throw response.OriginalException;
-            }
-
-            offset += Setting.LOOK_ES_BATCH_SIZE;
+                     var response = await _elasticClient.BulkAsync(descriptor => descriptor.IndexMany(updateDocuments[offset..length],
+                                                                                                         (des, doc) => des.Index(_elasticIndex)
+                                                                                                                          .Id(doc.Id)
+                                                                                                                          .Document(doc)), cancellationToken);
+                     
+                     if (!response.IsValid && response.OriginalException is not null)
+                     {
+                         throw response.OriginalException;
+                     }
+                     
+                     offset += Setting.LOOK_ES_BATCH_SIZE;
+                 });
         }
     }
 
