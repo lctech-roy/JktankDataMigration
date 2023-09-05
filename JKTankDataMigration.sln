@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JLookDataMigration", "JLookDataMigration.csproj", "{72A2EE06-8237-4072-969E-1081EF7115B2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JKTankDataMigration", "JKTankDataMigration.csproj", "{72A2EE06-8237-4072-969E-1081EF7115B2}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lctech.Attachment.Core", "..\Lctech.Attachment\src\Lctech.Attachment.Core\Lctech.Attachment.Core.csproj", "{E422637E-4C52-4F17-9B0D-1BAEA72E709C}"
 EndProject
