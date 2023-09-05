@@ -1,12 +1,12 @@
 using Dapper;
-using JLookDataMigration.Helpers;
-using Lctech.JLook.Core.Domain.Entities;
-using Lctech.JLook.Core.Domain.Enums;
+using JKTankDataMigration.Helpers;
+using Lctech.JKTank.Core.Domain.Entities;
+using Lctech.JKTank.Core.Domain.Enums;
 using Npgsql;
 using System.Text;
-using JLookDataMigration.Extensions;
+using JKTankDataMigration.Extensions;
 
-namespace JLookDataMigration;
+namespace JKTankDataMigration;
 
 public class MemberStatisticMigration
 {

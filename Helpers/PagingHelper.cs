@@ -1,8 +1,8 @@
 using System.Runtime.CompilerServices;
-using JLookDataMigration.Models;
+using JKTankDataMigration.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace JLookDataMigration.Helpers;
+namespace JKTankDataMigration.Helpers;
 
 public class PagingHelper
 {

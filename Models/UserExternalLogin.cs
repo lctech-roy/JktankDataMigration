@@ -1,6 +1,6 @@
 using Netcorext.EntityFramework.UserIdentityPattern.Entities;
 
-namespace JLookDataMigration.Models;
+namespace JKTankDataMigration.Models;
 
 public class UserExternalLogin : Entity
 {

@@ -1,20 +1,20 @@
 using System.Text;
 using Dapper;
-using JLookDataMigration.Extensions;
-using JLookDataMigration.Helpers;
-using JLookDataMigration.Models;
-using Lctech.JLook.Core.Domain.Entities;
-using Lctech.JLook.Core.Domain.Enums;
+using JKTankDataMigration.Extensions;
+using JKTankDataMigration.Helpers;
+using JKTankDataMigration.Models;
+using Lctech.JKTank.Core.Domain.Entities;
+using Lctech.JKTank.Core.Domain.Enums;
 using MySql.Data.MySqlClient;
 using Netcorext.Extensions.Hash;
 using Polly;
 
-namespace JLookDataMigration;
+namespace JKTankDataMigration;
 
 public class MemberMigration
 {
     private const string USER_EXTEND_DATA_KEY = "SOURCE";
-    private const string USER_EXTEND_DATA_VALUE = "LCTECH.JLOOK.MEMBER";
+    private const string USER_EXTEND_DATA_VALUE = "LCTECH.JKTANK.MEMBER";
     private const string EXTERNAL_LOGIN_PROVIDER = "Pan";
     private const long DEFAULT_ROLE_ID = 1;
     private const long BANNED_TO_POST_ROLE_ID = 98;

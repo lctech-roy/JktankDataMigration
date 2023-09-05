@@ -2,17 +2,17 @@ using System.Collections.Concurrent;
 using System.Text;
 using System.Text.RegularExpressions;
 using Dapper;
-using JLookDataMigration.Extensions;
-using JLookDataMigration.Helpers;
-using JLookDataMigration.Models;
+using JKTankDataMigration.Extensions;
+using JKTankDataMigration.Helpers;
+using JKTankDataMigration.Models;
 using Lctech.Attachment.Core.Domain.Entities;
-using Lctech.JLook.Core.Domain.Entities;
-using Lctech.JLook.Core.Domain.Enums;
+using Lctech.JKTank.Core.Domain.Entities;
+using Lctech.JKTank.Core.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
 using Polly;
 using static System.Int32;
 
-namespace JLookDataMigration;
+namespace JKTankDataMigration;
 
 public class BlogMigration
 {

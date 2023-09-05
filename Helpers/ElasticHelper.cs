@@ -1,7 +1,7 @@
-using Lctech.JLook.Core.Domain.Documents;
+using Lctech.JKTank.Core.Domain.Documents;
 using Netcorext.Extensions.Commons;
 
-namespace JLookDataMigration.Helpers;
+namespace JKTankDataMigration.Helpers;
 
 public static class ElasticHelper
 {

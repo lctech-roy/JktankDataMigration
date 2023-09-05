@@ -1,8 +1,8 @@
 using System.Text;
-using JLookDataMigration.Extensions;
+using JKTankDataMigration.Extensions;
 using Npgsql;
 
-namespace JLookDataMigration.Helpers;
+namespace JKTankDataMigration.Helpers;
 
 public static class FileHelper
 {

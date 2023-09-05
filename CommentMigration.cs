@@ -1,12 +1,12 @@
 using System.Text;
-using JLookDataMigration.Extensions;
-using JLookDataMigration.Helpers;
-using Lctech.JLook.Core.Domain.Entities;
-using Lctech.JLook.Core.Domain.Enums;
+using JKTankDataMigration.Extensions;
+using JKTankDataMigration.Helpers;
+using Lctech.JKTank.Core.Domain.Entities;
+using Lctech.JKTank.Core.Domain.Enums;
 using MySql.Data.MySqlClient;
 using static System.Int32;
 
-namespace JLookDataMigration;
+namespace JKTankDataMigration;
 
 public class CommentMigration
 {

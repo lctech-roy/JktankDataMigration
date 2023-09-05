@@ -1,6 +1,6 @@
-using Lctech.JLook.Core.Domain.Entities;
+using Lctech.JKTank.Core.Domain.Entities;
 
-namespace JLookDataMigration.Models;
+namespace JKTankDataMigration.Models;
 
 public class OldBlog : Blog
 {

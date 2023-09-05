@@ -1,6 +1,6 @@
 using System.Diagnostics;
 
-namespace JLookDataMigration.Helpers;
+namespace JKTankDataMigration.Helpers;
 
 public class CommonHelper
 {

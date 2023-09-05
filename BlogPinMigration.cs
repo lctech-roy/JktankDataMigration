@@ -1,9 +1,9 @@
 using Dapper;
-using JLookDataMigration.Models;
+using JKTankDataMigration.Models;
 using MySql.Data.MySqlClient;
 using Npgsql;
 
-namespace JLookDataMigration;
+namespace JKTankDataMigration;
 
 public class BlogPinMigration
 {

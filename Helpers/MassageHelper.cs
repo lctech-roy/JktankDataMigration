@@ -1,8 +1,8 @@
 using Dapper;
-using Lctech.JLook.Core.Domain.Entities;
+using Lctech.JKTank.Core.Domain.Entities;
 using Npgsql;
 
-namespace JLookDataMigration.Helpers;
+namespace JKTankDataMigration.Helpers;
 
 public class MassageHelper
 {

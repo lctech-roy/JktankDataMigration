@@ -1,7 +1,7 @@
 using Dapper;
 using MySql.Data.MySqlClient;
 
-namespace JLookDataMigration.Helpers;
+namespace JKTankDataMigration.Helpers;
 
 public class BlogHelper
 {

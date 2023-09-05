@@ -1,4 +1,4 @@
-namespace JLookDataMigration.Extensions;
+namespace JKTankDataMigration.Extensions;
 
 public static class ValueTypeExtension
 {

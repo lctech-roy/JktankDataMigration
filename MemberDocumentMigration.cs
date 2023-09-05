@@ -1,10 +1,10 @@
 using Dapper;
-using JLookDataMigration.Helpers;
-using Lctech.JLook.Core.Domain.Documents;
+using JKTankDataMigration.Helpers;
+using Lctech.JKTank.Core.Domain.Documents;
 using Nest;
 using Npgsql;
 
-namespace JLookDataMigration;
+namespace JKTankDataMigration;
 
 public class MemberDocumentMigration
 {

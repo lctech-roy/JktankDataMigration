@@ -1,10 +1,10 @@
-using JLookDataMigration.Extensions;
-using JLookDataMigration.Models;
+using JKTankDataMigration.Extensions;
+using JKTankDataMigration.Models;
 using Lctech.Attachment.Core.Domain.Entities;
-using Lctech.JLook.Core.Domain.Entities;
+using Lctech.JKTank.Core.Domain.Entities;
 using Npgsql;
 
-namespace JLookDataMigration;
+namespace JKTankDataMigration;
 
 public class Migration
 {

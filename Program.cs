@@ -2,8 +2,8 @@
 
 using System.Globalization;
 using Elasticsearch.Net;
-using JLookDataMigration;
-using JLookDataMigration.Helpers;
+using JKTankDataMigration;
+using JKTankDataMigration.Helpers;
 using Mapster;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.DependencyInjection;
@@ -85,8 +85,8 @@ Thread.CurrentThread.CurrentUICulture = CultureInfo.InvariantCulture;
 // await CommonHelper.WatchTimeAsync(nameof(migration.ExecuteMemberBlogCategoryAsync), () => migration.ExecuteMemberBlogCategoryAsync());
 
 // 日誌-1128地區分類
-CommonHelper.WatchTime(nameof(massageBlogRegionMigration),  () =>  massageBlogRegionMigration.Migration());
-await CommonHelper.WatchTimeAsync(nameof(migration.ExecuteMassageBlogRegionAsync), () => migration.ExecuteMassageBlogRegionAsync());
+// CommonHelper.WatchTime(nameof(massageBlogRegionMigration),  () =>  massageBlogRegionMigration.Migration());
+// await CommonHelper.WatchTimeAsync(nameof(migration.ExecuteMassageBlogRegionAsync), () => migration.ExecuteMassageBlogRegionAsync());
 
 // 日誌
 // await CommonHelper.WatchTimeAsync(nameof(blogMigration), async () => await blogMigration.MigrationAsync(token));
@@ -119,7 +119,7 @@ await CommonHelper.WatchTimeAsync(nameof(migration.ExecuteMassageBlogRegionAsync
 // await CommonHelper.WatchTimeAsync(nameof(memberDocumentMigration), async () => await memberDocumentMigration.MigrationAsync(token));
 
 // es-日誌
-// await CommonHelper.WatchTimeAsync(nameof(blogDocumentMigration), async () => await blogDocumentMigration.MigrationAsync(token));
+await CommonHelper.WatchTimeAsync(nameof(blogDocumentMigration), async () => await blogDocumentMigration.MigrationAsync(token));
 
 // es-日誌標籤
 // await CommonHelper.WatchTimeAsync(nameof(hashTagDocumentMigration), async () => await hashTagDocumentMigration.MigrationAsync(token));

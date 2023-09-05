@@ -1,7 +1,7 @@
 using Netcorext.Algorithms;
 using Polly;
 
-namespace JLookDataMigration.Extensions;
+namespace JKTankDataMigration.Extensions;
 
 public static class SnowFlakeExtension
 {

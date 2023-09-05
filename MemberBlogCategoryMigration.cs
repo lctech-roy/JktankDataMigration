@@ -1,12 +1,12 @@
 using System.Text;
 using System.Web;
 using Dapper;
-using JLookDataMigration.Extensions;
-using JLookDataMigration.Models;
-using Lctech.JLook.Core.Domain.Entities;
+using JKTankDataMigration.Extensions;
+using JKTankDataMigration.Models;
+using Lctech.JKTank.Core.Domain.Entities;
 using MySql.Data.MySqlClient;
 
-namespace JLookDataMigration;
+namespace JKTankDataMigration;
 
 public class MemberBlogCategoryMigration
 {

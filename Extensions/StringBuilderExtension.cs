@@ -1,6 +1,6 @@
 using System.Text;
 
-namespace JLookDataMigration.Extensions;
+namespace JKTankDataMigration.Extensions;
 
 public static class StringBuilderExtension
 {

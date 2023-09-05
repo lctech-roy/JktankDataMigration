@@ -1,11 +1,11 @@
 using System.Text;
 using Dapper;
-using JLookDataMigration.Extensions;
-using JLookDataMigration.Helpers;
-using Lctech.JLook.Core.Domain.Entities;
+using JKTankDataMigration.Extensions;
+using JKTankDataMigration.Helpers;
+using Lctech.JKTank.Core.Domain.Entities;
 using Npgsql;
 
-namespace JLookDataMigration;
+namespace JKTankDataMigration;
 
 public class MassageBlogRegionMigration
 {

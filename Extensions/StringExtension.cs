@@ -1,7 +1,7 @@
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace JLookDataMigration.Extensions;
+namespace JKTankDataMigration.Extensions;
 
 public static class StringExtension
 {

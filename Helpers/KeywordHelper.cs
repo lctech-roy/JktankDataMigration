@@ -1,6 +1,6 @@
 using System.Text.RegularExpressions;
 
-namespace JLookDataMigration.Helpers;
+namespace JKTankDataMigration.Helpers;
 
 public static class KeywordHelper
 {

@@ -5,14 +5,14 @@
     <TargetFramework>net6.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <RootNamespace>JLookDataMigration</RootNamespace>
+    <RootNamespace>JKTankDataMigration</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
 <!--    <ProjectReference Include="..\Lctech.Jkf.Forum.Core\Lctech.Jkf.Forum.Core.csproj" />-->
     <PackageReference Include="Lctech.Jkf.Forum.Core" Version="1.0.0-dev.*" GeneratePathProperty="true" />
     <ProjectReference Include="..\Lctech.Attachment\src\Lctech.Attachment.Core\Lctech.Attachment.Core.csproj" />
-    <ProjectReference Include="..\Lctech.JLook\src\Lctech.JLook.Core\Lctech.JLook.Core.csproj" />
+    <ProjectReference Include="..\Lctech.JKTank\src\Lctech.JKTank.Core\Lctech.JKTank.Core.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -44,5 +44,6 @@
   <ItemGroup>
     <None Remove="ScriptInsert\**" />
   </ItemGroup>
+
 
 </Project>

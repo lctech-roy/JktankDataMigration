@@ -1,8 +1,6 @@
-using Dapper;
-using JLookDataMigration.Models;
-using MySqlConnector;
+using JKTankDataMigration.Models;
 
-namespace JLookDataMigration.Helpers;
+namespace JKTankDataMigration.Helpers;
 
 public static class PeriodHelper
 {

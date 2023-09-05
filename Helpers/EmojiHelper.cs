@@ -1,4 +1,4 @@
-namespace JLookDataMigration.Helpers;
+namespace JKTankDataMigration.Helpers;
 
 public class EmojiHelper
 {

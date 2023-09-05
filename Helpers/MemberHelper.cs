@@ -2,7 +2,7 @@ using Dapper;
 using MySql.Data.MySqlClient;
 using Npgsql;
 
-namespace JLookDataMigration.Helpers;
+namespace JKTankDataMigration.Helpers;
 
 public class MemberHelper
 {

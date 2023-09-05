@@ -1,7 +1,6 @@
-using JLookDataMigration.Models;
 using Netcorext.EntityFramework.UserIdentityPattern.Entities;
 
-namespace JLookDataMigration;
+namespace JKTankDataMigration;
 
 public static class Setting
 {
@@ -26,7 +25,7 @@ public static class Setting
     // private const string PASSWORD = "5vvJumLnhFnu";
     //private const string PORT = "5432";
     
-    public const string NEW_LOOK_CONNECTION = $"Host={HOST};Port={PORT};Username={USER_NAME};Password={PASSWORD};Database=lctech_jlook;Timeout=1024;CommandTimeout=1800;Maximum Pool Size=80;SSL Mode=Require;Trust Server Certificate=true;Include Error Detail=true";
+    public const string NEW_LOOK_CONNECTION = $"Host={HOST};Port={PORT};Username={USER_NAME};Password={PASSWORD};Database=lctech_jktank;Timeout=1024;CommandTimeout=1800;Maximum Pool Size=80;SSL Mode=Require;Trust Server Certificate=true;Include Error Detail=true";
     public const string NEW_ATTACHMENT_CONNECTION = $"Host={HOST};Port={PORT};Username={USER_NAME};Password={PASSWORD};Database=lctech_attachment;Timeout=1024;CommandTimeout=1800;Maximum Pool Size=80;SSL Mode=Require;Trust Server Certificate=true;Include Error Detail=true";
     public const string NEW_AUTH_CONNECTION = $"Host={HOST};Port={PORT};Username={USER_NAME};Password={PASSWORD};Database=lctech_auth;Timeout=1024;CommandTimeout=1800;Maximum Pool Size=80;SSL Mode=Require;Trust Server Certificate=true;Include Error Detail=true";
 
@@ -52,7 +51,7 @@ public static class Setting
     
     public const string BLOG_ID = "BlogId";
 
-    public const string LOOK_ES_INDEX = "lctech-jlook-dev";
+    public const string LOOK_ES_INDEX = "lctech-jktank-dev";
     public const string LOOK_ES_CONNECTION = "https://es-jkforum-dev.es.asia-east1.gcp.elastic-cloud.com";
     public const string LOOK_ES_PASSWORD = "NXRvZDVvY0JDd284cFNTREM2U2Y6WHJpU3VIWnhTRUdHdmE2YkVqc0xkdw==";
     public const int LOOK_ES_BATCH_SIZE = 5000;

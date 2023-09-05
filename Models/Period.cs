@@ -1,4 +1,4 @@
-namespace JLookDataMigration.Models;
+namespace JKTankDataMigration.Models;
 
 public class Period
 {

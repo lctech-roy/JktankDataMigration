@@ -1,7 +1,7 @@
 using Dapper;
 using Npgsql;
 
-namespace JLookDataMigration.Helpers;
+namespace JKTankDataMigration.Helpers;
 
 public class LookMemberHelper
 {
