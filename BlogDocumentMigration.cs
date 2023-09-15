@@ -12,7 +12,7 @@ public class BlogDocumentMigration
     private readonly IElasticClient _elasticClient;
     private readonly string _elasticIndex;
     private static readonly Dictionary<long, long[]> UserRoleDic = LookAuthHelper.GetLookAuthUserRoleDic();
-    private static readonly Dictionary<long, string[]> BlogSpecialTagsDic = LookSpecialTagHelper.GetBlogSpecialTagsDic();
+    // private static readonly Dictionary<long, string[]> BlogSpecialTagsDic = LookSpecialTagHelper.GetBlogSpecialTagsDic();
 
     private const string QUERY_LOOK_BLOG_SQL = @"SELECT 
                                                     b.""Id"",
@@ -108,8 +108,8 @@ public class BlogDocumentMigration
                                                                           if (UserRoleDic.TryGetValue(blogDocument.CreatorId, out var roleIds))
                                                                               blogDocument.CreatorRoleIds = roleIds;
 
-                                                                          if (BlogSpecialTagsDic.TryGetValue(blogDocument.Id, out var specialTags))
-                                                                              blogDocument.SpecialTags = specialTags;
+                                                                          // if (BlogSpecialTagsDic.TryGetValue(blogDocument.Id, out var specialTags))
+                                                                          //     blogDocument.SpecialTags = specialTags;
 
                                                                           return blogDocument;
                                                                       }).ToArray();

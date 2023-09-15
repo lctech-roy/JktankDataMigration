@@ -14,6 +14,13 @@ public static class ElasticHelper
         return GetIndex(prefix, documentName);
     }
 
+    public static string GetCommentIndex(string? prefix = null)
+    {
+        const string documentName = nameof(Comment);
+
+        return GetIndex(prefix, documentName);
+    }
+    
     public static string GetHashtagIndex(string? prefix = null)
     {
         const string documentName = nameof(Hashtag);
