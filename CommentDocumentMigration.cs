@@ -15,13 +15,15 @@ public class CommentDocumentMigration
                                                     c.""Id"",
                                                     c.""BlogId"",
                                                     c.""Type"",
-                                                    c.""Disabled"",
+                                                    b.""Disabled"" AS BlogDisabled,
                                                     c.""Content"",
                                                     c.""CreatorId"",
                                                     m.""DisplayName"" AS CreatorName,
                                                     c.""CreationDate""
                                                     FROM ""Comment"" c 
-                                                    LEFT JOIN ""Member"" m ON c.""CreatorId"" = m.""Id""";
+                                                    INNER JOIN ""Blog"" b ON b.""Id"" = c.""BlogId""
+                                                    LEFT JOIN ""Member"" m ON c.""CreatorId"" = m.""Id""
+                                                    WHERE c.""Disabled"" = FALSE";
 
     public CommentDocumentMigration(IElasticClient elasticClient)
     {

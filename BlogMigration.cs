@@ -69,7 +69,7 @@ public class BlogMigration
                                             FROM pre_home_blog b
                                             LEFT JOIN pre_home_blogfield bf ON b.blogid = bf.blogid
                                             WHERE b.blogid >= @Id{(Setting.TestBlogId.HasValue ? ($" AND b.blogid = {Setting.TestBlogId}") : "")}
-                                            ORDER BY b.blogid 
+                                            ORDER BY b.blogid
                                             LIMIT {LIMIT}";
 
     private static readonly ConcurrentDictionary<string, int> HashTagCountDic = new();
@@ -350,7 +350,7 @@ public class BlogMigration
 
             blogSb.AppendValueLine(blog.Id, (int)blog.Subject, blog.CategoryId.ToCopyValue(), copyStatusArrayStr,
                                    (int)blog.VisibleType, blog.Title.ToCopyText(), blog.Content.ToCopyText(), blog.Cover.ToCopyValue(),
-                                   blog.IsPinned, blog.Price, blog.Conclusion.ToCopyText(), blog.MassageBlogId.ToCopyValue(), 
+                                   blog.IsPinned, blog.Price, blog.Conclusion.ToCopyText(), blog.MassageBlogId.ToCopyValue(),
                                    blog.Hashtags.ToCopyArray(), blog.LastStatusModificationDate.ToCopyValue(), blog.Disabled,
                                    createDate, memberId, createDate, memberId, 0);
 
@@ -416,7 +416,7 @@ public class BlogMigration
 
             var tag = tagStr.Substring(starPoint, i - starPoint);
             tags.Add(tag.Trim());
-            
+
             if (string.IsNullOrWhiteSpace(tag))
                 continue;
 
