@@ -83,8 +83,8 @@ public class MemberStatisticMigration
                                   };
             }
             
-            memberStatistic.HotScore = Convert.ToDecimal(memberStatistic.CommentCount * 0.1 + memberStatistic.ReactCount * 0.033);
-
+            memberStatistic.HotScore =(int)Math.Round(Convert.ToDecimal(memberStatistic.CommentCount * 0.1 + memberStatistic.ReactCount * 0.033), MidpointRounding.AwayFromZero);
+            
             memberStatisticSb.AppendValueLine(memberStatistic.Id, memberStatistic.HotScore, memberStatistic.ViewCount, memberStatistic.ObtainDonateCount
                                             , memberStatistic.ObtainPurchaseCount, memberStatistic.ObtainDonateJPoints, memberStatistic.ObtainPurchaseJPoints, memberStatistic.ObtainTotalJPoints
                                             , memberStatistic.DonateCount, memberStatistic.PurchaseCount, memberStatistic.DonateJPoints, memberStatistic.PurchaseJPoints, memberStatistic.ConsumeTotalJPoints

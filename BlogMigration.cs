@@ -374,8 +374,8 @@ public class BlogMigration
                                     AverageScore = 5
                                 };
 
-            blogStatistic.HotScore = Convert.ToDecimal(blogStatistic.CommentCount * 0.1 + blogStatistic.TotalReactCount * 0.033);
-
+            blogStatistic.HotScore = (int)Math.Round(Convert.ToDecimal(blogStatistic.CommentCount * 0.1 + blogStatistic.TotalReactCount * 0.033), MidpointRounding.AwayFromZero);
+            
             blogStatisticSb.AppendValueLine(blogStatistic.Id, blogStatistic.HotScore, blogStatistic.ViewCount, blogStatistic.DonateCount, blogStatistic.DonorCount,
                                             blogStatistic.PurchaseCount, blogStatistic.DonateJPoints, blogStatistic.PurchaseJPoints, blogStatistic.ObtainTotalJPoints,
                                             blogStatistic.FavoriteCount, blogStatistic.CommentCount, blogStatistic.ComeByReactCount, blogStatistic.AmazingReactCount,
