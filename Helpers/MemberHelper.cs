@@ -28,7 +28,7 @@ public class MemberHelper
     {
         const string sql = @"SELECT * from pre_hidespace";
 
-        var memberHash = CommonHelper.WatchTime(nameof(GetMemberFirstPostDateDic)
+        var memberHash = CommonHelper.WatchTime(nameof(GetLifeStyleMemberHash)
                                               , () =>
                                                 {
                                                     using var conn = new MySqlConnection(Setting.OLD_FORUM_CONNECTION);
