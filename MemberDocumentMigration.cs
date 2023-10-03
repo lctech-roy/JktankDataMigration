@@ -25,6 +25,7 @@ public class MemberDocumentMigration
                                                     ms.""FavoriteCount"",
                                                     ms.""FollowerCount"",
                                                     ms.""MassageBlogCount"",
+                                                    ms.""LinkMassageBlogCount"",
                                                     ms.""PricingBlogCount"",
                                                     ms.""TotalBlogCount""
                                                     FROM ""Member"" m
