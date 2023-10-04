@@ -20,6 +20,9 @@ public class MemberDocumentMigration
                                                     ms.""ObtainDonateJPoints"",
                                                     ms.""ObtainPurchaseJPoints"",
                                                     ms.""ObtainTotalJPoints"",
+                                                    ms.""ActualObtainDonateJPoints"",
+                                                    ms.""ActualObtainPurchaseJPoints"",
+                                                    ms.""ActualObtainTotalJPoints"",
                                                     ms.""CommentCount"",
                                                     ms.""ReactCount"",
                                                     ms.""FavoriteCount"",
@@ -30,7 +33,7 @@ public class MemberDocumentMigration
                                                     ms.""TotalBlogCount""
                                                     FROM ""Member"" m
                                                     LEFT JOIN ""MemberStatistic"" ms ON ms.""Id"" = m.""Id""";
-
+    
     public MemberDocumentMigration(IElasticClient elasticClient)
     {
         _elasticClient = elasticClient;
