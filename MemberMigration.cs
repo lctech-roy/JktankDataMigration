@@ -3,6 +3,7 @@ using Dapper;
 using JKTankDataMigration.Extensions;
 using JKTankDataMigration.Helpers;
 using JKTankDataMigration.Models;
+using Lctech.JKTank.Core;
 using Lctech.JKTank.Core.Domain.Entities;
 using Lctech.JKTank.Core.Domain.Enums;
 using MySql.Data.MySqlClient;
@@ -13,13 +14,13 @@ namespace JKTankDataMigration;
 
 public class MemberMigration
 {
-    private const string USER_EXTEND_DATA_KEY = "SOURCE";
-    private const string USER_EXTEND_DATA_VALUE = "LCTECH.JKTANK.MEMBER";
+    private static readonly string UserExtendDataKey = Constants.EXTEND_DATA_SOURCE_KEY.ToUpper();
+    private static readonly string UserExtendDataValue = Constants.EXTEND_DATA_AUTH_FRONTEND_SOURCE_VALUE.ToUpper();
     private const string EXTERNAL_LOGIN_PROVIDER = "Pan";
     private const long DEFAULT_ROLE_ID = 1;
     private const long BANNED_TO_POST_ROLE_ID = 98;
     private const long BLOCK_ROLE_ID = 99;
-    
+
     private static readonly DateTimeOffset DefaultRoleExpireDate = DateTimeOffset.MaxValue;
     private static readonly Dictionary<long, DateTimeOffset> MemberFirstPostDateDic = MemberHelper.GetMemberFirstPostDateDic();
 
@@ -264,7 +265,7 @@ public class MemberMigration
                     break;
             }
 
-            userExtendDataSb.AppendValueLine(memberId, USER_EXTEND_DATA_KEY, USER_EXTEND_DATA_VALUE,
+            userExtendDataSb.AppendValueLine(memberId, UserExtendDataKey, UserExtendDataValue,
                                              createDate, 0, createDate, 0, 0);
 
             userExternalLoginSb.AppendValueLine(memberId, EXTERNAL_LOGIN_PROVIDER, memberId.ToString(),
