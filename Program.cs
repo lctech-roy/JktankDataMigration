@@ -24,7 +24,7 @@ serviceCollection.AddSingleton<BlogMigration>();
 serviceCollection.AddSingleton<BlogReactMigration>();
 serviceCollection.AddSingleton<CommentMigration>();
 serviceCollection.AddSingleton<MemberFavoriteMigration>();
-serviceCollection.AddSingleton<MemberFollowerMigration>();
+serviceCollection.AddSingleton<MemberRelationMigration>();
 serviceCollection.AddSingleton<MemberStatisticMigration>();
 serviceCollection.AddSingleton<BlogPinMigration>();
 
@@ -64,7 +64,7 @@ var blogMigration = serviceProvider.GetRequiredService<BlogMigration>();
 var blogReactMigration = serviceProvider.GetRequiredService<BlogReactMigration>();
 var commentMigration = serviceProvider.GetRequiredService<CommentMigration>();
 var memberFavoriteMigration = serviceProvider.GetRequiredService<MemberFavoriteMigration>();
-var memberFollowerMigration = serviceProvider.GetRequiredService<MemberFollowerMigration>();
+var memberRelationMigration = serviceProvider.GetRequiredService<MemberRelationMigration>();
 var memberStatisticMigration =  serviceProvider.GetRequiredService<MemberStatisticMigration>();
 var blogPinMigration =  serviceProvider.GetRequiredService<BlogPinMigration>();
 
@@ -107,8 +107,8 @@ Thread.CurrentThread.CurrentUICulture = CultureInfo.InvariantCulture;
 // await CommonHelper.WatchTimeAsync(nameof(migration.ExecuteMemberFavoriteAsync), () => migration.ExecuteMemberFavoriteAsync());
 
 // Blog會員-追蹤會員
-// await CommonHelper.WatchTimeAsync(nameof(memberFollowerMigration), async () => await memberFollowerMigration.MigrationAsync(token));
-// await CommonHelper.WatchTimeAsync(nameof(migration.ExecuteMemberFollowerAsync), () => migration.ExecuteMemberFollowerAsync());
+// await CommonHelper.WatchTimeAsync(nameof(memberRelationMigration), async () => await memberRelationMigration.MigrationAsync(token));
+// await CommonHelper.WatchTimeAsync(nameof(migration.ExecuteMemberRelationAsync), () => migration.ExecuteMemberRelationAsync());
 
 // Blog會員-統計資料
 // await CommonHelper.WatchTimeAsync(nameof(memberStatisticMigration), async () => await memberStatisticMigration.MigrationAsync(token));
@@ -121,12 +121,12 @@ Thread.CurrentThread.CurrentUICulture = CultureInfo.InvariantCulture;
 // await CommonHelper.WatchTimeAsync(nameof(memberDocumentMigration), async () => await memberDocumentMigration.MigrationAsync(token));
 
 // es-日誌
-//await CommonHelper.WatchTimeAsync(nameof(blogDocumentMigration), async () => await blogDocumentMigration.MigrationAsync(token));
+// await CommonHelper.WatchTimeAsync(nameof(blogDocumentMigration), async () => await blogDocumentMigration.MigrationAsync(token));
 
 // es-日誌標籤
 // await CommonHelper.WatchTimeAsync(nameof(hashTagDocumentMigration), async () => await hashTagDocumentMigration.MigrationAsync(token));
 
 // es-留言
-await CommonHelper.WatchTimeAsync(nameof(commentDocumentMigration), async () => await commentDocumentMigration.MigrationAsync(token));
+// await CommonHelper.WatchTimeAsync(nameof(commentDocumentMigration), async () => await commentDocumentMigration.MigrationAsync(token));
 
 Console.WriteLine("Hello, World!");

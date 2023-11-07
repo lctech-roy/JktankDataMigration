@@ -128,14 +128,14 @@ public class Migration
         connection.ExecuteCommandByPath($"{SCHEMA_PATH}/{nameof(MemberFavorite)}/{AFTER_FILE_NAME}");
     }
 
-    public async Task ExecuteMemberFollowerAsync()
+    public async Task ExecuteMemberRelationAsync()
     {
-        const string memberFollowerPath = $"{Setting.INSERT_DATA_PATH}/{nameof(MemberFollower)}";
+        const string memberFollowerPath = $"{Setting.INSERT_DATA_PATH}/{nameof(MemberRelation)}";
 
         await using var connection = new NpgsqlConnection(Setting.NEW_LOOK_CONNECTION);
-        connection.ExecuteCommandByPath($"{SCHEMA_PATH}/{nameof(MemberFollower)}/{BEFORE_FILE_NAME}");
+        connection.ExecuteCommandByPath($"{SCHEMA_PATH}/{nameof(MemberRelation)}/{BEFORE_FILE_NAME}");
         connection.ExecuteAllCopyFiles(memberFollowerPath);
-        connection.ExecuteCommandByPath($"{SCHEMA_PATH}/{nameof(MemberFollower)}/{AFTER_FILE_NAME}");
+        connection.ExecuteCommandByPath($"{SCHEMA_PATH}/{nameof(MemberRelation)}/{AFTER_FILE_NAME}");
         
     }
     
