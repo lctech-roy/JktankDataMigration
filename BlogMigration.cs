@@ -27,6 +27,7 @@ public class BlogMigration
                                             $",\"{nameof(Blog.VisibleType)}\",\"{nameof(Blog.Title)}\",\"{nameof(Blog.Content)}\",\"{nameof(Blog.Cover)}\"" +
                                             $",\"{nameof(Blog.IsPinned)}\",\"{nameof(Blog.Price)}\",\"{nameof(Blog.Conclusion)}\",\"{nameof(Blog.MediaCount)}\"" +
                                             $",\"{nameof(Blog.MassageBlogId)}\",\"{nameof(Blog.Hashtags)}\",\"{nameof(Blog.LastStatusModificationDate)}\",\"{nameof(Blog.Disabled)}\"" +
+                                            $",\"{nameof(Blog.ServiceScore)}\",\"{nameof(Blog.AppearanceScore)}\",\"{nameof(Blog.ConversationScore)}\",\"{nameof(Blog.TidinessScore)}\",\"{nameof(Blog.AverageScore)}\"" +
                                             Setting.COPY_ENTITY_SUFFIX;
 
     private const string COPY_BLOG_MEDIA_PREFIX = $"COPY \"{nameof(BlogMedia)}\" " +
@@ -47,7 +48,6 @@ public class BlogMigration
                                                       $",\"{nameof(BlogStatistic.PurchaseCount)}\",\"{nameof(BlogStatistic.DonateJPoints)}\",\"{nameof(BlogStatistic.PurchaseJPoints)}\",\"{nameof(BlogStatistic.ObtainTotalJPoints)}\"" +
                                                       $",\"{nameof(BlogStatistic.FavoriteCount)}\",\"{nameof(BlogStatistic.CommentCount)}\",\"{nameof(BlogStatistic.ComeByReactCount)}\",\"{nameof(BlogStatistic.AmazingReactCount)}\"" +
                                                       $",\"{nameof(BlogStatistic.ShakeHandsReactCount)}\",\"{nameof(BlogStatistic.FlowerReactCount)}\",\"{nameof(BlogStatistic.ConfuseReactCount)}\",\"{nameof(BlogStatistic.TotalReactCount)}\"" +
-                                                      $",\"{nameof(BlogStatistic.ServiceScore)}\",\"{nameof(BlogStatistic.AppearanceScore)}\",\"{nameof(BlogStatistic.ConversationScore)}\",\"{nameof(BlogStatistic.TidinessScore)}\",\"{nameof(BlogStatistic.AverageScore)}\"" +
                                                       Setting.COPY_ENTITY_SUFFIX;
 
     private const string COPY_HASH_TAG_PREFIX = $"COPY \"{nameof(Hashtag)}\" " +
@@ -344,7 +344,12 @@ public class BlogMigration
                            MassageBlogId = massageArticleId,
                            Hashtags = GetTags(oldBlog.OldTags),
                            LastStatusModificationDate = null,
-                           Disabled = false
+                           Disabled = false,
+                           ServiceScore = 5,
+                           AppearanceScore = 5,
+                           ConversationScore = 5,
+                           TidinessScore = 5,
+                           AverageScore = 5
                        };
 
             var copyStatusArrayStr = $"{{{string.Join(",", blog.Status.Select(x => (int)x))}}}";
@@ -353,6 +358,7 @@ public class BlogMigration
                                    (int)blog.VisibleType, blog.Title.ToCopyText(), blog.Content.ToCopyText(), blog.Cover.ToCopyValue(),
                                    blog.IsPinned, blog.Price, blog.Conclusion.ToCopyText(), blog.MediaCount, blog.MassageBlogId.ToCopyValue(),
                                    blog.Hashtags.ToCopyArray(), blog.LastStatusModificationDate.ToCopyValue(), blog.Disabled,
+                                   blog.ServiceScore, blog.AppearanceScore, blog.ConversationScore, blog.TidinessScore, blog.AverageScore,
                                    createDate, memberId, createDate, memberId, 0);
 
             var blogStatistic = new BlogStatistic
@@ -367,12 +373,7 @@ public class BlogMigration
                                     FlowerReactCount = oldBlog.FlowerReactCount,
                                     ConfuseReactCount = oldBlog.ConfuseReactCount,
                                     TotalReactCount = oldBlog.ComeByReactCount + oldBlog.AmazingReactCount + oldBlog.ShakeHandsReactCount
-                                                    + oldBlog.FlowerReactCount + oldBlog.ConfuseReactCount,
-                                    ServiceScore = 5,
-                                    AppearanceScore = 5,
-                                    ConversationScore = 5,
-                                    TidinessScore = 5,
-                                    AverageScore = 5
+                                                    + oldBlog.FlowerReactCount + oldBlog.ConfuseReactCount
                                 };
 
             blogStatistic.HotScore = (int)Math.Round(Convert.ToDecimal(blogStatistic.CommentCount * 0.1 + blogStatistic.TotalReactCount * 0.033), MidpointRounding.AwayFromZero);
@@ -381,7 +382,6 @@ public class BlogMigration
                                             blogStatistic.PurchaseCount, blogStatistic.DonateJPoints, blogStatistic.PurchaseJPoints, blogStatistic.ObtainTotalJPoints,
                                             blogStatistic.FavoriteCount, blogStatistic.CommentCount, blogStatistic.ComeByReactCount, blogStatistic.AmazingReactCount,
                                             blogStatistic.ShakeHandsReactCount, blogStatistic.FlowerReactCount, blogStatistic.ConfuseReactCount, blogStatistic.TotalReactCount,
-                                            blogStatistic.ServiceScore, blogStatistic.AppearanceScore, blogStatistic.ConversationScore, blogStatistic.TidinessScore, blogStatistic.AverageScore,
                                             createDate, 0, createDate, 0, 0);
         }
 
