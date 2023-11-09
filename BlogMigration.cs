@@ -25,7 +25,7 @@ public class BlogMigration
     private const string COPY_BLOG_PREFIX = $"COPY \"{nameof(Blog)}\" " +
                                             $"(\"{nameof(Blog.Id)}\",\"{nameof(Blog.Subject)}\",\"{nameof(Blog.CategoryId)}\",\"{nameof(Blog.Status)}\"" +
                                             $",\"{nameof(Blog.VisibleType)}\",\"{nameof(Blog.Title)}\",\"{nameof(Blog.Content)}\",\"{nameof(Blog.Cover)}\"" +
-                                            $",\"{nameof(Blog.IsPinned)}\",\"{nameof(Blog.Price)}\",\"{nameof(Blog.Conclusion)}\"" +
+                                            $",\"{nameof(Blog.IsPinned)}\",\"{nameof(Blog.Price)}\",\"{nameof(Blog.Conclusion)}\",\"{nameof(Blog.MediaCount)}\"" +
                                             $",\"{nameof(Blog.MassageBlogId)}\",\"{nameof(Blog.Hashtags)}\",\"{nameof(Blog.LastStatusModificationDate)}\",\"{nameof(Blog.Disabled)}\"" +
                                             Setting.COPY_ENTITY_SUFFIX;
 
@@ -340,6 +340,7 @@ public class BlogMigration
                            Cover = coverId,
                            Price = 0,
                            Conclusion = null,
+                           MediaCount = matchCount,
                            MassageBlogId = massageArticleId,
                            Hashtags = GetTags(oldBlog.OldTags),
                            LastStatusModificationDate = null,
@@ -350,7 +351,7 @@ public class BlogMigration
 
             blogSb.AppendValueLine(blog.Id, (int)blog.Subject, blog.CategoryId.ToCopyValue(), copyStatusArrayStr,
                                    (int)blog.VisibleType, blog.Title.ToCopyText(), blog.Content.ToCopyText(), blog.Cover.ToCopyValue(),
-                                   blog.IsPinned, blog.Price, blog.Conclusion.ToCopyText(), blog.MassageBlogId.ToCopyValue(),
+                                   blog.IsPinned, blog.Price, blog.Conclusion.ToCopyText(), blog.MediaCount, blog.MassageBlogId.ToCopyValue(),
                                    blog.Hashtags.ToCopyArray(), blog.LastStatusModificationDate.ToCopyValue(), blog.Disabled,
                                    createDate, memberId, createDate, memberId, 0);
 
@@ -375,7 +376,7 @@ public class BlogMigration
                                 };
 
             blogStatistic.HotScore = (int)Math.Round(Convert.ToDecimal(blogStatistic.CommentCount * 0.1 + blogStatistic.TotalReactCount * 0.033), MidpointRounding.AwayFromZero);
-            
+
             blogStatisticSb.AppendValueLine(blogStatistic.Id, blogStatistic.HotScore, blogStatistic.ViewCount, blogStatistic.DonateCount, blogStatistic.DonorCount,
                                             blogStatistic.PurchaseCount, blogStatistic.DonateJPoints, blogStatistic.PurchaseJPoints, blogStatistic.ObtainTotalJPoints,
                                             blogStatistic.FavoriteCount, blogStatistic.CommentCount, blogStatistic.ComeByReactCount, blogStatistic.AmazingReactCount,
