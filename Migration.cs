@@ -130,11 +130,11 @@ public class Migration
 
     public async Task ExecuteMemberRelationAsync()
     {
-        const string memberFollowerPath = $"{Setting.INSERT_DATA_PATH}/{nameof(MemberRelation)}";
+        const string memberRelationPath = $"{Setting.INSERT_DATA_PATH}/{nameof(MemberRelation)}";
 
         await using var connection = new NpgsqlConnection(Setting.NEW_LOOK_CONNECTION);
         connection.ExecuteCommandByPath($"{SCHEMA_PATH}/{nameof(MemberRelation)}/{BEFORE_FILE_NAME}");
-        connection.ExecuteAllCopyFiles(memberFollowerPath);
+        connection.ExecuteAllCopyFiles(memberRelationPath);
         connection.ExecuteCommandByPath($"{SCHEMA_PATH}/{nameof(MemberRelation)}/{AFTER_FILE_NAME}");
         
     }

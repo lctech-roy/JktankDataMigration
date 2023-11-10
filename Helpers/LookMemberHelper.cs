@@ -51,7 +51,7 @@ public class LookMemberHelper
     public static Dictionary<long, int> GetLookMemberFollowerCountDic()
     {
         const string sql = @"SELECT ""Id"",COUNT(""Id"") AS FollowerCount 
-                             FROM ""MemberFollower""
+                             FROM ""MemberRelation"" WHERE ""IsFollower"" = true
                              GROUP BY ""Id""";
 
         var hashSet = CommonHelper.WatchTime(nameof(GetLookMemberFollowerCountDic)

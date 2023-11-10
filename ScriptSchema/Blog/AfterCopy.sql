@@ -3,7 +3,6 @@ ALTER TABLE "Order" SET LOGGED;
 ALTER TABLE "MemberJPointsHistory" SET LOGGED;
 ALTER TABLE "MemberViewHistory" SET LOGGED;
 ALTER TABLE "MemberFavorite" SET LOGGED;
-ALTER TABLE "MemberConsumptionSummary" SET LOGGED;
 ALTER TABLE "Comment" SET LOGGED;
 ALTER TABLE "CommentLike" SET UNLOGGED;
 ALTER TABLE "MemberTimeline" SET LOGGED;
