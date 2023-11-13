@@ -23,7 +23,7 @@ public class RegexHelper
     private const string EMBED_SRC_PATTERN = @"<embed.+?src=[""'](https?:.+?)[""'].*?>";
     private const string FONT_SIZE_PATTERN = $@"(<font.+?size=[""'])(?<{SIZE_GROUP}>\d+)([""'].*?>)";
     private const string FONT_FACE_PATTERN = $@"(<font.+?)(?<{FACE_GROUP}>face=[""'].+?[""'])(.*?>)";
-    private const string COMMENT_REPLY_PATTERN = $@"<div class=""quote""><span class=""q""><b>(?<{AUTHOR_GROUP}>.*)</b>: (?<{AUTHOR_CONTENT_GROUP}>[\S\s]*)</span></div>(?<{REPLIER_CONTENT_GROUP}>[\S\s]*)";
+    private const string COMMENT_REPLY_PATTERN = $@"<div class=""quote"">(?:<span class=""q"">|<blockquote>)<b>(?<{AUTHOR_GROUP}>.*)</b>: ?(?<{AUTHOR_CONTENT_GROUP}>[\S\s]*)(?:</span>|</blockquote>)</div>(?<{REPLIER_CONTENT_GROUP}>[\S\s]*)";
     
     // include href
     // private const string MASSAGE_URL_PATTERN = $@"(<a\b|(?!^)\G)[^>]*?\bhref=([""']?)(https?://www\.jkforum\.net/(thread-(?<{TID_GROUP}>\d+)-\d+-\d+\.html|forum\.php\?mod=(misc|post|viewthread)\S*&tid=(?<{TID_GROUP}>\d+)|group\/\d+\?action=preview&tid=(?<{TID_GROUP}>\d+)))([""']?)\2";

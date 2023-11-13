@@ -67,17 +67,28 @@ public class CommentMigration
 
             var createDate = DateTimeOffset.FromUnixTimeSeconds(dateLine);
 
+            var comment = new Comment
+                          {
+                              Id = commentId,
+                              BlogId = blogId,
+                              Type = CommentType.Comment,
+                              Disabled = disabled,
+                              Author = new Member { DisplayName = authorName.Trim() },
+                              CreatorId = memberId,
+                              ModifierId = memberId,
+                              CreationDate = createDate,
+                              ModificationDate = createDate
+                          };
+            
             var matches = RegexHelper.CommentReplyRegex.Matches(content);
 
             var matchReply = matches.FirstOrDefault();
-
-            Comment? comment;
-
+            
             if (matchReply != null)
             {
-                var author = matchReply.Groups[RegexHelper.AUTHOR_GROUP].Value;
-                var authorContent = matchReply.Groups[RegexHelper.AUTHOR_CONTENT_GROUP].Value.Replace("\n", "\r\n");
-                var replierContent = matchReply.Groups[RegexHelper.REPLIER_CONTENT_GROUP].Value;
+                var author = matchReply.Groups[RegexHelper.AUTHOR_GROUP].Value.Trim();
+                var authorContent = matchReply.Groups[RegexHelper.AUTHOR_CONTENT_GROUP].Value.Replace("\n", "\r\n").Trim();
+                var replierContent = matchReply.Groups[RegexHelper.REPLIER_CONTENT_GROUP].Value.Trim();
 
                 var parentComment = blogComments.FirstOrDefault(x => x.Author.DisplayName == author && x.Content == authorContent);
 
@@ -85,66 +96,25 @@ public class CommentMigration
                 {
                     Console.WriteLine($"Count:{++parentNotFoundCount} CommentId:{commentId} ParentComment is null");
 
-                    comment = new Comment
-                              {
-                                  Id = commentId,
-                                  BlogId = blogId,
-                                  ParentId = null,
-                                  Type = CommentType.Comment,
-                                  DonateJPoints = 0,
-                                  Level = 1,
-                                  Content = replierContent,
-                                  ReplyCount = 0,
-                                  LikeCount = 0,
-                                  TotalLikeCount = 0,
-                                  SortingIndex = 0,
-                                  Hierarchy = new[] { commentId },
-                                  Disabled = disabled,
-                                  Author = new Member { DisplayName = authorName }
-                              };
+                    comment.Level = 1;
+                    comment.Content = replierContent.Trim();
+                    comment.Hierarchy = new[] { commentId };
                 }
                 else
                 {
                     parentComment.ReplyCount++;
 
-                    comment = new Comment
-                              {
-                                  Id = commentId,
-                                  BlogId = blogId,
-                                  ParentId = parentComment.Id,
-                                  Type = CommentType.Comment,
-                                  DonateJPoints = 0,
-                                  Level = parentComment.Level + 1 > 2 ? 2 : parentComment.Level + 1,
-                                  Content = replierContent,
-                                  ReplyCount = 0,
-                                  LikeCount = 0,
-                                  TotalLikeCount = 0,
-                                  SortingIndex = 0,
-                                  Hierarchy = parentComment.Hierarchy.Append(commentId).ToArray(),
-                                  Disabled = disabled,
-                                  Author = new Member { DisplayName = authorName }
-                              };
+                    comment.ParentId = parentComment.Id;
+                    comment.Level = parentComment.Level + 1 > 2 ? 2 : parentComment.Level + 1;
+                    comment.Content = replierContent.Trim();
+                    comment.Hierarchy = parentComment.Hierarchy.Append(commentId).ToArray();
                 }
             }
             else
             {
-                comment = new Comment
-                          {
-                              Id = commentId,
-                              BlogId = blogId,
-                              ParentId = null,
-                              Type = CommentType.Comment,
-                              DonateJPoints = 0,
-                              Level = 1,
-                              Content = content,
-                              ReplyCount = 0,
-                              LikeCount = 0,
-                              TotalLikeCount = 0,
-                              SortingIndex = 0,
-                              Hierarchy = new[] { commentId },
-                              Disabled = disabled,
-                              Author = new Member { DisplayName = authorName }
-                          };
+                comment.Level = 1;
+                comment.Content = content.Trim();
+                comment.Hierarchy = new[] { commentId };
             }
 
             var blogIdChanged = blogId != previousBlogId;
@@ -159,7 +129,7 @@ public class CommentMigration
                     commentSb.AppendValueLine(blogComment.Id, blogComment.BlogId, blogComment.ParentId.ToCopyValue(), (int)blogComment.Type,
                                               blogComment.DonateJPoints, blogComment.Level, blogComment.Content.ToCopyText(), blogComment.ReplyCount,
                                               blogComment.LikeCount, blogComment.TotalLikeCount, blogComment.SortingIndex, blogComment.Hierarchy.ToCopyArray(),
-                                              blogComment.Disabled, createDate, memberId, createDate, memberId, 0);
+                                              blogComment.Disabled, blogComment.CreationDate, blogComment.CreatorId, blogComment.ModificationDate, blogComment.ModifierId, 0);
                 }
             }
 
