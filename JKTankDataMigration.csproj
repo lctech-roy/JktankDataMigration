@@ -10,6 +10,7 @@
 
   <ItemGroup>
 <!--    <ProjectReference Include="..\Lctech.Jkf.Forum.Core\Lctech.Jkf.Forum.Core.csproj" />-->
+    <PackageReference Include="Hashids.net" Version="1.7.0" />
     <PackageReference Include="Lctech.Jkf.Forum.Core" Version="1.0.0-dev.*" GeneratePathProperty="true" />
     <ProjectReference Include="..\Lctech.Attachment\src\Lctech.Attachment.Core\Lctech.Attachment.Core.csproj" />
     <ProjectReference Include="..\Lctech.JKTank\src\Lctech.JKTank.Core\Lctech.JKTank.Core.csproj" />
