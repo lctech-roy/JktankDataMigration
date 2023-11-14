@@ -65,20 +65,28 @@ public static class FileHelper
 
         var fullPath = $"{directoryPath}/{fileName}";
 
-        if (isAppend && File.Exists(fullPath))
+        switch (isAppend)
         {
-            File.AppendAllText(fullPath, valueSb.ToString(), _encoding);
+            case true when File.Exists(fullPath):
+                File.AppendAllText(fullPath, valueSb.ToString(), _encoding);
 
-            // File.AppendAllText(fullPath, valueSb.ToString());
-            Console.WriteLine($"Append {fullPath}");
-        }
-        else
-        {
-            Directory.CreateDirectory(directoryPath);
-            File.WriteAllText(fullPath, string.Concat(copyPrefix, valueSb.ToString()), _encoding);
+                Console.WriteLine($"Append {fullPath}");
 
-            // File.WriteAllText(fullPath, string.Concat(copyPrefix, valueSb.ToString()));
-            Console.WriteLine(fullPath);
+                break;
+            case true when !File.Exists(fullPath):
+                Directory.CreateDirectory(directoryPath);
+                File.WriteAllText(fullPath, string.Concat(copyPrefix, valueSb.ToString()), _encoding);
+
+                Console.WriteLine(fullPath);
+
+                break;
+            default:
+                Directory.CreateDirectory(directoryPath);
+                File.WriteAllText(fullPath, string.Concat(copyPrefix, valueSb.ToString()), _encoding);
+
+                Console.WriteLine(fullPath);
+
+                break;
         }
 
         valueSb.Clear();
