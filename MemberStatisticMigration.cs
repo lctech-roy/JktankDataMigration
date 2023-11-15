@@ -15,7 +15,8 @@ public class MemberStatisticMigration
 
     private const string COPY_MEMBER_STATISTIC_PREFIX = $"COPY \"{nameof(MemberStatistic)}\" " +
                                                         $"(\"{nameof(MemberStatistic.Id)}\",\"{nameof(MemberStatistic.HotScore)}\",\"{nameof(MemberStatistic.ViewCount)}\",\"{nameof(MemberStatistic.ObtainDonateCount)}\"" +
-                                                        $",\"{nameof(MemberStatistic.ObtainPurchaseCount)}\",\"{nameof(MemberStatistic.ObtainDonateJPoints)}\",\"{nameof(MemberStatistic.ObtainPurchaseJPoints)}\",\"{nameof(MemberStatistic.ObtainTotalJPoints)}\"" +
+                                                        $",\"{nameof(MemberStatistic.ObtainPurchaseCount)}\",\"{nameof(MemberStatistic.ActualObtainDonateJPoints)}\",\"{nameof(MemberStatistic.ActualObtainPurchaseJPoints)}\",\"{nameof(MemberStatistic.ActualObtainTotalJPoints)}\"" +
+                                                        $",\"{nameof(MemberStatistic.ObtainDonateJPoints)}\",\"{nameof(MemberStatistic.ObtainPurchaseJPoints)}\",\"{nameof(MemberStatistic.ObtainTotalJPoints)}\"" +
                                                         $",\"{nameof(MemberStatistic.DonateCount)}\",\"{nameof(MemberStatistic.PurchaseCount)}\",\"{nameof(MemberStatistic.DonateJPoints)}\",\"{nameof(MemberStatistic.PurchaseJPoints)}\",\"{nameof(MemberStatistic.ConsumeTotalJPoints)}\"" +
                                                         $",\"{nameof(MemberStatistic.CommentCount)}\",\"{nameof(MemberStatistic.ReactCount)}\",\"{nameof(MemberStatistic.FavoriteCount)}\",\"{nameof(MemberStatistic.FollowerCount)}\"" +
                                                         $",\"{nameof(MemberStatistic.MassageBlogCount)}\",\"{nameof(MemberStatistic.LinkMassageBlogCount)}\",\"{nameof(MemberStatistic.PricingBlogCount)}\",\"{nameof(MemberStatistic.TotalBlogCount)}\"" +
@@ -87,7 +88,8 @@ public class MemberStatisticMigration
             memberStatistic.HotScore = (int)Math.Round(Convert.ToDecimal(memberStatistic.CommentCount * 0.1 + memberStatistic.ReactCount * 0.033), MidpointRounding.AwayFromZero);
 
             memberStatisticSb.AppendValueLine(memberStatistic.Id, memberStatistic.HotScore, memberStatistic.ViewCount, memberStatistic.ObtainDonateCount
-                                            , memberStatistic.ObtainPurchaseCount, memberStatistic.ObtainDonateJPoints, memberStatistic.ObtainPurchaseJPoints, memberStatistic.ObtainTotalJPoints
+                                            , memberStatistic.ObtainPurchaseCount, memberStatistic.ActualObtainDonateJPoints, memberStatistic.ActualObtainPurchaseJPoints, memberStatistic.ActualObtainTotalJPoints
+                                            , memberStatistic.ObtainDonateJPoints, memberStatistic.ObtainPurchaseJPoints, memberStatistic.ObtainTotalJPoints
                                             , memberStatistic.DonateCount, memberStatistic.PurchaseCount, memberStatistic.DonateJPoints, memberStatistic.PurchaseJPoints, memberStatistic.ConsumeTotalJPoints
                                             , memberStatistic.CommentCount, memberStatistic.ReactCount, memberStatistic.FavoriteCount, memberStatistic.FollowerCount
                                             , memberStatistic.MassageBlogCount, memberStatistic.LinkMassageBlogCount, memberStatistic.PricingBlogCount, memberStatistic.TotalBlogCount
