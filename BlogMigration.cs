@@ -45,7 +45,8 @@ public class BlogMigration
 
     private const string COPY_BLOG_STATISTIC_PREFIX = $"COPY \"{nameof(BlogStatistic)}\" " +
                                                       $"(\"{nameof(BlogStatistic.Id)}\",\"{nameof(BlogStatistic.HotScore)}\",\"{nameof(BlogStatistic.ViewCount)}\",\"{nameof(BlogStatistic.DonateCount)}\",\"{nameof(BlogStatistic.DonorCount)}\"" +
-                                                      $",\"{nameof(BlogStatistic.PurchaseCount)}\",\"{nameof(BlogStatistic.DonateJPoints)}\",\"{nameof(BlogStatistic.PurchaseJPoints)}\",\"{nameof(BlogStatistic.ObtainTotalJPoints)}\"" +
+                                                      $",\"{nameof(BlogStatistic.PurchaseCount)}\",\"{nameof(BlogStatistic.ActualDonateJPoints)}\",\"{nameof(BlogStatistic.ActualPurchaseJPoints)}\",\"{nameof(BlogStatistic.ActualObtainTotalJPoints)}\"" +
+                                                      $",\"{nameof(BlogStatistic.DonateJPoints)}\",\"{nameof(BlogStatistic.PurchaseJPoints)}\",\"{nameof(BlogStatistic.ObtainTotalJPoints)}\"" +
                                                       $",\"{nameof(BlogStatistic.FavoriteCount)}\",\"{nameof(BlogStatistic.CommentCount)}\",\"{nameof(BlogStatistic.ComeByReactCount)}\",\"{nameof(BlogStatistic.AmazingReactCount)}\"" +
                                                       $",\"{nameof(BlogStatistic.ShakeHandsReactCount)}\",\"{nameof(BlogStatistic.FlowerReactCount)}\",\"{nameof(BlogStatistic.ConfuseReactCount)}\",\"{nameof(BlogStatistic.TotalReactCount)}\"" +
                                                       Setting.COPY_ENTITY_SUFFIX;
@@ -192,8 +193,7 @@ public class BlogMigration
 
                                                                       return emoji;
                                                                   });
-
-
+            
             var matchCount = 0;
             long? coverId = null;
 
@@ -235,7 +235,7 @@ public class BlogMigration
                                                                        }
                                                                    }
 
-                                                                   if (string.IsNullOrEmpty(path))
+                                                                   if (string.IsNullOrEmpty(path) || path.Length > 2048)
                                                                        return string.Empty;
 
                                                                    var attachmentId = blogId * 1000L + ++matchCount;
@@ -379,7 +379,8 @@ public class BlogMigration
             blogStatistic.HotScore = (int)Math.Round(Convert.ToDecimal(blogStatistic.CommentCount * 0.1 + blogStatistic.TotalReactCount * 0.033), MidpointRounding.AwayFromZero);
 
             blogStatisticSb.AppendValueLine(blogStatistic.Id, blogStatistic.HotScore, blogStatistic.ViewCount, blogStatistic.DonateCount, blogStatistic.DonorCount,
-                                            blogStatistic.PurchaseCount, blogStatistic.DonateJPoints, blogStatistic.PurchaseJPoints, blogStatistic.ObtainTotalJPoints,
+                                            blogStatistic.PurchaseCount, blogStatistic.ActualDonateJPoints, blogStatistic.ActualPurchaseJPoints, blogStatistic.ActualObtainTotalJPoints,
+                                            blogStatistic.DonateJPoints, blogStatistic.PurchaseJPoints, blogStatistic.ObtainTotalJPoints,
                                             blogStatistic.FavoriteCount, blogStatistic.CommentCount, blogStatistic.ComeByReactCount, blogStatistic.AmazingReactCount,
                                             blogStatistic.ShakeHandsReactCount, blogStatistic.FlowerReactCount, blogStatistic.ConfuseReactCount, blogStatistic.TotalReactCount,
                                             createDate, 0, createDate, 0, 0);
