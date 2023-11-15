@@ -32,7 +32,7 @@ ALTER TABLE "MemberJPointsHistory"
 ALTER TABLE "MemberStatistic"
     ADD CONSTRAINT "FK_MemberStatistic_Member_Id" FOREIGN KEY ("Id") REFERENCES "public"."Member"("Id") ON DELETE CASCADE;
 ALTER TABLE "MemberTimeline"
-    ADD CONSTRAINT "FK_MemberTimeline_Member_CreatorId" FOREIGN KEY ("CreatorId") REFERENCES "public"."Member"("Id") ON DELETE CASCADE
+    ADD CONSTRAINT "FK_MemberTimeline_Member_CreatorId" FOREIGN KEY ("CreatorId") REFERENCES "public"."Member"("Id") ON DELETE CASCADE;
 ALTER TABLE "MemberTopic"
     ADD CONSTRAINT "FK_MemberTopic_Member_Id" FOREIGN KEY ("Id") REFERENCES "public"."Member"("Id") ON DELETE CASCADE;
 ALTER TABLE "MemberViewHistory"

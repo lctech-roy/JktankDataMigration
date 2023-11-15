@@ -6,8 +6,6 @@ ALTER TABLE "Comment"
     DROP CONSTRAINT IF EXISTS "FK_Comment_Member_CreatorId";
 ALTER TABLE "MemberBlogCategory"
     DROP CONSTRAINT IF EXISTS "FK_MemberBlogCategory_Member_MemberId";
-ALTER TABLE "MemberBlogCategory"
-    DROP CONSTRAINT IF EXISTS "FK_MemberBlogCategory_Member_MemberId";
 ALTER TABLE "MemberCover"
     DROP CONSTRAINT IF EXISTS "FK_MemberCover_Member_Id";
 ALTER TABLE "MemberFavorite"

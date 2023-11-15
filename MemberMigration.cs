@@ -17,7 +17,7 @@ public class MemberMigration
     private static readonly string UserExtendDataKey = Constants.EXTEND_DATA_SOURCE_KEY.ToUpper();
     private static readonly string UserExtendDataValue = Constants.EXTEND_DATA_AUTH_FRONTEND_SOURCE_VALUE.ToUpper();
     private const string EXTERNAL_LOGIN_PROVIDER = "Pan";
-    private const long DEFAULT_ROLE_ID = 1;
+    private const long DEFAULT_ROLE_ID = 2;
     private const long BANNED_TO_POST_ROLE_ID = 98;
     private const long BLOCK_ROLE_ID = 99;
 
@@ -27,7 +27,7 @@ public class MemberMigration
     private const string COPY_MEMBER_PREFIX = $"COPY \"{nameof(Member)}\" " +
                                               $"(\"{nameof(Member.Id)}\",\"{nameof(Member.DisplayName)}\",\"{nameof(Member.NormalizedDisplayName)}\"" +
                                               $",\"{nameof(Member.ParentId)}\",\"{nameof(Member.PrivacyType)}\",\"{nameof(Member.Birthday)}\",\"{nameof(Member.Avatar)}\"" +
-                                              $",\"{nameof(Member.PersonalProfile)}\",\"{nameof(Member.WarningCount)}\"" +
+                                              $",\"{nameof(Member.PersonalProfile)}\",\"{nameof(Member.WarningCount)}\",\"{nameof(Member.Disabled)}\"" +
                                               $",\"{nameof(Member.WarningExpirationDate)}\",\"{nameof(Member.FirstPostDate)}\"" + Setting.COPY_ENTITY_SUFFIX;
 
     private const string COPY_MEMBER_PROFILE_PREFIX = $"COPY \"{nameof(MemberProfile)}\" " +
@@ -188,7 +188,8 @@ public class MemberMigration
                              PersonalProfile = null,
                              WarningCount = 0,
                              WarningExpirationDate = null,
-                             FirstPostDate = MemberFirstPostDateDic.TryGetValue(memberId, out var value) ? value : null
+                             FirstPostDate = MemberFirstPostDateDic.TryGetValue(memberId, out var value) ? value : null,
+                             Disabled = oldMember.GroupId == 5
                          };
 
             var memberProfile = new MemberProfile
@@ -225,12 +226,12 @@ public class MemberMigration
                            AccessFailedCount = 0,
                            LastSignInDate = null,
                            LastSignInIp = null,
-                           Disabled = false
+                           Disabled = oldMember.GroupId == 5
                        };
 
             memberSb.AppendValueLine(memberId, member.DisplayName.ToCopyText(), member.NormalizedDisplayName.ToCopyText(),
                                      member.ParentId.ToCopyValue(), (int)member.PrivacyType, member.Birthday.ToCopyValue(), member.Avatar.ToCopyText(),
-                                     member.PersonalProfile.ToCopyValue(), member.WarningCount,
+                                     member.PersonalProfile.ToCopyValue(), member.WarningCount, member.Disabled,
                                      member.WarningExpirationDate.ToCopyValue(), member.FirstPostDate.ToCopyValue(),
                                      createDate, 0, createDate, 0, 0);
 
