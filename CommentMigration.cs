@@ -14,7 +14,7 @@ public class CommentMigration
                                                $"(\"{nameof(Comment.Id)}\",\"{nameof(Comment.BlogId)}\",\"{nameof(Comment.ParentId)}\",\"{nameof(Comment.Type)}\"" +
                                                $",\"{nameof(Comment.DonateJPoints)}\",\"{nameof(Comment.Level)}\",\"{nameof(Comment.Content)}\",\"{nameof(Comment.ReplyCount)}\"" +
                                                $",\"{nameof(Comment.LikeCount)}\",\"{nameof(Comment.TotalLikeCount)}\",\"{nameof(Comment.SortingIndex)}\",\"{nameof(Comment.Hierarchy)}\"" +
-                                               $",\"{nameof(Comment.Disabled)}\"" + Setting.COPY_ENTITY_SUFFIX;
+                                               $",\"{nameof(Comment.Disabled)}\",\"{nameof(Comment.LastEditDate)}\"" + Setting.COPY_ENTITY_SUFFIX;
 
     private const string QUERY_COMMENT_SQL = @"SELECT id AS BlogId, cid AS Id, message AS Content, status AS Disabled, dateline, authorid AS MemberId, author AS Author
                                                FROM pre_home_comment WHERE idtype = 'blogid' ORDER BY blogid,dateline";
@@ -73,6 +73,7 @@ public class CommentMigration
                               BlogId = blogId,
                               Type = CommentType.Comment,
                               Disabled = disabled,
+                              LastEditDate = createDate,
                               Author = new Member { DisplayName = authorName.Trim() },
                               CreatorId = memberId,
                               ModifierId = memberId,
@@ -129,7 +130,7 @@ public class CommentMigration
                     commentSb.AppendValueLine(blogComment.Id, blogComment.BlogId, blogComment.ParentId.ToCopyValue(), (int)blogComment.Type,
                                               blogComment.DonateJPoints, blogComment.Level, blogComment.Content.ToCopyText(), blogComment.ReplyCount,
                                               blogComment.LikeCount, blogComment.TotalLikeCount, blogComment.SortingIndex, blogComment.Hierarchy.ToCopyArray(),
-                                              blogComment.Disabled, blogComment.CreationDate, blogComment.CreatorId, blogComment.ModificationDate, blogComment.ModifierId, 0);
+                                              blogComment.Disabled,blogComment.LastEditDate.ToCopyValue(), blogComment.CreationDate, blogComment.CreatorId, blogComment.ModificationDate, blogComment.ModifierId, 0);
                 }
             }
 
