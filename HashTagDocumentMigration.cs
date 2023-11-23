@@ -6,19 +6,16 @@ using Npgsql;
 
 namespace JKTankDataMigration;
 
-public class HashTagDocumentMigration
+public class HashTagDocumentMigration(IElasticClient elasticClient)
 {
-    private readonly IElasticClient _elasticClient;
-    private readonly string _elasticIndex;
+    private readonly string _elasticIndex = ElasticHelper.GetHashtagIndex(Setting.LOOK_ES_INDEX);
 
-    private const string QUERY_LOOK_HASH_TAG_SQL = @"SELECT ""Id"",""Name"",""RelationBlogCount""
-                                                    FROM ""Hashtag""";
-
-    public HashTagDocumentMigration(IElasticClient elasticClient)
-    {
-        _elasticClient = elasticClient;
-        _elasticIndex = ElasticHelper.GetHashtagIndex(Setting.LOOK_ES_INDEX);
-    }
+    private const string QUERY_LOOK_HASH_TAG_SQL = $"""
+                                                   SELECT "{nameof(TempHashtagDocument.Id)}",
+                                                          "{nameof(TempHashtagDocument.Name)}",
+                                                          "{nameof(TempHashtagDocument.RelationBlogCount)}"
+                                                   FROM "Hashtag"
+                                                   """;
 
     public async Task MigrationAsync(CancellationToken cancellationToken = new())
     {
@@ -38,7 +35,7 @@ public class HashTagDocumentMigration
         var tempHashtagDic = documents.ToDictionary(x => x.Name, x => x.Id);
 
 
-        var response = await _elasticClient.BulkAsync(descriptor => descriptor.IndexMany(hashTagDocuments, (des, doc) => des.Index(_elasticIndex)
+        var response = await elasticClient.BulkAsync(descriptor => descriptor.IndexMany(hashTagDocuments, (des, doc) => des.Index(_elasticIndex)
                                                                                                                              .Id(tempHashtagDic[doc.Name])
                                                                                                                              .Document(doc)), cancellationToken);
 
