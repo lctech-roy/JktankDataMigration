@@ -1,76 +1,71 @@
 using Dapper;
 using JKTankDataMigration.Helpers;
-using Lctech.JKTank.Core.Domain.Documents;
+using Lctech.JKTank.Core.Domain.Entities;
 using Nest;
 using Netcorext.Extensions.Commons;
 using Npgsql;
+using Blog = Lctech.JKTank.Core.Domain.Documents.Blog;
 
 namespace JKTankDataMigration;
 
-public class BlogDocumentMigration
+public class BlogDocumentMigration(IElasticClient elasticClient)
 {
-    private readonly IElasticClient _elasticClient;
-    private readonly string _elasticIndex;
+    private readonly string _elasticIndex = ElasticHelper.GetBlogIndex(Setting.LOOK_ES_INDEX);
     private static readonly Dictionary<long, long[]> UserRoleDic = LookAuthHelper.GetLookAuthUserRoleDic();
     private static readonly Dictionary<long, long[]> BlogSpecialTagsDic = LookSpecialTagHelper.GetBlogSpecialTagsDic();
 
-    private const string QUERY_LOOK_BLOG_SQL = @"SELECT 
-                                                    b.""Id"",
-                                                    b.""Subject"",
-                                                    mbc.""Name"" AS Category,
-                                                    b.""Status"",
-                                                    m.""PrivacyType"",
-                                                    b.""VisibleType"",
-                                                    b.""Title"",
-                                                    b.""Content"",
-                                                    b.""Cover"",
-                                                    bs.""ObtainTotalJPoints"",
-                                                    bs.""CommentCount"",
-                                                    bs.""HotScore"",
-                                                    bs.""ViewCount"",
-                                                    bs.""DonateCount"",
-                                                    bs.""DonorCount"",
-                                                    bs.""PurchaseCount"",
-                                                    bs.""DonateJPoints"",
-                                                    bs.""PurchaseJPoints"",
-                                                    bs.""ActualDonateJPoints"",
-                                                    bs.""ActualPurchaseJPoints"",
-                                                    bs.""ActualObtainTotalJPoints"",
-                                                    bs.""ObtainTotalJPoints"",
-                                                    bs.""CommentCount"",
-                                                    bs.""ComeByReactCount"",
-                                                    bs.""AmazingReactCount"",
-                                                    bs.""ShakeHandsReactCount"",
-                                                    bs.""FlowerReactCount"",
-                                                    bs.""ConfuseReactCount"",
-                                                    bs.""TotalReactCount"",
-                                                    bs.""FavoriteCount"",
-                                                    bs.""ServiceScore"",
-                                                    bs.""AppearanceScore"",
-                                                    bs.""ConversationScore"",
-                                                    bs.""TidinessScore"",
-                                                    bs.""AverageScore"",
-                                                    b.""Hashtags"",
-                                                    b.""CreatorId"",
-                                                    m.""DisplayName"" AS CreatorName,
-                                                    b.""CreationDate"",
-                                                    b.""LastEditDate"",
-                                                    b.""MassageBlogId"",
-                                                    msb.""RegionId"" AS MassageBlogRegionId,
-                                                    msb.""RelationBlogCount"" AS MassageBlogRelationBlogCount,
-                                                    msb.""ExpirationDate"" AS MassageBlogExpirationDate,
-                                                    b.""Disabled""
-                                                    FROM ""Blog"" b
-                                                    LEFT JOIN ""BlogStatistic"" bs ON b.""Id"" = bs.""Id""
-                                                    LEFT JOIN ""MassageBlog"" msb ON b.""MassageBlogId"" = msb.""Id""
-                                                    LEFT JOIN ""Member"" m ON b.""CreatorId"" = m.""Id""
-                                                    LEFT JOIN ""MemberBlogCategory"" mbc ON b.""CategoryId"" = mbc.""Id""";
-
-    public BlogDocumentMigration(IElasticClient elasticClient)
-    {
-        _elasticClient = elasticClient;
-        _elasticIndex = ElasticHelper.GetBlogIndex(Setting.LOOK_ES_INDEX);
-    }
+    private const string QUERY_LOOK_BLOG_SQL = $"""
+                                               SELECT b."{nameof(TempBlogDocument.Id)}",
+                                                      b."{nameof(TempBlogDocument.Subject)}",
+                                                      mbc."{nameof(MemberBlogCategory.Name)}" AS {nameof(TempBlogDocument.Category)},
+                                                      b."{nameof(TempBlogDocument.Status)}",
+                                                      m."{nameof(TempBlogDocument.PrivacyType)}",
+                                                      b."{nameof(TempBlogDocument.VisibleType)}",
+                                                      b."{nameof(TempBlogDocument.Title)}",
+                                                      b."{nameof(TempBlogDocument.Content)}",
+                                                      b."{nameof(TempBlogDocument.Cover)}",
+                                                      bs."{nameof(TempBlogDocument.ObtainTotalJPoints)}",
+                                                      bs."{nameof(TempBlogDocument.CommentCount)}",
+                                                      bs."{nameof(TempBlogDocument.HotScore)}",
+                                                      bs."{nameof(TempBlogDocument.ViewCount)}",
+                                                      bs."{nameof(TempBlogDocument.DonateCount)}",
+                                                      bs."{nameof(TempBlogDocument.DonorCount)}",
+                                                      bs."{nameof(TempBlogDocument.PurchaseCount)}",
+                                                      bs."{nameof(TempBlogDocument.DonateJPoints)}",
+                                                      bs."{nameof(TempBlogDocument.PurchaseJPoints)}",
+                                                      bs."{nameof(TempBlogDocument.ActualDonateJPoints)}",
+                                                      bs."{nameof(TempBlogDocument.ActualPurchaseJPoints)}",
+                                                      bs."{nameof(TempBlogDocument.ActualObtainTotalJPoints)}",
+                                                      bs."{nameof(TempBlogDocument.ObtainTotalJPoints)}",
+                                                      bs."{nameof(TempBlogDocument.CommentCount)}",
+                                                      bs."{nameof(TempBlogDocument.ComeByReactCount)}",
+                                                      bs."{nameof(TempBlogDocument.AmazingReactCount)}",
+                                                      bs."{nameof(TempBlogDocument.ShakeHandsReactCount)}",
+                                                      bs."{nameof(TempBlogDocument.FlowerReactCount)}",
+                                                      bs."{nameof(TempBlogDocument.ConfuseReactCount)}",
+                                                      bs."{nameof(TempBlogDocument.TotalReactCount)}",
+                                                      bs."{nameof(TempBlogDocument.FavoriteCount)}",
+                                                      b."{nameof(TempBlogDocument.ServiceScore)}",
+                                                      b."{nameof(TempBlogDocument.AppearanceScore)}",
+                                                      b."{nameof(TempBlogDocument.ConversationScore)}",
+                                                      b."{nameof(TempBlogDocument.TidinessScore)}",
+                                                      b."{nameof(TempBlogDocument.AverageScore)}",
+                                                      b."{nameof(TempBlogDocument.Hashtags)}",
+                                                      b."{nameof(TempBlogDocument.CreatorId)}",
+                                                      m."{nameof(Member.DisplayName)}" AS {nameof(TempBlogDocument.CreatorName)},
+                                                      b."{nameof(TempBlogDocument.CreationDate)}",
+                                                      b."{nameof(TempBlogDocument.LastEditDate)}",
+                                                      b."{nameof(TempBlogDocument.MassageBlogId)}",
+                                                      msb."{nameof(MassageBlog.RegionId)}" AS {nameof(TempBlogDocument.MassageBlogRegionId)},
+                                                      msb."{nameof(MassageBlog.RelationBlogCount)}" AS {nameof(TempBlogDocument.MassageBlogRelationBlogCount)},
+                                                      msb."{nameof(MassageBlog.ExpirationDate)}" AS {nameof(TempBlogDocument.MassageBlogExpirationDate)},
+                                                      b."{nameof(TempBlogDocument.Disabled)}"
+                                                      FROM "Blog" b
+                                                      LEFT JOIN "BlogStatistic" bs ON b."Id" = bs."Id"
+                                                      LEFT JOIN "MassageBlog" msb ON b."MassageBlogId" = msb."Id"
+                                                      LEFT JOIN "Member" m ON b."CreatorId" = m."Id"
+                                                      LEFT JOIN "MemberBlogCategory" mbc ON b."CategoryId" = mbc."Id"
+                                               """;
 
     public async Task MigrationAsync(CancellationToken cancellationToken = new())
     {
@@ -91,9 +86,9 @@ public class BlogDocumentMigration
 
         if (!deleteDocuments.IsEmpty())
         {
-            var deleteRep = await _elasticClient.BulkAsync(descriptor => descriptor
-                                                              .DeleteMany(deleteDocuments, (des, doc) => des.Index(_elasticIndex)
-                                                                                                            .Id(doc.Id)), cancellationToken);
+            var deleteRep = await elasticClient.BulkAsync(descriptor => descriptor
+                                                             .DeleteMany(deleteDocuments, (des, doc) => des.Index(_elasticIndex)
+                                                                                                           .Id(doc.Id)), cancellationToken);
 
             if (!deleteRep.IsValid && deleteRep.OriginalException is not null)
             {
@@ -123,7 +118,7 @@ public class BlogDocumentMigration
         {
             await CommonHelper.WatchTimeAsync
                 (
-                 $"{nameof(_elasticClient.BulkAsync)}({Setting.LOOK_ES_BATCH_SIZE}) offset:{offset}",
+                 $"{nameof(elasticClient.BulkAsync)}({Setting.LOOK_ES_BATCH_SIZE}) offset:{offset}",
                  async () =>
                  {
                      var length = offset + Setting.LOOK_ES_BATCH_SIZE;
@@ -131,16 +126,16 @@ public class BlogDocumentMigration
                      if (length > updateDocuments.Length)
                          length = updateDocuments.Length;
 
-                     var response = await _elasticClient.BulkAsync(descriptor => descriptor.IndexMany(updateDocuments[offset..length],
-                                                                                                         (des, doc) => des.Index(_elasticIndex)
-                                                                                                                          .Id(doc.Id)
-                                                                                                                          .Document(doc)), cancellationToken);
-                     
+                     var response = await elasticClient.BulkAsync(descriptor => descriptor.IndexMany(updateDocuments[offset..length],
+                                                                                                     (des, doc) => des.Index(_elasticIndex)
+                                                                                                                      .Id(doc.Id)
+                                                                                                                      .Document(doc)), cancellationToken);
+
                      if (!response.IsValid && response.OriginalException is not null)
                      {
                          throw response.OriginalException;
                      }
-                     
+
                      offset += Setting.LOOK_ES_BATCH_SIZE;
                  });
         }
