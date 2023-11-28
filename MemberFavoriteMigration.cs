@@ -8,6 +8,9 @@ namespace JKTankDataMigration;
 
 public class MemberFavoriteMigration
 {
+    private static readonly HashSet<long> MemberIdHash = LookMemberHelper.GetLookMemberIdHash();
+    private static readonly HashSet<long> BlogIdHash = LookHelper.GetLookBlogIdHash();
+
     private const string COPY_MEMBER_FAVORITE_PREFIX = $"COPY \"{nameof(MemberFavorite)}\" " +
                                                        $"(\"{nameof(MemberFavorite.Id)}\",\"{nameof(MemberFavorite.BlogId)}\"" + Setting.COPY_ENTITY_SUFFIX;
 
@@ -23,8 +26,6 @@ public class MemberFavoriteMigration
 
         var memberFavoriteSb = new StringBuilder();
 
-        var blogIdHash = BlogHelper.GetBlogIdHash();
-
         await using var conn = new MySqlConnection(Setting.OLD_FORUM_CONNECTION);
 
         await conn.OpenAsync(cancellationToken);
@@ -34,21 +35,24 @@ public class MemberFavoriteMigration
         var reader = await command.ExecuteReaderAsync(cancellationToken);
 
         var distinctHash = new HashSet<(long, long)>();
-        
+
         while (await reader.ReadAsync(cancellationToken))
         {
             var blogId = reader.GetInt64(1);
 
-            if (!blogIdHash.Contains(blogId))
+            if (!BlogIdHash.Contains(blogId))
                 continue;
 
             var memberId = reader.GetInt64(0);
-            
-            if(distinctHash.Contains((memberId,blogId)))
+
+            if (!MemberIdHash.Contains(memberId))
+                continue;
+
+            if (distinctHash.Contains((memberId, blogId)))
                 continue;
 
             distinctHash.Add((memberId, blogId));
-            
+
             var dateLine = reader.GetInt64(2);
 
             var createDate = DateTimeOffset.FromUnixTimeSeconds(dateLine);

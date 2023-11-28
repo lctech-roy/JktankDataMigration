@@ -1,6 +1,8 @@
 using System.Runtime.CompilerServices;
+using Dapper;
 using JKTankDataMigration.Models;
 using Microsoft.EntityFrameworkCore;
+using MySql.Data.MySqlClient;
 
 namespace JKTankDataMigration.Helpers;
 
@@ -17,16 +19,14 @@ public class PagingHelper
                                  ) ranked 
                              WHERE rownum % {limit} = 1";
 
-        var fSql = FormattableStringFactory.Create(sql);
-
         var ids = CommonHelper.WatchTime(nameof(GetPagingFirstIds)
                                        , () =>
                                          {
-                                             var options = new DbContextOptionsBuilder<DbContext>().UseMySql(Setting.OLD_FORUM_CONNECTION, ServerVersion.AutoDetect(Setting.OLD_FORUM_CONNECTION)).Options;
+                                             using var conn = new MySqlConnection(Setting.OLD_FORUM_CONNECTION);
 
-                                             using var ctx = new DbContext(options);
+                                             conn.Open();
 
-                                             return ctx.Database.SqlQuery<long>(fSql).ToArray();
+                                             return conn.Query<long>(sql, new { row = 0 }).ToArray();
                                          });
 
         return ids;

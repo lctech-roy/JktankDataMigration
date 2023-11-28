@@ -2,6 +2,7 @@ using System.Text;
 using System.Web;
 using Dapper;
 using JKTankDataMigration.Extensions;
+using JKTankDataMigration.Helpers;
 using JKTankDataMigration.Models;
 using Lctech.JKTank.Core.Domain.Entities;
 using MySql.Data.MySqlClient;
@@ -15,7 +16,8 @@ public class MemberBlogCategoryMigration
                                                   + Setting.COPY_ENTITY_SUFFIX;
 
     private const string QUERY_BLOG_CLASS_SQL = $@"SELECT classid as {nameof(MemberBlogCategory.Id)}, classname AS '{nameof(MemberBlogCategory.Name)}', uid as {nameof(MemberBlogCategory.MemberId)},dateline FROM pre_home_class";
-
+    
+    private static readonly HashSet<long> MemberIdHash = LookMemberHelper.GetLookMemberIdHash();
     public void Migration()
     {
         OldMemberBlogCategory[] oldMemberBlogCategories;
@@ -32,6 +34,9 @@ public class MemberBlogCategoryMigration
         {
             var memberId = memberBlogCategory.MemberId;
 
+            if(!MemberIdHash.Contains(memberId))
+                continue;
+            
             if (!memberCategoryDic.ContainsKey(memberBlogCategory.MemberId))
             {
                 memberCategoryDic.Add(memberBlogCategory.MemberId, (1, new List<(string name, int count)> { (memberBlogCategory.Name, 1) }));

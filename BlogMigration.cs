@@ -19,6 +19,8 @@ public class BlogMigration
 {
     private static readonly HashSet<long> ProhibitMemberIdHash = MemberHelper.GetProhibitMemberIdHash();
     private static readonly HashSet<long> LifeStyleMemberHash = MemberHelper.GetLifeStyleMemberHash();
+    private static readonly HashSet<long> MemberIdHash = LookMemberHelper.GetLookMemberIdHash();
+
     private HashSet<long>? _massageArticleIdHash;
 
     private const int LIMIT = 20000;
@@ -70,9 +72,8 @@ public class BlogMigration
                                                           b.uid AS {nameof(OldBlog.Uid)}, b.dateline AS {nameof(OldBlog.DateLine)}
                                                           FROM pre_home_blog b
                                                           LEFT JOIN pre_home_blogfield bf ON b.blogid = bf.blogid
-                                                          WHERE b.blogid >= @Id{(Setting.TestBlogId.HasValue ? ($" AND b.blogid = {Setting.TestBlogId}") : "")}
                                                           ORDER BY b.blogid
-                                                          LIMIT {LIMIT}
+                                                          LIMIT {LIMIT} OFFSET @Offset 
                                                    """;
 
     private static readonly ConcurrentDictionary<string, int> HashTagCountDic = new();
@@ -98,40 +99,81 @@ public class BlogMigration
                                    ATTACHMENT_PATH, ATTACHMENT_EXTEND_DATA_PATH, HASH_TAG_PATH, MASSAGE_BLOG_PATH
                                });
 
-        var firstIds = Setting.TestBlogId.HasValue ? new long[] { 0 } : PagingHelper.GetPagingFirstIds("pre_home_blog", "blogid", LIMIT);
+        // var firstIds = Setting.TestBlogId.HasValue ? new long[] { 0 } : PagingHelper.GetPagingFirstIds("pre_home_blog", "blogid", LIMIT);
 
-        await Parallel.ForEachAsync(firstIds,
-                                    CommonHelper.GetParallelOptions(cancellationToken),
-                                    async (id, token) =>
-                                    {
-                                        await Policy
+        await Policy
 
-                                              // 1. 處理甚麼樣的例外
-                                             .Handle<EndOfStreamException>()
-                                             .Or<ArgumentOutOfRangeException>()
+              // 1. 處理甚麼樣的例外
+             .Handle<EndOfStreamException>()
+             .Or<ArgumentOutOfRangeException>()
 
-                                              // 2. 重試策略，包含重試次數
-                                             .RetryAsync(5, (ex, retryCount) =>
-                                                            {
-                                                                Console.WriteLine($"發生錯誤：{ex.Message}，第 {retryCount} 次重試");
-                                                                Thread.Sleep(3000);
-                                                            })
+              // 2. 重試策略，包含重試次數
+             .RetryAsync(5, (ex, retryCount) =>
+                            {
+                                Console.WriteLine($"發生錯誤：{ex.Message}，第 {retryCount} 次重試");
+                                Thread.Sleep(3000);
+                            })
 
-                                              // 3. 執行內容
-                                             .ExecuteAsync(async () =>
-                                                           {
-                                                               await using var conn = new MySqlConnection(Setting.OLD_FORUM_CONNECTION);
+              // 3. 執行內容
+             .ExecuteAsync(async () =>
+                           {
+                               var hasNextRow = true;
+                               var offset = 0;
 
-                                                               await conn.OpenAsync(cancellationToken);
+                               while (hasNextRow)
+                               {
+                                   await using var conn = new MySqlConnection(Setting.OLD_FORUM_CONNECTION);
 
-                                                               var oldBlogs = conn.Query<OldBlog>(QueryBlogSql, new { Id = id }).ToArray();
+                                   await conn.OpenAsync(cancellationToken);
 
-                                                               if (oldBlogs.Length == 0)
-                                                                   return;
+                                   var oldBlogs = conn.Query<OldBlog>(QueryBlogSql, new { Offset = offset }).ToArray();
 
-                                                               Execute(oldBlogs);
-                                                           });
-                                    });
+                                   if (oldBlogs.Length == 0)
+                                   {
+                                       hasNextRow = false;
+
+                                       continue;
+                                   }
+
+                                   Execute(oldBlogs);
+
+                                   offset += LIMIT;
+                               }
+                           });
+
+
+        // await Parallel.ForEachAsync(firstIds,
+        //                             CommonHelper.GetParallelOptions(cancellationToken),
+        //                             async (id, token) =>
+        //                             {
+        //                                 await Policy
+        //
+        //                                       // 1. 處理甚麼樣的例外
+        //                                      .Handle<EndOfStreamException>()
+        //                                      .Or<ArgumentOutOfRangeException>()
+        //
+        //                                       // 2. 重試策略，包含重試次數
+        //                                      .RetryAsync(5, (ex, retryCount) =>
+        //                                                     {
+        //                                                         Console.WriteLine($"發生錯誤：{ex.Message}，第 {retryCount} 次重試");
+        //                                                         Thread.Sleep(3000);
+        //                                                     })
+        //
+        //                                       // 3. 執行內容
+        //                                      .ExecuteAsync(async () =>
+        //                                                    {
+        //                                                        await using var conn = new MySqlConnection(Setting.OLD_FORUM_CONNECTION);
+        //
+        //                                                        await conn.OpenAsync(cancellationToken);
+        //
+        //                                                        var oldBlogs = conn.Query<OldBlog>(QueryBlogSql, new { Id = id }).ToArray();
+        //
+        //                                                        if (oldBlogs.Length == 0)
+        //                                                            return;
+        //
+        //                                                        Execute(oldBlogs);
+        //                                                    });
+        //                             });
 
 
         if (!HashTagCountDic.IsEmpty)
@@ -179,6 +221,9 @@ public class BlogMigration
 
         foreach (var oldBlog in oldBlogs)
         {
+            if (!MemberIdHash.Contains(oldBlog.Uid))
+                continue;
+
             var createDate = DateTimeOffset.FromUnixTimeSeconds(oldBlog.DateLine);
             var memberId = oldBlog.Uid;
             var blogId = oldBlog.Id;
@@ -290,9 +335,9 @@ public class BlogMigration
 
             content = RegexHelper.FontSizeRegex.Replace(content, match =>
                                                                  {
-                                                                     if(match.Groups[RegexHelper.SIZE_GROUP].Length == 0)
+                                                                     if (match.Groups[RegexHelper.SIZE_GROUP].Length == 0)
                                                                          return match.Value;
-                                                                     
+
                                                                      TryParse(match.Groups[RegexHelper.SIZE_GROUP].Value, out var fontSize);
 
                                                                      var newFontSize = RegexHelper.FontSizeDic.GetValueOrDefault(fontSize, "1.87em");

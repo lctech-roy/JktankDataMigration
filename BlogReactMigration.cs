@@ -9,6 +9,8 @@ namespace JKTankDataMigration;
 
 public class BlogReactMigration
 {
+    private static readonly HashSet<long> BlogIdHash = LookHelper.GetLookBlogIdHash();
+    
     private const string COPY_BLOG_REACT_PREFIX = $"COPY \"{nameof(BlogReact)}\" " +
                                                   $"(\"{nameof(BlogReact.Id)}\",\"{nameof(BlogReact.Type)}\"" +
                                                   Setting.COPY_ENTITY_SUFFIX;
@@ -23,8 +25,6 @@ public class BlogReactMigration
         FileHelper.RemoveFiles(new[] { BLOG_REACT_PATH });
 
         var blogReactSb = new StringBuilder();
-
-        var blogIdHash = BlogHelper.GetBlogIdHash();
         
         await using var conn = new MySqlConnection(Setting.OLD_FORUM_CONNECTION);
 
@@ -41,7 +41,7 @@ public class BlogReactMigration
             var memberId = reader.GetInt64(0);
             var id = reader.GetInt64(1);
             
-            if(!blogIdHash.Contains(id))
+            if(!BlogIdHash.Contains(id))
                 continue;
             
             if(distinctHash.Contains((id,memberId)))
