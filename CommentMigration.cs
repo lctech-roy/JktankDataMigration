@@ -17,7 +17,7 @@ public class CommentMigration
                                                $",\"{nameof(Comment.Disabled)}\",\"{nameof(Comment.LastEditDate)}\"" + Setting.COPY_ENTITY_SUFFIX;
 
     private const string QUERY_COMMENT_SQL = @"SELECT id AS BlogId, cid AS Id, message AS Content, status AS Disabled, dateline, authorid AS MemberId, author AS Author
-                                               FROM pre_home_comment WHERE idtype = 'blogid' ORDER BY blogid,dateline";
+                                               FROM pre_home_comment WHERE idtype = 'blogid' ORDER BY blogid,dateline"; //AND id = 1274140 
 
     //test Id => 9522,279968
     private const string COMMENT_PATH = $"{Setting.INSERT_DATA_PATH}/{nameof(Comment)}";
@@ -80,11 +80,11 @@ public class CommentMigration
                               CreationDate = createDate,
                               ModificationDate = createDate
                           };
-            
+
             var matches = RegexHelper.CommentReplyRegex.Matches(content);
 
             var matchReply = matches.FirstOrDefault();
-            
+
             if (matchReply != null)
             {
                 var author = matchReply.Groups[RegexHelper.AUTHOR_GROUP].Value.Trim();
@@ -126,11 +126,13 @@ public class CommentMigration
                 {
                     blogComment.Content = ReplaceImageSmiley(blogComment.Content);
                     blogComment.Content = ReplaceImageSrcToUrl(blogComment.Content);
+                    blogComment.Content = ReplaceHref(blogComment.Content);
+                    blogComment.Content = ReplaceHtml(blogComment.Content);
 
                     commentSb.AppendValueLine(blogComment.Id, blogComment.BlogId, blogComment.ParentId.ToCopyValue(), (int)blogComment.Type,
                                               blogComment.DonateJPoints, blogComment.Level, blogComment.Content.ToCopyText(), blogComment.ReplyCount,
                                               blogComment.LikeCount, blogComment.TotalLikeCount, blogComment.SortingIndex, blogComment.Hierarchy.ToCopyArray(),
-                                              blogComment.Disabled,blogComment.LastEditDate.ToCopyValue(), blogComment.CreationDate, blogComment.CreatorId, blogComment.ModificationDate, blogComment.ModifierId, 0);
+                                              blogComment.Disabled, blogComment.LastEditDate.ToCopyValue(), blogComment.CreationDate, blogComment.CreatorId, blogComment.ModificationDate, blogComment.ModifierId, 0);
                 }
             }
 
@@ -173,10 +175,25 @@ public class CommentMigration
         {
             return RegexHelper.ImgSrcUrlPattern.Replace(content, innerMatch =>
                                                                  {
-                                                                     var result = innerMatch.Groups[RegexHelper.URL_GROUP].Value;
+                                                                     var url = innerMatch.Groups[RegexHelper.URL_GROUP].Value;
 
-                                                                     return result;
+                                                                     return $"[url={url}]{url}[/url]";
                                                                  });
+        }
+
+        string ReplaceHtml(string content)
+        {
+            return RegexHelper.HtmlRegex.Replace(content, _ => string.Empty);
+        }
+
+        string ReplaceHref(string content)
+        {
+            return RegexHelper.HrefRegex.Replace(content, innerMatch =>
+                                                          {
+                                                              var url = innerMatch.Groups[RegexHelper.URL_GROUP].Value;
+
+                                                              return $"[url={url}]{url}[/url]";
+                                                          });
         }
     }
 }

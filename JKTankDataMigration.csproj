@@ -19,13 +19,13 @@
   <ItemGroup>
     <PackageReference Include="Dapper" Version="2.0.123" />
     <PackageReference Include="Microsoft.VisualStudio.Threading" Version="16.9.60" />
-    <PackageReference Include="MySql.EntityFrameworkCore" Version="7.0.2" />
+    <PackageReference Include="MySql.EntityFrameworkCore" Version="7.0.*" />
     <PackageReference Include="MySqlConnector" Version="2.2.5" />
     <PackageReference Include="Netcorext.Algorithms.Snowflake" Version="1.0.0" />
     <PackageReference Include="Netcorext.Extensions.Hash" Version="1.0.0" />
     <PackageReference Include="Npgsql" Version="8.0.*" />
     <PackageReference Include="Polly" Version="7.2.3" />
-    <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="7.0.0" />
+    <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="7.0.*" />
     <PackageReference Include="Slapper.AutoMapper" Version="2.0.5" />
     <PackageReference Include="Netcorext.Extensions.Linq" Version="1.0.1-dev.*" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.*" />

@@ -9,6 +9,7 @@ using Lctech.Attachment.Core.Domain.Entities;
 using Lctech.JKTank.Core.Domain.Entities;
 using Lctech.JKTank.Core.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
+using MySql.Data.MySqlClient;
 using Polly;
 using static System.Int32;
 
@@ -60,18 +61,19 @@ public class BlogMigration
                                                     $",\"{nameof(MassageBlog.Title)}\",\"{nameof(MassageBlog.Description)}\",\"{nameof(MassageBlog.CoverId)}\"" +
                                                     Setting.COPY_ENTITY_SUFFIX;
 
-    private static readonly string QueryBlogSql = @$"SELECT 
-                                            b.blogid AS {nameof(OldBlog.Id)}, b.subject AS {nameof(OldBlog.Title)} ,b.classid AS {nameof(OldBlog.CategoryId)}, status AS {nameof(OldBlog.IsReview)}, 
-                                            friend AS {nameof(OldBlog.OldVisibleType)}, bf.message AS {nameof(OldBlog.OldContent)}, 
-                                            bf.tag as {nameof(OldBlog.OldTags)}, b.viewnum AS {nameof(OldBlog.ViewCount)}, b.favtimes AS {nameof(OldBlog.FavoriteCount)}, 
-                                            b.replynum AS {nameof(OldBlog.CommentCount)}, b.click1 AS {nameof(OldBlog.ComeByReactCount)}, b.click2 AS {nameof(OldBlog.AmazingReactCount)}, 
-                                            b.click3 AS {nameof(OldBlog.ShakeHandsReactCount)}, b.click4 AS {nameof(OldBlog.FlowerReactCount)}, b.click5 AS {nameof(OldBlog.ConfuseReactCount)},
-                                            b.uid AS {nameof(OldBlog.Uid)}, b.dateline AS {nameof(OldBlog.DateLine)}
-                                            FROM pre_home_blog b
-                                            LEFT JOIN pre_home_blogfield bf ON b.blogid = bf.blogid
-                                            WHERE b.blogid >= @Id{(Setting.TestBlogId.HasValue ? ($" AND b.blogid = {Setting.TestBlogId}") : "")}
-                                            ORDER BY b.blogid
-                                            LIMIT {LIMIT}";
+    private static readonly string QueryBlogSql = $"""
+                                                   SELECT b.blogid AS {nameof(OldBlog.Id)}, b.subject AS {nameof(OldBlog.Title)} ,b.classid AS {nameof(OldBlog.CategoryId)}, status AS {nameof(OldBlog.IsReview)},
+                                                          friend AS {nameof(OldBlog.OldVisibleType)}, bf.message AS {nameof(OldBlog.OldContent)},
+                                                          bf.tag as {nameof(OldBlog.OldTags)}, b.viewnum AS {nameof(OldBlog.ViewCount)}, b.favtimes AS {nameof(OldBlog.FavoriteCount)},
+                                                          b.replynum AS {nameof(OldBlog.CommentCount)}, b.click1 AS {nameof(OldBlog.ComeByReactCount)}, b.click2 AS {nameof(OldBlog.AmazingReactCount)},
+                                                          b.click3 AS {nameof(OldBlog.ShakeHandsReactCount)}, b.click4 AS {nameof(OldBlog.FlowerReactCount)}, b.click5 AS {nameof(OldBlog.ConfuseReactCount)},
+                                                          b.uid AS {nameof(OldBlog.Uid)}, b.dateline AS {nameof(OldBlog.DateLine)}
+                                                          FROM pre_home_blog b
+                                                          LEFT JOIN pre_home_blogfield bf ON b.blogid = bf.blogid
+                                                          WHERE b.blogid >= @Id{(Setting.TestBlogId.HasValue ? ($" AND b.blogid = {Setting.TestBlogId}") : "")}
+                                                          ORDER BY b.blogid
+                                                          LIMIT {LIMIT}
+                                                   """;
 
     private static readonly ConcurrentDictionary<string, int> HashTagCountDic = new();
     private static readonly ConcurrentDictionary<long, int> MassageBlogCountDic = new();
@@ -118,14 +120,13 @@ public class BlogMigration
                                               // 3. 執行內容
                                              .ExecuteAsync(async () =>
                                                            {
-                                                               var options = new DbContextOptionsBuilder<DbContext>().UseMySql(Setting.OLD_FORUM_CONNECTION, ServerVersion.AutoDetect(Setting.OLD_FORUM_CONNECTION)).Options;
+                                                               await using var conn = new MySqlConnection(Setting.OLD_FORUM_CONNECTION);
 
-                                                               await using var ctx = new DbContext(options);
+                                                               await conn.OpenAsync(cancellationToken);
 
-                                                               var command = new CommandDefinition(QueryBlogSql, new { id }, cancellationToken: token);
-                                                               var oldBlogs = (await ctx.Database.GetDbConnection().QueryAsync<OldBlog>(command)).ToArray();
+                                                               var oldBlogs = conn.Query<OldBlog>(QueryBlogSql, new { Id = id }).ToArray();
 
-                                                               if (!oldBlogs.Any())
+                                                               if (oldBlogs.Length == 0)
                                                                    return;
 
                                                                Execute(oldBlogs);
@@ -133,7 +134,7 @@ public class BlogMigration
                                     });
 
 
-        if (HashTagCountDic.Any())
+        if (!HashTagCountDic.IsEmpty)
         {
             var dateNow = DateTimeOffset.UtcNow;
             var hashTagSb = new StringBuilder();
@@ -148,7 +149,7 @@ public class BlogMigration
             FileHelper.WriteToFile($"{Setting.INSERT_DATA_PATH}", $"{nameof(Hashtag)}.sql", COPY_HASH_TAG_PREFIX, hashTagSb);
         }
 
-        if (MassageBlogCountDic.Any())
+        if (!MassageBlogCountDic.IsEmpty)
         {
             var massageBlogs = MassageHelper.QueryBlogMassages(MassageBlogCountDic.Keys);
             var massageBlogSb = new StringBuilder();
@@ -193,7 +194,7 @@ public class BlogMigration
 
                                                                       return emoji;
                                                                   });
-            
+
             var matchCount = 0;
             long? coverId = null;
 
@@ -287,13 +288,26 @@ public class BlogMigration
                                                                   return $"[url={url}]{url}[/url]";
                                                               });
 
-            content = RegexHelper.FontSizeRegex.Replace(content, innerMatch =>
+            content = RegexHelper.FontSizeRegex.Replace(content, match =>
                                                                  {
-                                                                     TryParse(innerMatch.Groups[RegexHelper.SIZE_GROUP].Value, out var fontSize);
+                                                                     if(match.Groups[RegexHelper.SIZE_GROUP].Length == 0)
+                                                                         return match.Value;
+                                                                     
+                                                                     TryParse(match.Groups[RegexHelper.SIZE_GROUP].Value, out var fontSize);
 
                                                                      var newFontSize = RegexHelper.FontSizeDic.GetValueOrDefault(fontSize, "1.87em");
 
-                                                                     return innerMatch.Groups[1].Value + newFontSize + innerMatch.Groups[2].Value;
+                                                                     var fontSizeStr = $"font-size:{newFontSize};";
+
+                                                                     if (!RegexHelper.StyleRegex.IsMatch(match.Value))
+                                                                         return $"""{match.Groups[RegexHelper.START_GROUP].Value} style="{fontSizeStr}"{match.Groups[RegexHelper.END_GROUP].Value}""";
+
+                                                                     var removeSizeStr = match.Groups[RegexHelper.START_GROUP].Value + match.Groups[RegexHelper.END_GROUP].Value;
+
+                                                                     var finalStr = RegexHelper.StyleRegex.Replace(removeSizeStr, innerMatch =>
+                                                                                                                                      $"""{innerMatch.Groups[RegexHelper.START_GROUP].Value}{fontSizeStr}{innerMatch.Groups[RegexHelper.STYLE_GROUP].Value}{innerMatch.Groups[RegexHelper.END_GROUP].Value}""");
+
+                                                                     return finalStr;
                                                                  });
 
             content = RegexHelper.FontFaceRegex.Replace(content, innerMatch => innerMatch.Groups[1].Value + innerMatch.Groups[2].Value);
