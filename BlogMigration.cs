@@ -1,4 +1,5 @@
 using System.Collections.Concurrent;
+using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
 using Dapper;
@@ -8,7 +9,6 @@ using JKTankDataMigration.Models;
 using Lctech.Attachment.Core.Domain.Entities;
 using Lctech.JKTank.Core.Domain.Entities;
 using Lctech.JKTank.Core.Domain.Enums;
-using Microsoft.EntityFrameworkCore;
 using MySql.Data.MySqlClient;
 using Polly;
 using static System.Int32;
@@ -64,17 +64,18 @@ public class BlogMigration
                                                     Setting.COPY_ENTITY_SUFFIX;
 
     private static readonly string QueryBlogSql = $"""
-                                                   SELECT b.blogid AS {nameof(OldBlog.Id)}, b.subject AS {nameof(OldBlog.Title)} ,b.classid AS {nameof(OldBlog.CategoryId)}, status AS {nameof(OldBlog.IsReview)},
-                                                          friend AS {nameof(OldBlog.OldVisibleType)}, bf.message AS {nameof(OldBlog.OldContent)},
-                                                          bf.tag as {nameof(OldBlog.OldTags)}, b.viewnum AS {nameof(OldBlog.ViewCount)}, b.favtimes AS {nameof(OldBlog.FavoriteCount)},
-                                                          b.replynum AS {nameof(OldBlog.CommentCount)}, b.click1 AS {nameof(OldBlog.ComeByReactCount)}, b.click2 AS {nameof(OldBlog.AmazingReactCount)},
-                                                          b.click3 AS {nameof(OldBlog.ShakeHandsReactCount)}, b.click4 AS {nameof(OldBlog.FlowerReactCount)}, b.click5 AS {nameof(OldBlog.ConfuseReactCount)},
-                                                          b.uid AS {nameof(OldBlog.Uid)}, b.dateline AS {nameof(OldBlog.DateLine)}
-                                                          FROM pre_home_blog b
-                                                          LEFT JOIN pre_home_blogfield bf ON b.blogid = bf.blogid
-                                                          ORDER BY b.blogid
-                                                          LIMIT {LIMIT} OFFSET @Offset 
-                                                   """;
+                                                    SELECT b.blogid AS {nameof(OldBlog.Id)}, b.subject AS {nameof(OldBlog.Title)} ,b.classid AS {nameof(OldBlog.CategoryId)}, status AS {nameof(OldBlog.IsReview)},
+                                                           friend AS {nameof(OldBlog.OldVisibleType)}, bf.message AS {nameof(OldBlog.OldContent)},
+                                                           bf.tag as {nameof(OldBlog.OldTags)}, b.viewnum AS {nameof(OldBlog.ViewCount)}, b.favtimes AS {nameof(OldBlog.FavoriteCount)},
+                                                           b.replynum AS {nameof(OldBlog.CommentCount)}, b.click1 AS {nameof(OldBlog.ComeByReactCount)}, b.click2 AS {nameof(OldBlog.AmazingReactCount)},
+                                                           b.click3 AS {nameof(OldBlog.ShakeHandsReactCount)}, b.click4 AS {nameof(OldBlog.FlowerReactCount)}, b.click5 AS {nameof(OldBlog.ConfuseReactCount)},
+                                                           b.uid AS {nameof(OldBlog.Uid)}, b.dateline AS {nameof(OldBlog.DateLine)}
+                                                           FROM pre_home_blog b
+                                                           LEFT JOIN pre_home_blogfield bf ON b.blogid = bf.blogid
+                                                           {(Setting.TestBlogId.HasValue ? ($"WHERE b.blogid = {Setting.TestBlogId}") : "")}
+                                                           ORDER BY b.blogid
+                                                           LIMIT {LIMIT} OFFSET @Offset 
+                                                    """;
 
     private static readonly ConcurrentDictionary<string, int> HashTagCountDic = new();
     private static readonly ConcurrentDictionary<long, int> MassageBlogCountDic = new();
@@ -91,6 +92,8 @@ public class BlogMigration
 
     public async Task MigrationAsync(CancellationToken cancellationToken)
     {
+        var sql = QueryBlogSql;
+        
         _massageArticleIdHash = !Setting.TestBlogId.HasValue ? MassageHelper.GetMassageArticleIdHash(null) : null;
 
         FileHelper.RemoveFiles(new[]
@@ -98,8 +101,6 @@ public class BlogMigration
                                    BLOG_PATH, BLOG_STATISTIC_PATH, BLOG_MEDIA_PATH,
                                    ATTACHMENT_PATH, ATTACHMENT_EXTEND_DATA_PATH, HASH_TAG_PATH, MASSAGE_BLOG_PATH
                                });
-
-        // var firstIds = Setting.TestBlogId.HasValue ? new long[] { 0 } : PagingHelper.GetPagingFirstIds("pre_home_blog", "blogid", LIMIT);
 
         await Policy
 
@@ -140,41 +141,6 @@ public class BlogMigration
                                    offset += LIMIT;
                                }
                            });
-
-
-        // await Parallel.ForEachAsync(firstIds,
-        //                             CommonHelper.GetParallelOptions(cancellationToken),
-        //                             async (id, token) =>
-        //                             {
-        //                                 await Policy
-        //
-        //                                       // 1. 處理甚麼樣的例外
-        //                                      .Handle<EndOfStreamException>()
-        //                                      .Or<ArgumentOutOfRangeException>()
-        //
-        //                                       // 2. 重試策略，包含重試次數
-        //                                      .RetryAsync(5, (ex, retryCount) =>
-        //                                                     {
-        //                                                         Console.WriteLine($"發生錯誤：{ex.Message}，第 {retryCount} 次重試");
-        //                                                         Thread.Sleep(3000);
-        //                                                     })
-        //
-        //                                       // 3. 執行內容
-        //                                      .ExecuteAsync(async () =>
-        //                                                    {
-        //                                                        await using var conn = new MySqlConnection(Setting.OLD_FORUM_CONNECTION);
-        //
-        //                                                        await conn.OpenAsync(cancellationToken);
-        //
-        //                                                        var oldBlogs = conn.Query<OldBlog>(QueryBlogSql, new { Id = id }).ToArray();
-        //
-        //                                                        if (oldBlogs.Length == 0)
-        //                                                            return;
-        //
-        //                                                        Execute(oldBlogs);
-        //                                                    });
-        //                             });
-
 
         if (!HashTagCountDic.IsEmpty)
         {
@@ -393,7 +359,7 @@ public class BlogMigration
                                              1 => VisibleType.Friend,
                                              _ => VisibleType.OnlyMe
                                          },
-                           Title = oldBlog.Title,
+                           Title =  ToDecodeTitle(oldBlog.Title),
                            IsPinned = false,
                            Content = content,
                            Cover = coverId,
@@ -488,5 +454,10 @@ public class BlogMigration
         }
 
         return tags.ToArray();
+    }
+    
+    private static string ToDecodeTitle(string title)
+    {
+        return !string.IsNullOrEmpty(title) ? WebUtility.HtmlDecode(title) : title;
     }
 }
