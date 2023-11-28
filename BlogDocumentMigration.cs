@@ -69,6 +69,16 @@ public class BlogDocumentMigration(IElasticClient elasticClient)
 
     public async Task MigrationAsync(CancellationToken cancellationToken = new())
     {
+        var deleteResponse = await elasticClient.DeleteByQueryAsync(new DeleteByQueryRequest(_elasticIndex)
+                                                                    {
+                                                                        Query = new MatchAllQuery()
+                                                                    }, cancellationToken);
+        
+        if (!deleteResponse.IsValid && deleteResponse.OriginalException is not null)
+        {
+            throw new Exception(deleteResponse.OriginalException.Message);
+        }
+        
         TempBlogDocument[] documents;
 
         await using (var cn = new NpgsqlConnection(Setting.NEW_LOOK_CONNECTION))
