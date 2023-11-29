@@ -306,7 +306,7 @@ public class BlogMigration
 
                                                                      TryParse(match.Groups[RegexHelper.SIZE_GROUP].Value, out var fontSize);
 
-                                                                     var newFontSize = RegexHelper.FontSizeDic.GetValueOrDefault(fontSize, "1.87em");
+                                                                     var newFontSize = RegexHelper.FontSizeDic.GetValueOrDefault(fontSize, "1em");
 
                                                                      var fontSizeStr = $"font-size:{newFontSize};";
 

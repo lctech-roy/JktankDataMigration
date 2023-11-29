@@ -27,7 +27,7 @@ public class RegexHelper
     private const string FONT_SIZE_PATTERN = $"""(?<{START_GROUP}><font [^>]*?)size=["'](?<{SIZE_GROUP}>\d+)?["'](?<{END_GROUP}>.*?>)""";
     private const string STYLE_PATTERN = $"""(?<{START_GROUP}>style=["'])(?<{STYLE_GROUP}>.+?)(?<{END_GROUP}>["'])""";
     private const string FONT_FACE_PATTERN = $"""(<font [^>]*?)(?<{FACE_GROUP}>face=["'].+?["'])(.*?>)""";
-    private const string COMMENT_REPLY_PATTERN = $"""<div class="quote">(?:<span class="q">|<blockquote>)<b>(?<{AUTHOR_GROUP}>.*?)</b>: ?(?<{AUTHOR_CONTENT_GROUP}>[\S\s]*?)(?:</span>|</blockquote>)</div>(?<{REPLIER_CONTENT_GROUP}>[\S\s]*)""";
+    private const string COMMENT_REPLY_PATTERN = $"""<div class="quote">(?:<span class="q">|<blockquote>)<b>(?<{AUTHOR_GROUP}>.*?)</b>: ?(?<{AUTHOR_CONTENT_GROUP}>[\S\s]*)(?:</span>|</blockquote>)</div>(?<{REPLIER_CONTENT_GROUP}>[\S\s]*)""";
     private const string HTML_PATTERN = "<br ?/?>";
     private const string HREF_PATTERN = $"""<a [^>]*?href="(?<{URL_GROUP}>.*?)".*?</a>""";
 

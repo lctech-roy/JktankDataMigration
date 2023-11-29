@@ -17,7 +17,7 @@ public class CommentMigration
                                                $",\"{nameof(Comment.Disabled)}\",\"{nameof(Comment.LastEditDate)}\"" + Setting.COPY_ENTITY_SUFFIX;
 
     private const string QUERY_COMMENT_SQL = @"SELECT id AS BlogId, cid AS Id, message AS Content, status AS Disabled, dateline, authorid AS MemberId, author AS Author
-                                               FROM pre_home_comment WHERE idtype = 'blogid' ORDER BY blogid,dateline"; //AND id = 1274140 
+                                               FROM pre_home_comment WHERE idtype = 'blogid' ORDER BY blogid,dateline"; //AND id = 1591669
 
     //test Id => 9522,279968
     private const string COMMENT_PATH = $"{Setting.INSERT_DATA_PATH}/{nameof(Comment)}";
@@ -80,10 +80,8 @@ public class CommentMigration
                               CreationDate = createDate,
                               ModificationDate = createDate
                           };
-
-            var matches = RegexHelper.CommentReplyRegex.Matches(content);
-
-            var matchReply = matches.FirstOrDefault();
+            
+            var matchReply = RegexHelper.CommentReplyRegex.Matches(content).FirstOrDefault();
 
             if (matchReply != null)
             {
@@ -91,6 +89,15 @@ public class CommentMigration
                 var authorContent = matchReply.Groups[RegexHelper.AUTHOR_CONTENT_GROUP].Value.Replace("\n", "\r\n").Trim();
                 var replierContent = matchReply.Groups[RegexHelper.REPLIER_CONTENT_GROUP].Value.Trim();
 
+                //如果有巢狀引言, 則取最後一個 eg: commentId = 17983712
+                var contentMatch = RegexHelper.CommentReplyRegex.Matches(authorContent).FirstOrDefault();
+                
+                if (contentMatch != null)
+                {
+                    author = contentMatch.Groups[RegexHelper.AUTHOR_GROUP].Value.Trim();
+                    authorContent = contentMatch.Groups[RegexHelper.AUTHOR_CONTENT_GROUP].Value.Replace("\n", "\r\n").Trim();
+                }
+                
                 var parentComment = blogComments.FirstOrDefault(x => x.Author.DisplayName == author && x.Content == authorContent);
 
                 if (parentComment == null)
