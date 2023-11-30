@@ -87,25 +87,26 @@ public class CommentMigration
             {
                 var author = matchReply.Groups[RegexHelper.AUTHOR_GROUP].Value.Trim();
                 var authorContent = matchReply.Groups[RegexHelper.AUTHOR_CONTENT_GROUP].Value.Replace("\n", "\r\n").Trim();
-                var replierContent = matchReply.Groups[RegexHelper.REPLIER_CONTENT_GROUP].Value.Trim();
+                var replierContent = matchReply.Groups[RegexHelper.REPLIER_CONTENT_GROUP].Value.Replace("\n", "\r\n").Trim();
 
-                //如果有巢狀引言, 則取最後一個 eg: commentId = 17983712
-                var contentMatch = RegexHelper.CommentReplyRegex.Matches(authorContent).FirstOrDefault();
+                //如果有巢狀引言, 則取最後一個author content eg: commentId = 17983712
+                var lastContentMatch = RegexHelper.CommentMultipleReplyRegex.Matches(content).FirstOrDefault();
                 
-                if (contentMatch != null)
+                if (lastContentMatch != null)
                 {
-                    author = contentMatch.Groups[RegexHelper.AUTHOR_GROUP].Value.Trim();
-                    authorContent = contentMatch.Groups[RegexHelper.AUTHOR_CONTENT_GROUP].Value.Replace("\n", "\r\n").Trim();
+                    authorContent = lastContentMatch.Groups[RegexHelper.AUTHOR_CONTENT_GROUP].Value.Replace("\n", "\r\n").Trim();
                 }
                 
-                var parentComment = blogComments.FirstOrDefault(x => x.Author.DisplayName == author && x.Content == authorContent);
+                var parentComment = blogComments.FirstOrDefault(x => x.Author.DisplayName == author && 
+                                                                     x.Content.Replace("\r",string.Empty).Replace("\n",string.Empty).TrimEnd('.').Trim() == 
+                                                                     authorContent.Replace("\r",string.Empty).Replace("\n",string.Empty).TrimEnd('.').Trim());
 
                 if (parentComment == null)
                 {
                     Console.WriteLine($"Count:{++parentNotFoundCount} CommentId:{commentId} ParentComment is null");
 
                     comment.Level = 1;
-                    comment.Content = replierContent.Trim();
+                    comment.Content = replierContent;
                     comment.Hierarchy = new[] { commentId };
                 }
                 else
@@ -114,7 +115,7 @@ public class CommentMigration
 
                     comment.ParentId = parentComment.Id;
                     comment.Level = parentComment.Level + 1 > 2 ? 2 : parentComment.Level + 1;
-                    comment.Content = replierContent.Trim();
+                    comment.Content = replierContent;
                     comment.Hierarchy = parentComment.Hierarchy.Append(commentId).ToArray();
                 }
             }

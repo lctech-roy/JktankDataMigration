@@ -28,6 +28,7 @@ public class RegexHelper
     private const string STYLE_PATTERN = $"""(?<{START_GROUP}>style=["'])(?<{STYLE_GROUP}>.+?)(?<{END_GROUP}>["'])""";
     private const string FONT_FACE_PATTERN = $"""(<font [^>]*?)(?<{FACE_GROUP}>face=["'].+?["'])(.*?>)""";
     private const string COMMENT_REPLY_PATTERN = $"""<div class="quote">(?:<span class="q">|<blockquote>)<b>(?<{AUTHOR_GROUP}>.*?)</b>: ?(?<{AUTHOR_CONTENT_GROUP}>[\S\s]*)(?:</span>|</blockquote>)</div>(?<{REPLIER_CONTENT_GROUP}>[\S\s]*)""";
+    private const string COMMENT_MULTIPLE_REPLY_PATTERN = $"""<div class="quote">(?:<span class="q">|<blockquote>)<b>(?<{AUTHOR_GROUP}>.*?)</b>: ?.*(?:</span>|</blockquote>)</div>(?<{AUTHOR_CONTENT_GROUP}>[\S\s]*)(?:</span>|</blockquote>)</div>(?<{REPLIER_CONTENT_GROUP}>(?!blockquote).*)""";
     private const string HTML_PATTERN = "<br ?/?>";
     private const string HREF_PATTERN = $"""<a [^>]*?href="(?<{URL_GROUP}>.*?)".*?</a>""";
 
@@ -44,6 +45,8 @@ public class RegexHelper
     public static readonly Regex FontFaceRegex = new(FONT_FACE_PATTERN, RegexOptions.Compiled | RegexOptions.IgnoreCase);
     public static readonly Regex MassageUrlRegex = new(MASSAGE_URL_PATTERN, RegexOptions.Compiled | RegexOptions.IgnoreCase);
     public static readonly Regex CommentReplyRegex = new(COMMENT_REPLY_PATTERN, RegexOptions.Compiled | RegexOptions.IgnoreCase);
+    public static readonly Regex CommentMultipleReplyRegex = new(COMMENT_MULTIPLE_REPLY_PATTERN, RegexOptions.Compiled | RegexOptions.IgnoreCase);
+    
     public static readonly Regex HtmlRegex = new(HTML_PATTERN, RegexOptions.Compiled | RegexOptions.IgnoreCase);
     public static readonly Regex HrefRegex = new(HREF_PATTERN, RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
