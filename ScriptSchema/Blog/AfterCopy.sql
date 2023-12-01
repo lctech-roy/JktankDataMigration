@@ -18,4 +18,4 @@ ALTER TABLE "Comment"
     ADD CONSTRAINT "FK_Comment_Blog_BlogId" FOREIGN KEY ("BlogId") REFERENCES "public"."Blog"("Id") ON DELETE CASCADE;
 
 ALTER TABLE "HotTagHashtag"
-    ADD CONSTRAINT "FK_HotTagHashtag_HotTag_HotTagsId" FOREIGN KEY ("HotTagsId") REFERENCES "public"."HotTag"("Id") ON DELETE CASCADE;
+    ADD CONSTRAINT "FK_HotTagHashtag_Hashtag_HashtagsId" FOREIGN KEY ("HashtagsId") REFERENCES "public"."Hashtag"("Id") ON DELETE CASCADE;

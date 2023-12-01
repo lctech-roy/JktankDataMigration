@@ -5,7 +5,7 @@ ALTER TABLE "Comment"
     DROP CONSTRAINT IF EXISTS "FK_Comment_Blog_BlogId";
 
 ALTER TABLE "HotTagHashtag"
-    DROP CONSTRAINT IF EXISTS "FK_HotTagHashtag_HotTag_HotTagsId";
+    DROP CONSTRAINT IF EXISTS "FK_HotTagHashtag_Hashtag_HashtagsId";
 
 TRUNCATE "Blog" CASCADE;
 TRUNCATE "MassageBlog" CASCADE;
