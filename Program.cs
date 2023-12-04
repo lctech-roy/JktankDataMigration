@@ -21,6 +21,7 @@ serviceCollection.AddSingleton<MemberMigration>();
 serviceCollection.AddSingleton<MemberBlogCategoryMigration>();
 serviceCollection.AddSingleton<MassageBlogRegionMigration>();
 serviceCollection.AddSingleton<BlogMigration>();
+serviceCollection.AddSingleton<HotTagMigration>();
 serviceCollection.AddSingleton<BlogReactMigration>();
 serviceCollection.AddSingleton<CommentMigration>();
 serviceCollection.AddSingleton<MemberFavoriteMigration>();
@@ -61,17 +62,18 @@ var blogCategoryMigration = serviceProvider.GetRequiredService<MemberBlogCategor
 var memberMigration = serviceProvider.GetRequiredService<MemberMigration>();
 var massageBlogRegionMigration = serviceProvider.GetRequiredService<MassageBlogRegionMigration>();
 var blogMigration = serviceProvider.GetRequiredService<BlogMigration>();
+var hotTagMigration = serviceProvider.GetRequiredService<HotTagMigration>();
 var blogReactMigration = serviceProvider.GetRequiredService<BlogReactMigration>();
 var commentMigration = serviceProvider.GetRequiredService<CommentMigration>();
 var memberFavoriteMigration = serviceProvider.GetRequiredService<MemberFavoriteMigration>();
 var memberRelationMigration = serviceProvider.GetRequiredService<MemberRelationMigration>();
-var memberStatisticMigration =  serviceProvider.GetRequiredService<MemberStatisticMigration>();
-var blogPinMigration =  serviceProvider.GetRequiredService<BlogPinMigration>();
+var memberStatisticMigration = serviceProvider.GetRequiredService<MemberStatisticMigration>();
+var blogPinMigration = serviceProvider.GetRequiredService<BlogPinMigration>();
 
-var memberDocumentMigration =  serviceProvider.GetRequiredService<MemberDocumentMigration>();
-var blogDocumentMigration =  serviceProvider.GetRequiredService<BlogDocumentMigration>();
-var commentDocumentMigration =  serviceProvider.GetRequiredService<CommentDocumentMigration>();
-var hashTagDocumentMigration =  serviceProvider.GetRequiredService<HashTagDocumentMigration>();
+var memberDocumentMigration = serviceProvider.GetRequiredService<MemberDocumentMigration>();
+var blogDocumentMigration = serviceProvider.GetRequiredService<BlogDocumentMigration>();
+var commentDocumentMigration = serviceProvider.GetRequiredService<CommentDocumentMigration>();
+var hashTagDocumentMigration = serviceProvider.GetRequiredService<HashTagDocumentMigration>();
 
 var token = new CancellationTokenSource().Token;
 
@@ -82,51 +84,55 @@ Thread.CurrentThread.CurrentUICulture = CultureInfo.InvariantCulture;
 // await CommonHelper.WatchTimeAsync(nameof(memberMigration), async () => await memberMigration.MigrationAsync(token));
 // await CommonHelper.WatchTimeAsync(nameof(migration.ExecuteMemberAsync), () => migration.ExecuteMemberAsync());
 
-// 日誌分類
-// CommonHelper.WatchTime(nameof(blogCategoryMigration),  () =>  blogCategoryMigration.Migration());
-// await CommonHelper.WatchTimeAsync(nameof(migration.ExecuteMemberBlogCategoryAsync), () => migration.ExecuteMemberBlogCategoryAsync());
-
-// 日誌-1128地區分類
-// CommonHelper.WatchTime(nameof(massageBlogRegionMigration),  () =>  massageBlogRegionMigration.Migration());
-// await CommonHelper.WatchTimeAsync(nameof(migration.ExecuteMassageBlogRegionAsync), () => migration.ExecuteMassageBlogRegionAsync());
-
-// 日誌
+// // 日誌分類
+// CommonHelper.WatchTime(nameof(blogCategoryMigration), () => blogCategoryMigration.Migration());
+// await CommonHelper.WatchTimeAsync(nameof(migration.ExecuteMemberBlogCategoryAsync), async () => await migration.ExecuteMemberBlogCategoryAsync());
+//
+// // 日誌-1128地區分類
+// CommonHelper.WatchTime(nameof(massageBlogRegionMigration), () => massageBlogRegionMigration.Migration());
+// await CommonHelper.WatchTimeAsync(nameof(migration.ExecuteMassageBlogRegionAsync), async () => await migration.ExecuteMassageBlogRegionAsync());
+//
+// // 日誌
 // await CommonHelper.WatchTimeAsync(nameof(blogMigration), async () => await blogMigration.MigrationAsync(token));
-// await CommonHelper.WatchTimeAsync(nameof(migration.ExecuteBlogAsync), () => migration.ExecuteBlogAsync());
-
-// 日誌-會員表態
+// await CommonHelper.WatchTimeAsync(nameof(migration.ExecuteBlogAsync), async () => await migration.ExecuteBlogAsync());
+//
+// // 日誌-熱門標籤
+// CommonHelper.WatchTime(nameof(hotTagMigration), () => hotTagMigration.Migration());
+// await CommonHelper.WatchTimeAsync(nameof(migration.ExecuteHotTagAsync), async () => await migration.ExecuteHotTagAsync());
+//
+// // 日誌-會員表態
 // await CommonHelper.WatchTimeAsync(nameof(blogReactMigration), async () => await blogReactMigration.MigrationAsync(token));
-// await CommonHelper.WatchTimeAsync(nameof(migration.ExecuteBlogReactAsync), () => migration.ExecuteBlogReactAsync());
-
-// 日誌-留言
+// await CommonHelper.WatchTimeAsync(nameof(migration.ExecuteBlogReactAsync), async () => await migration.ExecuteBlogReactAsync());
+//
+// // 日誌-留言
 // await CommonHelper.WatchTimeAsync(nameof(commentMigration), async () => await commentMigration.MigrationAsync(token));
-// await CommonHelper.WatchTimeAsync(nameof(migration.ExecuteCommentAsync), () => migration.ExecuteCommentAsync());
-
-// Blog會員-收藏日誌
+// await CommonHelper.WatchTimeAsync(nameof(migration.ExecuteCommentAsync), async () => await migration.ExecuteCommentAsync());
+//
+// // Blog會員-收藏日誌
 // await CommonHelper.WatchTimeAsync(nameof(memberFavoriteMigration), async () => await memberFavoriteMigration.MigrationAsync(token));
-// await CommonHelper.WatchTimeAsync(nameof(migration.ExecuteMemberFavoriteAsync), () => migration.ExecuteMemberFavoriteAsync());
-
-// Blog會員-追蹤會員
+// await CommonHelper.WatchTimeAsync(nameof(migration.ExecuteMemberFavoriteAsync), async () => await migration.ExecuteMemberFavoriteAsync());
+//
+// // Blog會員-追蹤會員
 // await CommonHelper.WatchTimeAsync(nameof(memberRelationMigration), async () => await memberRelationMigration.MigrationAsync(token));
-// await CommonHelper.WatchTimeAsync(nameof(migration.ExecuteMemberRelationAsync), () => migration.ExecuteMemberRelationAsync());
-
-// Blog會員-統計資料
+// await CommonHelper.WatchTimeAsync(nameof(migration.ExecuteMemberRelationAsync), async () => await migration.ExecuteMemberRelationAsync());
+//
+// // Blog會員-統計資料
 // await CommonHelper.WatchTimeAsync(nameof(memberStatisticMigration), async () => await memberStatisticMigration.MigrationAsync(token));
-// await CommonHelper.WatchTimeAsync(nameof(migration.ExecuteStatisticAsync), () => migration.ExecuteStatisticAsync());
-
-// Blog-更新置頂
+// await CommonHelper.WatchTimeAsync(nameof(migration.ExecuteStatisticAsync), async () => await migration.ExecuteStatisticAsync());
+//
+// // Blog-更新置頂
 // await CommonHelper.WatchTimeAsync(nameof(blogPinMigration), async () => await blogPinMigration.MigrationAsync(token));
-
-// es-會員
+//
+// // es-會員
 // await CommonHelper.WatchTimeAsync(nameof(memberDocumentMigration), async () => await memberDocumentMigration.MigrationAsync(token));
-
-// es-日誌
+//
+// // es-日誌
 // await CommonHelper.WatchTimeAsync(nameof(blogDocumentMigration), async () => await blogDocumentMigration.MigrationAsync(token));
-
-// es-日誌標籤
+//
+// // es-日誌標籤
 // await CommonHelper.WatchTimeAsync(nameof(hashTagDocumentMigration), async () => await hashTagDocumentMigration.MigrationAsync(token));
-
-// es-留言
+//
+// // es-留言
 // await CommonHelper.WatchTimeAsync(nameof(commentDocumentMigration), async () => await commentDocumentMigration.MigrationAsync(token));
 
 Console.WriteLine("Hello, World!");

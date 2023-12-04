@@ -97,6 +97,18 @@ public class Migration
         connection2.ExecuteCommandByPath($"{SCHEMA_PATH}/{nameof(Attachment)}/{AFTER_FILE_NAME}");
     }
 
+    public async Task ExecuteHotTagAsync()
+    {
+        const string hotTagPath = $"{Setting.INSERT_DATA_PATH}/{nameof(HotTag)}";
+        
+        await using var connection = new NpgsqlConnection(Setting.NEW_LOOK_CONNECTION);
+        connection.ExecuteCommandByPath($"{SCHEMA_PATH}/{nameof(HotTag)}/{BEFORE_FILE_NAME}");
+        
+        connection.ExecuteAllTexts($"{hotTagPath}/{nameof(HotTag)}.sql");
+        connection.ExecuteAllTexts($"{hotTagPath}/{nameof(Hashtag)}.sql");
+        connection.ExecuteAllTexts($"{hotTagPath}/{nameof(HotTag)}{nameof(Hashtag)}.sql");
+    }
+
     public async Task ExecuteBlogReactAsync()
     {
         const string blogReactPath = $"{Setting.INSERT_DATA_PATH}/{nameof(BlogReact)}";

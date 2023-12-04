@@ -10,18 +10,21 @@ namespace JKTankDataMigration;
 public class HotTagMigration
 {
     private const string QUERY_HOT_TAG = """
-                                         SELECT "Id","Name" FROM "HotTag""
+                                         SELECT "Id","Name" FROM "HotTag"
                                          """;
 
     private const string QUERY_HASH_TAG = """
-                                          SELECT "Id","Name" FROM "Hashtag" WHERE "Name" IN (@Names)
+                                          SELECT "Id","Name" FROM "Hashtag" WHERE "Name" IN
                                           """;
+
+    private const string COPY_HASH_TAG_PREFIX = $"COPY \"{nameof(Hashtag)}\" (\"{nameof(Hashtag.Id)}\",\"{nameof(Hashtag.Name)}\",\"{nameof(Hashtag.RelationBlogCount)}\""
+                                              + Setting.COPY_ENTITY_SUFFIX;
 
     private const string COPY_HOT_TAG_PREFIX = $"COPY \"{nameof(HotTag)}\" (\"{nameof(HotTag.Id)}\",\"{nameof(HotTag.Name)}\",\"{nameof(HotTag.SortingIndex)}\",\"{nameof(HotTag.Disabled)}\""
                                              + Setting.COPY_ENTITY_SUFFIX;
 
     private const string COPY_HOT_HASH_TAG_PREFIX = $"COPY \"{nameof(HotTag)}{nameof(Hashtag)}\" (\"HashtagsId\",\"HotTagsId\""
-                                                  + Setting.COPY_ENTITY_SUFFIX;
+                                                  + Setting.COPY_SUFFIX;
 
     private const string HOT_TAG_PATH = $"{Setting.INSERT_DATA_PATH}/{nameof(HotTag)}";
 
@@ -54,10 +57,13 @@ public class HotTagMigration
 
         var hotHasTagNames = defaultHotTags.SelectMany(x => x.HashtagNames).Distinct().ToArray();
 
-        var hashTagDic = cn.Query<(long Id, string Name)>(QUERY_HASH_TAG, new { Names = hotHasTagNames }).ToDictionary(x => x.Name, x => x.Id);
+        var hasTagSql = QUERY_HASH_TAG + $" ({string.Join(",", hotHasTagNames.Select(x => $"'{x}'"))})";
+
+        var hashTagDic = cn.Query<(long Id, string Name)>(hasTagSql).ToDictionary(x => x.Name, x => x.Id);
 
         var hotHashTagSb = new StringBuilder();
-        
+        var hashTagSb = new StringBuilder();
+
         foreach (var defaultHotTag in defaultHotTags)
         {
             var count = 0;
@@ -67,18 +73,23 @@ public class HotTagMigration
                 var hashTagId = hashTagDic.GetValueOrDefault(hashtagName);
 
                 if (hashTagId != default)
-                    hotHashTagSb.AppendValueLine(hashTagId, defaultHotTag.Id, dateNow, 0, dateNow, 0, 0);
+                    hotHashTagSb.AppendValueLine(hashTagId, defaultHotTag.Id);
                 else
                 {
-                    hotHashTagSb.AppendValueLine(defaultHotTag.Id + ++ count, defaultHotTag.Id, dateNow, 0, dateNow, 0, 0);
+                    var newHashTagId = defaultHotTag.Id + ++count;
+
+                    hashTagSb.AppendValueLine(newHashTagId, hashtagName, 0, dateNow, 0, dateNow, 0, 0);
+                    hotHashTagSb.AppendValueLine(newHashTagId, defaultHotTag.Id);
                 }
-                
             }
         }
 
         if (hotTagSb.Length > 0)
             FileHelper.WriteToFile(HOT_TAG_PATH, $"{nameof(HotTag)}.sql", COPY_HOT_TAG_PREFIX, hotTagSb);
-        
+
+        if (hashTagSb.Length > 0)
+            FileHelper.WriteToFile(HOT_TAG_PATH, $"{nameof(Hashtag)}.sql", COPY_HASH_TAG_PREFIX, hashTagSb);
+
         FileHelper.WriteToFile(HOT_TAG_PATH, $"{nameof(HotTag)}{nameof(Hashtag)}.sql", COPY_HOT_HASH_TAG_PREFIX, hotHashTagSb);
     }
 
