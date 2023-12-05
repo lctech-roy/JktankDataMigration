@@ -1,6 +1,6 @@
 namespace JKTankDataMigration.Helpers;
 
-public class EmojiHelper
+public static class EmojiHelper
 {
     public static readonly Dictionary<int, string> EmojiDic = new()
                                                               {

@@ -45,7 +45,7 @@ public static class PeriodHelper
         Periods = periods;
     }
 
-    public static string ConvertToDateStr(DateTimeOffset dateTimeOffset)
+    private static string ConvertToDateStr(DateTimeOffset dateTimeOffset)
     {
         return $"{dateTimeOffset.Year}{dateTimeOffset.Month.ToString().PadLeft(2, '0')}";
     }

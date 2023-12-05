@@ -8,7 +8,7 @@ public class MemberHelper
 {
     public static Dictionary<long, DateTimeOffset> GetMemberFirstPostDateDic()
     {
-        const string sql = @"SELECT uid,MIN(dateline) as dateline FROM pre_home_blog GROUP BY uid HAVING 'status' = 0";
+        const string sql = "SELECT uid,MIN(dateline) as dateline FROM pre_home_blog GROUP BY uid HAVING 'status' = 0";
 
         var dic = CommonHelper.WatchTime(nameof(GetMemberFirstPostDateDic)
                                        , () =>

@@ -17,7 +17,7 @@ public class MemberRelationMigration
 
     private static readonly HashSet<long> BlogCreatorMemberIdHash = MemberHelper.GetBlogCreatorMemberIdHash();
 
-    private static readonly HashSet<long> LookMemberIdHash = LookMemberHelper.GetLookMemberIdHash();
+    private static readonly HashSet<long> TankMemberIdHash = TankHelper.GetMemberIdHash();
 
     private const string COPY_MEMBER_RELATION_PREFIX = $"COPY \"{nameof(MemberRelation)}\" " +
                                                        $"(\"{nameof(MemberRelation.Id)}\",\"{nameof(MemberRelation.RelatedMemberId)}\",\"{nameof(MemberRelation.IsFollower)}\",\"{nameof(MemberRelation.IsFriend)}\""
@@ -47,12 +47,12 @@ public class MemberRelationMigration
         {
             var memberId = reader.GetInt64(0);
 
-            if (!BlogCreatorMemberIdHash.Contains(memberId) || !LookMemberIdHash.Contains(memberId))
+            if (!BlogCreatorMemberIdHash.Contains(memberId) || !TankMemberIdHash.Contains(memberId))
                 continue;
 
             var followerId = reader.GetInt64(1);
 
-            if (!LookMemberIdHash.Contains(followerId))
+            if (!TankMemberIdHash.Contains(followerId))
                 continue;
 
             if (ProhibitMemberIdHash.Contains(memberId) || ProhibitMemberIdHash.Contains(followerId))
@@ -101,7 +101,7 @@ public class MemberRelationMigration
                 var meUid = Convert.ToInt64(Hashids.Decode(friendRelation.MeHashUid)[0]);
                 var youUid = Convert.ToInt64(Hashids.Decode(friendRelation.YouHashUid)[0]);
 
-                if (!LookMemberIdHash.Contains(meUid) || !LookMemberIdHash.Contains(youUid))
+                if (!TankMemberIdHash.Contains(meUid) || !TankMemberIdHash.Contains(youUid))
                     continue;
 
                 var meYou = memberRelationDic.GetValueOrDefault((meUid, youUid));

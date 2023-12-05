@@ -9,11 +9,13 @@ namespace JKTankDataMigration;
 
 public class MassageBlogRegionMigration
 {
-    private const string QUERY_MASSAGE_CATEGORY = $@"SELECT a.""Id"" AS {nameof(MassageBlogRegion.Id)}, 
-                                     a.""Name"" AS {nameof(MassageBlogRegion.Name)}
-                                     FROM ""ArticleCategory"" a
-                                     WHERE a.""BoardId"" = 1128 AND a.""AdminOnly"" = false
-                                     ORDER BY ""SortingIndex""";
+    private const string QUERY_MASSAGE_CATEGORY = $"""
+                                                   SELECT a."Id" AS {nameof(MassageBlogRegion.Id)},
+                                                   a."Name" AS {nameof(MassageBlogRegion.Name)}
+                                                   FROM "ArticleCategory" a
+                                                   WHERE a."BoardId" = 1128 AND a."AdminOnly" = false
+                                                   ORDER BY "SortingIndex"
+                                                   """;
 
     private const string COPY_MASSAGE_BLOG_REGION_PREFIX = $"COPY \"{nameof(MassageBlogRegion)}\" (\"{nameof(MassageBlogRegion.Id)}\",\"{nameof(MassageBlogRegion.Name)}\",\"{nameof(MassageBlogRegion.SortingIndex)}\""
                                                          + Setting.COPY_ENTITY_SUFFIX;

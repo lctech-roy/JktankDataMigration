@@ -10,10 +10,10 @@ namespace JKTankDataMigration;
 
 public class MemberDocumentMigration(IElasticClient elasticClient)
 {
-    private readonly string _elasticIndex = ElasticHelper.GetMemberIndex(Setting.LOOK_ES_INDEX);
-    private static readonly Dictionary<long, long[]> UserRoleDic = LookAuthHelper.GetLookAuthUserRoleDic();
+    private readonly string _elasticIndex = ElasticHelper.GetMemberIndex(Setting.TANK_ES_INDEX);
+    private static readonly Dictionary<long, long[]> UserRoleDic = TankHelper.GetAuthUserRoleDic();
 
-    private const string QUERY_LOOK_MEMBER_SQL = $"""
+    private const string QUERY_TANK_MEMBER_SQL = $"""
                                                    SELECT m."Id",
                                                           m."{nameof(Member.PrivacyType)}",
                                                           ms."{nameof(MemberStatistic.HotScore)}",
@@ -57,9 +57,9 @@ public class MemberDocumentMigration(IElasticClient elasticClient)
         
         Member[] documents;
 
-        await using (var cn = new NpgsqlConnection(Setting.NEW_LOOK_CONNECTION))
+        await using (var cn = new NpgsqlConnection(Setting.TANK_CONNECTION))
         {
-            documents = cn.Query<Member>(QUERY_LOOK_MEMBER_SQL).ToArray();
+            documents = cn.Query<Member>(QUERY_TANK_MEMBER_SQL).ToArray();
         }
 
         foreach (var member in documents)
@@ -74,10 +74,10 @@ public class MemberDocumentMigration(IElasticClient elasticClient)
         {
             await CommonHelper.WatchTimeAsync
                 (
-                 $"{nameof(elasticClient.BulkAsync)}({Setting.LOOK_ES_BATCH_SIZE}) offset:{offset}",
+                 $"{nameof(elasticClient.BulkAsync)}({Setting.TANK_ES_BATCH_SIZE}) offset:{offset}",
                  async () =>
                  {
-                     var length = offset + Setting.LOOK_ES_BATCH_SIZE;
+                     var length = offset + Setting.TANK_ES_BATCH_SIZE;
 
                      if (length > documents.Length)
                          length = documents.Length;
@@ -91,7 +91,7 @@ public class MemberDocumentMigration(IElasticClient elasticClient)
                          throw new Exception(response.OriginalException.Message);
                      }
 
-                     offset += Setting.LOOK_ES_BATCH_SIZE;
+                     offset += Setting.TANK_ES_BATCH_SIZE;
                  });
         }
     }

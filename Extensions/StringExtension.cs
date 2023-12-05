@@ -42,35 +42,13 @@ public static class StringExtension
 
     public static string ToCopyArray(this string[] strs)
     {
-        return !strs.Any() ? "{}" : $"{{{string.Join(",", strs.Where(x=>!string.IsNullOrWhiteSpace(x))).ToCopyText()}}}";
+        return strs.Length == 0 ? "{}" : $"{{{string.Join(",", strs.Where(x=>!string.IsNullOrWhiteSpace(x))).ToCopyText()}}}";
     }
 
-    public static string ToCopyArray(this long[] longs)
+    public static string ToCopyArray(this IEnumerable<long> longs)
     {
         var stringArray = longs.Select(x => x.ToString()).ToArray();
 
         return stringArray.ToCopyArray();
-    }
-    
-    public static string ToNewTags(this string tagStr)
-    {
-        if (string.IsNullOrWhiteSpace(tagStr) || tagStr == "0")
-            return string.Empty;
-
-        var newTagStr = "";
-        var starPoint = 0;
-
-        for (var i = 0; i < tagStr.Length; i++)
-        {
-            if (tagStr[i] == ',')
-                starPoint = i + 1;
-
-            if (tagStr[i] == '\t')
-                newTagStr += string.Concat(tagStr.AsSpan(starPoint, i - starPoint), "\t");
-        }
-
-        newTagStr = newTagStr.TrimEnd('\t');
-
-        return newTagStr;
     }
 }

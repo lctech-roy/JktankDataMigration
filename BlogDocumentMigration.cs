@@ -10,11 +10,11 @@ namespace JKTankDataMigration;
 
 public class BlogDocumentMigration(IElasticClient elasticClient)
 {
-    private readonly string _elasticIndex = ElasticHelper.GetBlogIndex(Setting.LOOK_ES_INDEX);
-    private static readonly Dictionary<long, long[]> UserRoleDic = LookAuthHelper.GetLookAuthUserRoleDic();
-    private static readonly Dictionary<long, long[]> BlogSpecialTagsDic = LookSpecialTagHelper.GetBlogSpecialTagsDic();
+    private readonly string _elasticIndex = ElasticHelper.GetBlogIndex(Setting.TANK_ES_INDEX);
+    private static readonly Dictionary<long, long[]> UserRoleDic = TankHelper.GetAuthUserRoleDic();
+    private static readonly Dictionary<long, long[]> BlogSpecialTagsDic = TankHelper.GetBlogSpecialTagsDic();
 
-    private const string QUERY_LOOK_BLOG_SQL = $"""
+    private const string QUERY_TANK_BLOG_SQL = $"""
                                                SELECT b."{nameof(TempBlogDocument.Id)}",
                                                       b."{nameof(TempBlogDocument.Subject)}",
                                                       mbc."{nameof(MemberBlogCategory.Name)}" AS {nameof(TempBlogDocument.Category)},
@@ -81,9 +81,9 @@ public class BlogDocumentMigration(IElasticClient elasticClient)
         
         TempBlogDocument[] documents;
 
-        await using (var cn = new NpgsqlConnection(Setting.NEW_LOOK_CONNECTION))
+        await using (var cn = new NpgsqlConnection(Setting.TANK_CONNECTION))
         {
-            documents = cn.Query<TempBlogDocument>(QUERY_LOOK_BLOG_SQL).ToArray();
+            documents = cn.Query<TempBlogDocument>(QUERY_TANK_BLOG_SQL).ToArray();
         }
 
         var documentGroup = documents.GroupBy(x => x.Disabled).ToArray();
@@ -128,10 +128,10 @@ public class BlogDocumentMigration(IElasticClient elasticClient)
         {
             await CommonHelper.WatchTimeAsync
                 (
-                 $"{nameof(elasticClient.BulkAsync)}({Setting.LOOK_ES_BATCH_SIZE}) offset:{offset}",
+                 $"{nameof(elasticClient.BulkAsync)}({Setting.TANK_ES_BATCH_SIZE}) offset:{offset}",
                  async () =>
                  {
-                     var length = offset + Setting.LOOK_ES_BATCH_SIZE;
+                     var length = offset + Setting.TANK_ES_BATCH_SIZE;
 
                      if (length > updateDocuments.Length)
                          length = updateDocuments.Length;
@@ -146,7 +146,7 @@ public class BlogDocumentMigration(IElasticClient elasticClient)
                          throw response.OriginalException;
                      }
 
-                     offset += Setting.LOOK_ES_BATCH_SIZE;
+                     offset += Setting.TANK_ES_BATCH_SIZE;
                  });
         }
     }

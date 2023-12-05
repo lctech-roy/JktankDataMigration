@@ -8,9 +8,9 @@ namespace JKTankDataMigration;
 
 public class HashTagDocumentMigration(IElasticClient elasticClient)
 {
-    private readonly string _elasticIndex = ElasticHelper.GetHashtagIndex(Setting.LOOK_ES_INDEX);
+    private readonly string _elasticIndex = ElasticHelper.GetHashtagIndex(Setting.TANK_ES_INDEX);
 
-    private const string QUERY_LOOK_HASH_TAG_SQL = $"""
+    private const string QUERY_TANK_HASH_TAG_SQL = $"""
                                                    SELECT "{nameof(TempHashtagDocument.Id)}",
                                                           "{nameof(TempHashtagDocument.Name)}",
                                                           "{nameof(TempHashtagDocument.RelationBlogCount)}"
@@ -31,9 +31,9 @@ public class HashTagDocumentMigration(IElasticClient elasticClient)
         
         TempHashtagDocument[] documents;
 
-        await using (var cn = new NpgsqlConnection(Setting.NEW_LOOK_CONNECTION))
+        await using (var cn = new NpgsqlConnection(Setting.TANK_CONNECTION))
         {
-            documents = cn.Query<TempHashtagDocument>(QUERY_LOOK_HASH_TAG_SQL).ToArray();
+            documents = cn.Query<TempHashtagDocument>(QUERY_TANK_HASH_TAG_SQL).ToArray();
         }
 
         var hashTagDocuments = documents.Select(x => new Hashtag

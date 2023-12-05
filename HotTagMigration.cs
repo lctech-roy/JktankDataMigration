@@ -33,7 +33,7 @@ public class HotTagMigration
     {
         var dateNow = DateTimeOffset.UtcNow;
 
-        using var cn = new NpgsqlConnection(Setting.NEW_LOOK_CONNECTION);
+        using var cn = new NpgsqlConnection(Setting.TANK_CONNECTION);
 
         var existHotTags = cn.Query<(long Id, string Name)>(QUERY_HOT_TAG).ToArray();
 

@@ -8,8 +8,8 @@ namespace JKTankDataMigration;
 
 public class MemberFavoriteMigration
 {
-    private static readonly HashSet<long> MemberIdHash = LookMemberHelper.GetLookMemberIdHash();
-    private static readonly HashSet<long> BlogIdHash = LookHelper.GetLookBlogIdHash();
+    private static readonly HashSet<long> MemberIdHash = TankHelper.GetMemberIdHash();
+    private static readonly HashSet<long> BlogIdHash = TankHelper.GetBlogIdHash();
 
     private const string COPY_MEMBER_FAVORITE_PREFIX = $"COPY \"{nameof(MemberFavorite)}\" " +
                                                        $"(\"{nameof(MemberFavorite.Id)}\",\"{nameof(MemberFavorite.BlogId)}\"" + Setting.COPY_ENTITY_SUFFIX;

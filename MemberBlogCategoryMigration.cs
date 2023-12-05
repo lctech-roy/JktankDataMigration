@@ -17,7 +17,7 @@ public class MemberBlogCategoryMigration
 
     private const string QUERY_BLOG_CLASS_SQL = $@"SELECT classid as {nameof(MemberBlogCategory.Id)}, classname AS '{nameof(MemberBlogCategory.Name)}', uid as {nameof(MemberBlogCategory.MemberId)},dateline FROM pre_home_class";
     
-    private static readonly HashSet<long> MemberIdHash = LookMemberHelper.GetLookMemberIdHash();
+    private static readonly HashSet<long> MemberIdHash = TankHelper.GetMemberIdHash();
     public void Migration()
     {
         OldMemberBlogCategory[] oldMemberBlogCategories;

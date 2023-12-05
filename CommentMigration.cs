@@ -28,8 +28,8 @@ public class CommentMigration
 
         var commentSb = new StringBuilder();
 
-        var blogIdHash = LookHelper.GetLookBlogIdHash();
-        var memberIdHash = LookMemberHelper.GetLookMemberIdHash();
+        var blogIdHash = TankHelper.GetBlogIdHash();
+        var memberIdHash = TankHelper.GetMemberIdHash();
 
         await using var conn = new MySqlConnection(Setting.OLD_FORUM_CONNECTION);
 

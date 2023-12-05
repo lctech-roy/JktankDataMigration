@@ -6,7 +6,7 @@ namespace JKTankDataMigration.Helpers;
 
 public static class FileHelper
 {
-    private static UTF8Encoding _encoding = new UTF8Encoding(true, false);
+    private static readonly UTF8Encoding Encoding = new(true, false);
 
     public static async Task CombineMultipleFilesIntoSingleFileAsync(string inputDirectoryPath, string inputFileNamePattern, string outputFilePath, CancellationToken cancellationToken = default)
     {
@@ -47,15 +47,6 @@ public static class FileHelper
 
             connection.ExecuteAllTexts(inputFilePath);
         }
-
-        //
-        // Parallel.ForEach(inputFilePaths, CommonHelper.GetParallelOptions(CancellationToken.None),
-        //                  inputFilePath =>
-        //                  {
-        //                      using var connection = new NpgsqlConnection(connectionStr);
-        //
-        //                      connection.ExecuteAllTexts(inputFilePath);
-        //                  });
     }
 
     public static void WriteToFile(string directoryPath, string fileName, string copyPrefix, StringBuilder valueSb, bool isAppend = false)
@@ -68,21 +59,21 @@ public static class FileHelper
         switch (isAppend)
         {
             case true when File.Exists(fullPath):
-                File.AppendAllText(fullPath, valueSb.ToString(), _encoding);
+                File.AppendAllText(fullPath, valueSb.ToString(), Encoding);
 
                 Console.WriteLine($"Append {fullPath}");
 
                 break;
             case true when !File.Exists(fullPath):
                 Directory.CreateDirectory(directoryPath);
-                File.WriteAllText(fullPath, string.Concat(copyPrefix, valueSb.ToString()), _encoding);
+                File.WriteAllText(fullPath, string.Concat(copyPrefix, valueSb.ToString()), Encoding);
 
                 Console.WriteLine(fullPath);
 
                 break;
             default:
                 Directory.CreateDirectory(directoryPath);
-                File.WriteAllText(fullPath, string.Concat(copyPrefix, valueSb.ToString()), _encoding);
+                File.WriteAllText(fullPath, string.Concat(copyPrefix, valueSb.ToString()), Encoding);
 
                 Console.WriteLine(fullPath);
 

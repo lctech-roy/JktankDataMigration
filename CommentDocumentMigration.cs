@@ -8,9 +8,9 @@ namespace JKTankDataMigration;
 
 public class CommentDocumentMigration(IElasticClient elasticClient)
 {
-    private readonly string _elasticIndex = ElasticHelper.GetCommentIndex(Setting.LOOK_ES_INDEX);
+    private readonly string _elasticIndex = ElasticHelper.GetCommentIndex(Setting.TANK_ES_INDEX);
 
-    private const string QUERY_LOOK_COMMENT_SQL = $"""
+    private const string QUERY_TANK_COMMENT_SQL = $"""
                                                   SELECT c."{nameof(Comment.Id)}",
                                                          c."{nameof(Comment.BlogId)}",
                                                          c."{nameof(Comment.Type)}",
@@ -39,9 +39,9 @@ public class CommentDocumentMigration(IElasticClient elasticClient)
         
         Comment[] documents;
 
-        await using (var cn = new NpgsqlConnection(Setting.NEW_LOOK_CONNECTION))
+        await using (var cn = new NpgsqlConnection(Setting.TANK_CONNECTION))
         {
-            documents = cn.Query<Comment>(QUERY_LOOK_COMMENT_SQL).ToArray();
+            documents = cn.Query<Comment>(QUERY_TANK_COMMENT_SQL).ToArray();
         }
 
         foreach (var document in documents)
@@ -55,10 +55,10 @@ public class CommentDocumentMigration(IElasticClient elasticClient)
         {
             await CommonHelper.WatchTimeAsync
                 (
-                 $"{nameof(elasticClient.BulkAsync)}({Setting.LOOK_ES_BATCH_SIZE}) offset:{offset}",
+                 $"{nameof(elasticClient.BulkAsync)}({Setting.TANK_ES_BATCH_SIZE}) offset:{offset}",
                  async () =>
                  {
-                     var length = offset + Setting.LOOK_ES_BATCH_SIZE;
+                     var length = offset + Setting.TANK_ES_BATCH_SIZE;
 
                      if (length > documents.Length)
                          length = documents.Length;
@@ -73,7 +73,7 @@ public class CommentDocumentMigration(IElasticClient elasticClient)
                          throw response.OriginalException;
                      }
 
-                     offset += Setting.LOOK_ES_BATCH_SIZE;
+                     offset += Setting.TANK_ES_BATCH_SIZE;
                  });
         }
     }

@@ -9,7 +9,7 @@ namespace JKTankDataMigration;
 
 public class BlogReactMigration
 {
-    private static readonly HashSet<long> BlogIdHash = LookHelper.GetLookBlogIdHash();
+    private static readonly HashSet<long> BlogIdHash = TankHelper.GetBlogIdHash();
     
     private const string COPY_BLOG_REACT_PREFIX = $"COPY \"{nameof(BlogReact)}\" " +
                                                   $"(\"{nameof(BlogReact.Id)}\",\"{nameof(BlogReact.Type)}\"" +

@@ -10,8 +10,8 @@ namespace JKTankDataMigration;
 
 public class MemberStatisticMigration
 {
-    private static readonly IEnumerable<long> LookMemberIds = LookMemberHelper.GetLookMemberId();
-    private static readonly Dictionary<long, int> LookMemberFollowerCountDic = LookMemberHelper.GetLookMemberFollowerCountDic();
+    private static readonly IEnumerable<long> TankMemberIds = TankHelper.GetMemberId();
+    private static readonly Dictionary<long, int> TankMemberFollowerCountDic = TankHelper.GetMemberFollowerCountDic();
 
     private const string COPY_MEMBER_STATISTIC_PREFIX = $"COPY \"{nameof(MemberStatistic)}\" " +
                                                         $"(\"{nameof(MemberStatistic.Id)}\",\"{nameof(MemberStatistic.HotScore)}\",\"{nameof(MemberStatistic.ViewCount)}\",\"{nameof(MemberStatistic.ObtainDonateCount)}\"" +
@@ -34,7 +34,7 @@ public class MemberStatisticMigration
                                        FROM ""Blog"" b 
                                        INNER JOIN ""BlogStatistic"" bs ON bs.""Id"" = b.""Id""";
 
-        await using var conn = new NpgsqlConnection(Setting.NEW_LOOK_CONNECTION);
+        await using var conn = new NpgsqlConnection(Setting.TANK_CONNECTION);
 
         var memberBlogDic = conn.Query<Blog, BlogStatistic, Blog>(queryBlogStatisticSql, (blog, blogStatistic) =>
                                                                                          {
@@ -47,11 +47,11 @@ public class MemberStatisticMigration
         var memberStatisticSb = new StringBuilder();
         var dateNow = DateTimeOffset.UtcNow;
 
-        foreach (var lookMemberId in LookMemberIds)
+        foreach (var tankMemberId in TankMemberIds)
         {
-            var totalBlogStatistics = memberBlogDic.GetValueOrDefault(lookMemberId);
+            var totalBlogStatistics = memberBlogDic.GetValueOrDefault(tankMemberId);
             var filterBlogStatistics = totalBlogStatistics?.Where(x => x.VisibleType != VisibleType.OnlyMe && !x.Disabled).ToArray();
-            var followerCount = LookMemberFollowerCountDic.GetValueOrDefault(lookMemberId);
+            var followerCount = TankMemberFollowerCountDic.GetValueOrDefault(tankMemberId);
 
             MemberStatistic memberStatistic;
 
@@ -59,7 +59,7 @@ public class MemberStatisticMigration
             {
                 memberStatistic = new MemberStatistic
                                   {
-                                      Id = lookMemberId,
+                                      Id = tankMemberId,
                                       FollowerCount = followerCount
                                   };
             }
@@ -67,7 +67,7 @@ public class MemberStatisticMigration
             {
                 memberStatistic = new MemberStatistic
                                   {
-                                      Id = lookMemberId,
+                                      Id = tankMemberId,
                                       ViewCount = filterBlogStatistics?.Sum(x => x.Statistic.ViewCount) ?? 0,
                                       ObtainDonateCount = filterBlogStatistics?.Sum(x => x.Statistic.DonateCount) ?? 0,
                                       ObtainPurchaseCount = totalBlogStatistics?.Sum(x => x.Statistic.PurchaseCount) ?? 0,

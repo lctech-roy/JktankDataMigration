@@ -4,7 +4,7 @@ using Npgsql;
 
 namespace JKTankDataMigration.Helpers;
 
-public class MassageHelper
+public class NewForumHelper
 {
     public static HashSet<long>? GetMassageArticleIdHash(long? articleId)
     {

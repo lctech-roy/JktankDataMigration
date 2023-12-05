@@ -19,7 +19,7 @@ public class BlogMigration
 {
     private static readonly HashSet<long> ProhibitMemberIdHash = MemberHelper.GetProhibitMemberIdHash();
     private static readonly HashSet<long> LifeStyleMemberHash = MemberHelper.GetLifeStyleMemberHash();
-    private static readonly HashSet<long> MemberIdHash = LookMemberHelper.GetLookMemberIdHash();
+    private static readonly HashSet<long> MemberIdHash = TankHelper.GetMemberIdHash();
 
     private HashSet<long>? _massageArticleIdHash;
 
@@ -94,7 +94,7 @@ public class BlogMigration
     {
         var sql = QueryBlogSql;
         
-        _massageArticleIdHash = !Setting.TestBlogId.HasValue ? MassageHelper.GetMassageArticleIdHash(null) : null;
+        _massageArticleIdHash = !Setting.TestBlogId.HasValue ? NewForumHelper.GetMassageArticleIdHash(null) : null;
 
         FileHelper.RemoveFiles(new[]
                                {
@@ -159,7 +159,7 @@ public class BlogMigration
 
         if (!MassageBlogCountDic.IsEmpty)
         {
-            var massageBlogs = MassageHelper.QueryBlogMassages(MassageBlogCountDic.Keys);
+            var massageBlogs = NewForumHelper.QueryBlogMassages(MassageBlogCountDic.Keys);
             var massageBlogSb = new StringBuilder();
 
             foreach (var massageBlog in massageBlogs)
@@ -331,7 +331,7 @@ public class BlogMigration
             long? articleId = (matchMassageIds.Length == 1) ? Convert.ToInt64(matchMassageIds.First()) : null;
 
             if (Setting.TestBlogId.HasValue && articleId.HasValue)
-                _massageArticleIdHash = MassageHelper.GetMassageArticleIdHash(articleId.Value);
+                _massageArticleIdHash = NewForumHelper.GetMassageArticleIdHash(articleId.Value);
 
             var massageArticleId = articleId.HasValue && _massageArticleIdHash != null && _massageArticleIdHash.Contains(articleId.Value)
                                        ? articleId

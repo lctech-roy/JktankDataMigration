@@ -45,8 +45,8 @@ serviceCollection.AddSingleton<FileExtensionContentTypeProvider>(_ =>
 
 TypeAdapterConfig.GlobalSettings.LoadProtobufConfig();
 
-serviceCollection.AddSingleton<IElasticClient>(_ => new ElasticClient(new ConnectionSettings(new Uri(Setting.LOOK_ES_CONNECTION))
-                                                                     .ApiKeyAuthentication(new ApiKeyAuthenticationCredentials(Setting.LOOK_ES_PASSWORD))
+serviceCollection.AddSingleton<IElasticClient>(_ => new ElasticClient(new ConnectionSettings(new Uri(Setting.TANK_ES_CONNECTION))
+                                                                     .ApiKeyAuthentication(new ApiKeyAuthenticationCredentials(Setting.TANK_ES_PASSWORD))
                                                                      .DisableDirectStreaming()));
 
 // 建立依賴服務提供者
