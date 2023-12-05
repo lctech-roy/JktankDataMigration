@@ -9,7 +9,11 @@ ALTER TABLE "UserRole"
 ALTER TABLE "UserPermissionCondition"
     SET LOGGED;
 
-ANALYZE "User";
-ANALYZE "UserRole";
-ANALYZE "UserExtendData";
-ANALYZE "UserExternalLogin";
+ANALYZE
+"User";
+ANALYZE
+"UserRole";
+ANALYZE
+"UserExtendData";
+ANALYZE
+"UserExternalLogin";

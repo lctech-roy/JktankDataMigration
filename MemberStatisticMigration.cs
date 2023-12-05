@@ -1,10 +1,10 @@
+using System.Text;
 using Dapper;
+using JKTankDataMigration.Extensions;
 using JKTankDataMigration.Helpers;
 using Lctech.JKTank.Core.Domain.Entities;
 using Lctech.JKTank.Core.Domain.Enums;
 using Npgsql;
-using System.Text;
-using JKTankDataMigration.Extensions;
 
 namespace JKTankDataMigration;
 

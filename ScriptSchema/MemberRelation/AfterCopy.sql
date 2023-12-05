@@ -1,4 +1,5 @@
 ALTER TABLE "MemberRelation"
     SET LOGGED;
 
-ANALYZE "MemberRelation";
+ANALYZE
+"MemberRelation";

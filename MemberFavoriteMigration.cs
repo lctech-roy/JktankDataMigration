@@ -15,8 +15,8 @@ public class MemberFavoriteMigration
                                                        $"(\"{nameof(MemberFavorite.Id)}\",\"{nameof(MemberFavorite.BlogId)}\"" + Setting.COPY_ENTITY_SUFFIX;
 
     private const string QUERY_MEMBER_FAVORITE_SQL = $@"SELECT uid AS Id, id AS {nameof(MemberFavorite.BlogId)}, dateline
-                                          FROM pre_home_favorite
-                                          WHERE idtype = 'blogid'";
+                                                        FROM pre_home_favorite
+                                                        WHERE idtype = 'blogid'";
 
     private const string MEMBER_FAVORITE_PATH = $"{Setting.INSERT_DATA_PATH}/{nameof(MemberFavorite)}";
 

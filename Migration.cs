@@ -33,18 +33,18 @@ public class Migration
                                       cn.ExecuteAllCopyFiles(memberProfilePath);
                                       cn.ExecuteCommandByPath($"{memberSchemaPath}/{AFTER_FILE_NAME}");
                                   });
-        
+
         var userTask = new Task(() =>
-                                  {
-                                      using var cn1 = new NpgsqlConnection(Setting.TANK_AUTH_CONNECTION); 
-                                      cn1.ExecuteCommandByPath($"{userSchemaPath}/{BEFORE_FILE_NAME}");
-                                      cn1.ExecuteAllCopyFiles(userPath);
-                                      cn1.ExecuteAllCopyFiles(userRolePath);
-                                      cn1.ExecuteAllCopyFiles(userExtendDataPath);
-                                      cn1.ExecuteAllCopyFiles(userExternalLoginPath);
-                                      cn1.ExecuteCommandByPath($"{userSchemaPath}/{AFTER_FILE_NAME}");
-                                  });
-        
+                                {
+                                    using var cn1 = new NpgsqlConnection(Setting.TANK_AUTH_CONNECTION);
+                                    cn1.ExecuteCommandByPath($"{userSchemaPath}/{BEFORE_FILE_NAME}");
+                                    cn1.ExecuteAllCopyFiles(userPath);
+                                    cn1.ExecuteAllCopyFiles(userRolePath);
+                                    cn1.ExecuteAllCopyFiles(userExtendDataPath);
+                                    cn1.ExecuteAllCopyFiles(userExternalLoginPath);
+                                    cn1.ExecuteCommandByPath($"{userSchemaPath}/{AFTER_FILE_NAME}");
+                                });
+
         userTask.Start();
         memberTask.Start();
 
@@ -63,7 +63,7 @@ public class Migration
     public async Task ExecuteMassageBlogRegionAsync()
     {
         const string massageBlogRegionPath = $"{Setting.INSERT_DATA_PATH}/{nameof(MassageBlogRegion)}";
-        
+
         await using var connection = new NpgsqlConnection(Setting.TANK_CONNECTION);
         connection.ExecuteCommandByPath($"{SCHEMA_PATH}/{nameof(MassageBlogRegion)}/{BEFORE_FILE_NAME}");
         connection.ExecuteAllCopyFiles(massageBlogRegionPath);
@@ -77,20 +77,20 @@ public class Migration
         const string blogMediaPath = $"{Setting.INSERT_DATA_PATH}/{nameof(BlogMedia)}";
         const string attachmentPath = $"{Setting.INSERT_DATA_PATH}/{nameof(Attachment)}";
         const string attachmentExtendDataPath = $"{Setting.INSERT_DATA_PATH}/{nameof(AttachmentExtendData)}";
-        
+
         await using var connection = new NpgsqlConnection(Setting.TANK_CONNECTION);
         connection.ExecuteCommandByPath($"{SCHEMA_PATH}/{nameof(Blog)}/{BEFORE_FILE_NAME}");
-        
+
         connection.ExecuteAllTexts($"{Setting.INSERT_DATA_PATH}/{nameof(MassageBlog)}.sql");
         connection.ExecuteAllCopyFiles(blogPath);
         connection.ExecuteAllCopyFiles(blogStatisticPath);
         connection.ExecuteAllCopyFiles(blogMediaPath);
         connection.ExecuteAllTexts($"{Setting.INSERT_DATA_PATH}/{nameof(Hashtag)}.sql");
-        
+
         connection.ExecuteCommandByPath($"{SCHEMA_PATH}/{nameof(Blog)}/{AFTER_FILE_NAME}");
 
         await using var connection2 = new NpgsqlConnection(Setting.TANK_ATTACHMENT_CONNECTION);
-        
+
         connection2.ExecuteCommandByPath($"{SCHEMA_PATH}/{nameof(Attachment)}/{BEFORE_FILE_NAME}");
         connection2.ExecuteAllCopyFiles(attachmentPath);
         connection2.ExecuteAllCopyFiles(attachmentExtendDataPath);
@@ -100,10 +100,10 @@ public class Migration
     public async Task ExecuteHotTagAsync()
     {
         const string hotTagPath = $"{Setting.INSERT_DATA_PATH}/{nameof(HotTag)}";
-        
+
         await using var connection = new NpgsqlConnection(Setting.TANK_CONNECTION);
         connection.ExecuteCommandByPath($"{SCHEMA_PATH}/{nameof(HotTag)}/{BEFORE_FILE_NAME}");
-        
+
         connection.ExecuteAllTexts($"{hotTagPath}/{nameof(HotTag)}.sql");
         connection.ExecuteAllTexts($"{hotTagPath}/{nameof(Hashtag)}.sql");
         connection.ExecuteAllTexts($"{hotTagPath}/{nameof(HotTag)}{nameof(Hashtag)}.sql");
@@ -133,7 +133,7 @@ public class Migration
     {
         const string memberFavoritePath = $"{Setting.INSERT_DATA_PATH}/{nameof(MemberFavorite)}";
 
-        
+
         await using var connection = new NpgsqlConnection(Setting.TANK_CONNECTION);
         connection.ExecuteCommandByPath($"{SCHEMA_PATH}/{nameof(MemberFavorite)}/{BEFORE_FILE_NAME}");
         connection.ExecuteAllCopyFiles(memberFavoritePath);
@@ -148,9 +148,8 @@ public class Migration
         connection.ExecuteCommandByPath($"{SCHEMA_PATH}/{nameof(MemberRelation)}/{BEFORE_FILE_NAME}");
         connection.ExecuteAllCopyFiles(memberRelationPath);
         connection.ExecuteCommandByPath($"{SCHEMA_PATH}/{nameof(MemberRelation)}/{AFTER_FILE_NAME}");
-        
     }
-    
+
     public async Task ExecuteStatisticAsync()
     {
         const string memberStatisticPath = $"{Setting.INSERT_DATA_PATH}/{nameof(MemberStatistic)}";

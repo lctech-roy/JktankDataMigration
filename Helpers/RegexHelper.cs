@@ -18,7 +18,7 @@ public class RegexHelper
     public const string AUTHOR_GROUP = "author";
     public const string AUTHOR_CONTENT_GROUP = "authorContent";
     public const string REPLIER_CONTENT_GROUP = "replierContent";
-    
+
     private const string IMG_SMILEY_PATTERN = """<img src=["'](?:https?://www.(?:jkf\.io|jkforum\.net)/)?(?:static/image/smiley/comcom|image/face)/(\d+)\.gif["'].*?>""";
     private const string IMG_SRC_URL_PATTERN = $"""<img [^>]*?src="(?<{URL_GROUP}>.*?)">""";
     private const string IMG_SRC_PATTERN = """<img [^>]*?src=["']https?:.+?["'].*?>""";
@@ -34,7 +34,7 @@ public class RegexHelper
 
     // include href
     private const string MASSAGE_URL_PATTERN = $@"https?://www\.(jkf\.io|jkforum\.net)/(thread-(?<{TID_GROUP}>\d+)-\d+-\d+\.html|forum\.php\?mod=(misc|post|viewthread)\S*&tid=(?<{TID_GROUP}>\d+)|group\/\d+\?action=preview&tid=(?<{TID_GROUP}>\d+))";
-    
+
     public static readonly Regex ImgSmileyRegex = new(IMG_SMILEY_PATTERN, RegexOptions.Compiled | RegexOptions.IgnoreCase);
     public static readonly Regex ImgSrcUrlPattern = new(IMG_SRC_URL_PATTERN, RegexOptions.Compiled | RegexOptions.IgnoreCase);
     public static readonly Regex ImgSrcRegex = new(IMG_SRC_PATTERN, RegexOptions.Compiled | RegexOptions.IgnoreCase);
@@ -46,7 +46,7 @@ public class RegexHelper
     public static readonly Regex MassageUrlRegex = new(MASSAGE_URL_PATTERN, RegexOptions.Compiled | RegexOptions.IgnoreCase);
     public static readonly Regex CommentReplyRegex = new(COMMENT_REPLY_PATTERN, RegexOptions.Compiled | RegexOptions.IgnoreCase);
     public static readonly Regex CommentMultipleReplyRegex = new(COMMENT_MULTIPLE_REPLY_PATTERN, RegexOptions.Compiled | RegexOptions.IgnoreCase);
-    
+
     public static readonly Regex HtmlRegex = new(HTML_PATTERN, RegexOptions.Compiled | RegexOptions.IgnoreCase);
     public static readonly Regex HrefRegex = new(HREF_PATTERN, RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
@@ -57,6 +57,6 @@ public class RegexHelper
                                                                      { 2, "0.8em" },
                                                                      { 3, "1em" },
                                                                      { 4, "1.33em" },
-                                                                     { 5, "1.85em" },
+                                                                     { 5, "1.85em" }
                                                                  };
 }

@@ -29,8 +29,8 @@ public class NewForumHelper
 
     public static IEnumerable<MassageBlog> QueryBlogMassages(IEnumerable<long> articleIds)
     {
-        var idStr = string.Join(",",articleIds);
-        
+        var idStr = string.Join(",", articleIds);
+
         var sql = $@"SELECT a.""Id"" AS {nameof(MassageBlog.Id)}, 
                                      a.""Title"" AS {nameof(MassageBlog.Title)}, 
                                      a.""Cover"" AS {nameof(MassageBlog.CoverId)}, 

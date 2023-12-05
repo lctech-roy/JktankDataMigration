@@ -1,5 +1,4 @@
 using Dapper;
-using JKTankDataMigration.Models;
 using MySql.Data.MySqlClient;
 using Npgsql;
 
@@ -12,9 +11,9 @@ public class BlogPinMigration
     public async Task MigrationAsync(CancellationToken cancellationToken)
     {
         await using var cn = new MySqlConnection(Setting.OLD_FORUM_CONNECTION);
-        
+
         var command = new CommandDefinition(QUERY_BLOG_PIN_SQL, cancellationToken: cancellationToken);
-        
+
         var pinBlogIds = (await cn.QueryAsync<string>(command)).ToArray();
 
         var maxPinBlogIds = pinBlogIds.Select(x =>

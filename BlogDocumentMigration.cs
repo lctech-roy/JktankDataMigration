@@ -15,57 +15,57 @@ public class BlogDocumentMigration(IElasticClient elasticClient)
     private static readonly Dictionary<long, long[]> BlogSpecialTagsDic = TankHelper.GetBlogSpecialTagsDic();
 
     private const string QUERY_TANK_BLOG_SQL = $"""
-                                               SELECT b."{nameof(TempBlogDocument.Id)}",
-                                                      b."{nameof(TempBlogDocument.Subject)}",
-                                                      mbc."{nameof(MemberBlogCategory.Name)}" AS {nameof(TempBlogDocument.Category)},
-                                                      b."{nameof(TempBlogDocument.Status)}",
-                                                      m."{nameof(TempBlogDocument.PrivacyType)}",
-                                                      b."{nameof(TempBlogDocument.VisibleType)}",
-                                                      b."{nameof(TempBlogDocument.Title)}",
-                                                      b."{nameof(TempBlogDocument.Content)}",
-                                                      b."{nameof(TempBlogDocument.Cover)}",
-                                                      bs."{nameof(TempBlogDocument.ObtainTotalJPoints)}",
-                                                      bs."{nameof(TempBlogDocument.CommentCount)}",
-                                                      bs."{nameof(TempBlogDocument.HotScore)}",
-                                                      bs."{nameof(TempBlogDocument.ViewCount)}",
-                                                      bs."{nameof(TempBlogDocument.DonateCount)}",
-                                                      bs."{nameof(TempBlogDocument.DonorCount)}",
-                                                      bs."{nameof(TempBlogDocument.PurchaseCount)}",
-                                                      bs."{nameof(TempBlogDocument.DonateJPoints)}",
-                                                      bs."{nameof(TempBlogDocument.PurchaseJPoints)}",
-                                                      bs."{nameof(TempBlogDocument.ActualDonateJPoints)}",
-                                                      bs."{nameof(TempBlogDocument.ActualPurchaseJPoints)}",
-                                                      bs."{nameof(TempBlogDocument.ActualObtainTotalJPoints)}",
-                                                      bs."{nameof(TempBlogDocument.ObtainTotalJPoints)}",
-                                                      bs."{nameof(TempBlogDocument.CommentCount)}",
-                                                      bs."{nameof(TempBlogDocument.ComeByReactCount)}",
-                                                      bs."{nameof(TempBlogDocument.AmazingReactCount)}",
-                                                      bs."{nameof(TempBlogDocument.ShakeHandsReactCount)}",
-                                                      bs."{nameof(TempBlogDocument.FlowerReactCount)}",
-                                                      bs."{nameof(TempBlogDocument.ConfuseReactCount)}",
-                                                      bs."{nameof(TempBlogDocument.TotalReactCount)}",
-                                                      bs."{nameof(TempBlogDocument.FavoriteCount)}",
-                                                      b."{nameof(TempBlogDocument.ServiceScore)}",
-                                                      b."{nameof(TempBlogDocument.AppearanceScore)}",
-                                                      b."{nameof(TempBlogDocument.ConversationScore)}",
-                                                      b."{nameof(TempBlogDocument.TidinessScore)}",
-                                                      b."{nameof(TempBlogDocument.AverageScore)}",
-                                                      b."{nameof(TempBlogDocument.Hashtags)}",
-                                                      b."{nameof(TempBlogDocument.CreatorId)}",
-                                                      m."{nameof(Member.DisplayName)}" AS {nameof(TempBlogDocument.CreatorName)},
-                                                      b."{nameof(TempBlogDocument.CreationDate)}",
-                                                      b."{nameof(TempBlogDocument.LastEditDate)}",
-                                                      b."{nameof(TempBlogDocument.MassageBlogId)}",
-                                                      msb."{nameof(MassageBlog.RegionId)}" AS {nameof(TempBlogDocument.MassageBlogRegionId)},
-                                                      msb."{nameof(MassageBlog.RelationBlogCount)}" AS {nameof(TempBlogDocument.MassageBlogRelationBlogCount)},
-                                                      msb."{nameof(MassageBlog.ExpirationDate)}" AS {nameof(TempBlogDocument.MassageBlogExpirationDate)},
-                                                      b."{nameof(TempBlogDocument.Disabled)}"
-                                                      FROM "Blog" b
-                                                      LEFT JOIN "BlogStatistic" bs ON b."Id" = bs."Id"
-                                                      LEFT JOIN "MassageBlog" msb ON b."MassageBlogId" = msb."Id"
-                                                      LEFT JOIN "Member" m ON b."CreatorId" = m."Id"
-                                                      LEFT JOIN "MemberBlogCategory" mbc ON b."CategoryId" = mbc."Id"
-                                               """;
+                                                SELECT b."{nameof(TempBlogDocument.Id)}",
+                                                       b."{nameof(TempBlogDocument.Subject)}",
+                                                       mbc."{nameof(MemberBlogCategory.Name)}" AS {nameof(TempBlogDocument.Category)},
+                                                       b."{nameof(TempBlogDocument.Status)}",
+                                                       m."{nameof(TempBlogDocument.PrivacyType)}",
+                                                       b."{nameof(TempBlogDocument.VisibleType)}",
+                                                       b."{nameof(TempBlogDocument.Title)}",
+                                                       b."{nameof(TempBlogDocument.Content)}",
+                                                       b."{nameof(TempBlogDocument.Cover)}",
+                                                       bs."{nameof(TempBlogDocument.ObtainTotalJPoints)}",
+                                                       bs."{nameof(TempBlogDocument.CommentCount)}",
+                                                       bs."{nameof(TempBlogDocument.HotScore)}",
+                                                       bs."{nameof(TempBlogDocument.ViewCount)}",
+                                                       bs."{nameof(TempBlogDocument.DonateCount)}",
+                                                       bs."{nameof(TempBlogDocument.DonorCount)}",
+                                                       bs."{nameof(TempBlogDocument.PurchaseCount)}",
+                                                       bs."{nameof(TempBlogDocument.DonateJPoints)}",
+                                                       bs."{nameof(TempBlogDocument.PurchaseJPoints)}",
+                                                       bs."{nameof(TempBlogDocument.ActualDonateJPoints)}",
+                                                       bs."{nameof(TempBlogDocument.ActualPurchaseJPoints)}",
+                                                       bs."{nameof(TempBlogDocument.ActualObtainTotalJPoints)}",
+                                                       bs."{nameof(TempBlogDocument.ObtainTotalJPoints)}",
+                                                       bs."{nameof(TempBlogDocument.CommentCount)}",
+                                                       bs."{nameof(TempBlogDocument.ComeByReactCount)}",
+                                                       bs."{nameof(TempBlogDocument.AmazingReactCount)}",
+                                                       bs."{nameof(TempBlogDocument.ShakeHandsReactCount)}",
+                                                       bs."{nameof(TempBlogDocument.FlowerReactCount)}",
+                                                       bs."{nameof(TempBlogDocument.ConfuseReactCount)}",
+                                                       bs."{nameof(TempBlogDocument.TotalReactCount)}",
+                                                       bs."{nameof(TempBlogDocument.FavoriteCount)}",
+                                                       b."{nameof(TempBlogDocument.ServiceScore)}",
+                                                       b."{nameof(TempBlogDocument.AppearanceScore)}",
+                                                       b."{nameof(TempBlogDocument.ConversationScore)}",
+                                                       b."{nameof(TempBlogDocument.TidinessScore)}",
+                                                       b."{nameof(TempBlogDocument.AverageScore)}",
+                                                       b."{nameof(TempBlogDocument.Hashtags)}",
+                                                       b."{nameof(TempBlogDocument.CreatorId)}",
+                                                       m."{nameof(Member.DisplayName)}" AS {nameof(TempBlogDocument.CreatorName)},
+                                                       b."{nameof(TempBlogDocument.CreationDate)}",
+                                                       b."{nameof(TempBlogDocument.LastEditDate)}",
+                                                       b."{nameof(TempBlogDocument.MassageBlogId)}",
+                                                       msb."{nameof(MassageBlog.RegionId)}" AS {nameof(TempBlogDocument.MassageBlogRegionId)},
+                                                       msb."{nameof(MassageBlog.RelationBlogCount)}" AS {nameof(TempBlogDocument.MassageBlogRelationBlogCount)},
+                                                       msb."{nameof(MassageBlog.ExpirationDate)}" AS {nameof(TempBlogDocument.MassageBlogExpirationDate)},
+                                                       b."{nameof(TempBlogDocument.Disabled)}"
+                                                       FROM "Blog" b
+                                                       LEFT JOIN "BlogStatistic" bs ON b."Id" = bs."Id"
+                                                       LEFT JOIN "MassageBlog" msb ON b."MassageBlogId" = msb."Id"
+                                                       LEFT JOIN "Member" m ON b."CreatorId" = m."Id"
+                                                       LEFT JOIN "MemberBlogCategory" mbc ON b."CategoryId" = mbc."Id"
+                                                """;
 
     public async Task MigrationAsync(CancellationToken cancellationToken = new())
     {
@@ -73,12 +73,12 @@ public class BlogDocumentMigration(IElasticClient elasticClient)
                                                                     {
                                                                         Query = new MatchAllQuery()
                                                                     }, cancellationToken);
-        
+
         if (!deleteResponse.IsValid && deleteResponse.OriginalException is not null)
         {
             throw new Exception(deleteResponse.OriginalException.Message);
         }
-        
+
         TempBlogDocument[] documents;
 
         await using (var cn = new NpgsqlConnection(Setting.TANK_CONNECTION))

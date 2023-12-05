@@ -42,7 +42,7 @@ public static class StringExtension
 
     public static string ToCopyArray(this string[] strs)
     {
-        return strs.Length == 0 ? "{}" : $"{{{string.Join(",", strs.Where(x=>!string.IsNullOrWhiteSpace(x))).ToCopyText()}}}";
+        return strs.Length == 0 ? "{}" : $"{{{string.Join(",", strs.Where(x => !string.IsNullOrWhiteSpace(x))).ToCopyText()}}}";
     }
 
     public static string ToCopyArray(this IEnumerable<long> longs)

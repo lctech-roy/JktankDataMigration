@@ -10,7 +10,7 @@ namespace JKTankDataMigration;
 public class BlogReactMigration
 {
     private static readonly HashSet<long> BlogIdHash = TankHelper.GetBlogIdHash();
-    
+
     private const string COPY_BLOG_REACT_PREFIX = $"COPY \"{nameof(BlogReact)}\" " +
                                                   $"(\"{nameof(BlogReact.Id)}\",\"{nameof(BlogReact.Type)}\"" +
                                                   Setting.COPY_ENTITY_SUFFIX;
@@ -25,7 +25,7 @@ public class BlogReactMigration
         FileHelper.RemoveFiles(new[] { BLOG_REACT_PATH });
 
         var blogReactSb = new StringBuilder();
-        
+
         await using var conn = new MySqlConnection(Setting.OLD_FORUM_CONNECTION);
 
         await conn.OpenAsync(cancellationToken);
@@ -35,24 +35,24 @@ public class BlogReactMigration
         var reader = await command.ExecuteReaderAsync(cancellationToken);
 
         var distinctHash = new HashSet<(long, long)>();
-        
+
         while (await reader.ReadAsync(cancellationToken))
         {
             var memberId = reader.GetInt64(0);
             var id = reader.GetInt64(1);
-            
-            if(!BlogIdHash.Contains(id))
+
+            if (!BlogIdHash.Contains(id))
                 continue;
-            
-            if(distinctHash.Contains((id,memberId)))
+
+            if (distinctHash.Contains((id, memberId)))
                 continue;
 
             distinctHash.Add((id, memberId));
-            
+
             var clickId = reader.GetInt32(2);
-            var dateLine =  reader.GetInt64(3);
+            var dateLine = reader.GetInt64(3);
             var createDate = DateTimeOffset.FromUnixTimeSeconds(dateLine);
-            
+
             var type = clickId switch
                        {
                            1 => ReactType.ComeBy,
@@ -62,13 +62,13 @@ public class BlogReactMigration
                            5 => ReactType.Confuse,
                            _ => ReactType.None
                        };
-                    
+
             blogReactSb.AppendValueLine(id, (int)type,
                                         createDate, memberId, createDate, memberId, 0);
         }
 
         await reader.CloseAsync();
-        
+
         FileHelper.WriteToFile(BLOG_REACT_PATH, $"{nameof(BlogReact)}.sql", COPY_BLOG_REACT_PREFIX, blogReactSb);
     }
 }

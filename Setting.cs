@@ -24,7 +24,7 @@ public static class Setting
     // private const string USER_NAME = "postgres";
     // private const string PASSWORD = "pkE5WfqQ6PKD";
     // private const string PORT = "30203";
-    
+
     public const string TANK_CONNECTION = $"Host={HOST};Port={PORT};Username={USER_NAME};Password={PASSWORD};Database=lctech_jktank;Timeout=1024;CommandTimeout=1800;Maximum Pool Size=80;SSL Mode=Require;Trust Server Certificate=true;Include Error Detail=true";
     public const string TANK_ATTACHMENT_CONNECTION = $"Host={HOST};Port={PORT};Username={USER_NAME};Password={PASSWORD};Database=lctech_attachment;Timeout=1024;CommandTimeout=1800;Maximum Pool Size=80;SSL Mode=Require;Trust Server Certificate=true;Include Error Detail=true";
     public const string TANK_AUTH_CONNECTION = $"Host={HOST};Port={PORT};Username={USER_NAME};Password={PASSWORD};Database=lctech_auth;Timeout=1024;CommandTimeout=1800;Maximum Pool Size=80;SSL Mode=Require;Trust Server Certificate=true;Include Error Detail=true";
@@ -34,9 +34,9 @@ public static class Setting
     private const string F_USER_NAME = "postgres";
     private const string F_PASSWORD = "Vc&v_|3x@7Z>l2J1";
     private const string F_PORT = "30151";
-    
+
     public const string NEW_FORUM_CONNECTION = $"Host={F_HOST};Port={F_PORT};Username={F_USER_NAME};Password={F_PASSWORD};Database=lctech_jkf_forum;Timeout=1024;CommandTimeout=1800;Maximum Pool Size=80;SSL Mode=Require;Trust Server Certificate=true;Include Error Detail=true";
-    
+
     public const string D = "";
     public const string INSERT_DATA_PATH = "../../../ScriptInsert";
 
@@ -48,7 +48,7 @@ public static class Setting
     public const string SCHEMA_PATH = "../../../ScriptSchema";
     public const string BEFORE_FILE_NAME = "BeforeCopy.sql";
     public const string AFTER_FILE_NAME = "AfterCopy.sql";
-    
+
     public const string BLOG_ID = "BlogId";
 
     public const string TANK_ES_INDEX = "jktank-dev";

@@ -9,6 +9,7 @@ public static class ConnectionExtension
     public static void ExecuteAllTexts(this NpgsqlConnection cn, string path)
     {
         if (!File.Exists(path)) return;
+
         try
         {
             if (cn.State == ConnectionState.Closed)
@@ -42,9 +43,9 @@ public static class ConnectionExtension
 
     public static void ExecuteAllCopyFiles(this NpgsqlConnection cn, string path)
     {
-        if(!Directory.Exists(path))
+        if (!Directory.Exists(path))
             return;
-        
+
         var inputFilePaths = Directory.GetFiles(path, "*.sql", SearchOption.AllDirectories);
 
         foreach (var inputFilePath in inputFilePaths)

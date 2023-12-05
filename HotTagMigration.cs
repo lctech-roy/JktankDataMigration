@@ -204,7 +204,7 @@ public class HotTagMigration
                                    "銀都",
                                    "台中"
                                }
-            },
+            }
         };
 
         return defaultHotTags;

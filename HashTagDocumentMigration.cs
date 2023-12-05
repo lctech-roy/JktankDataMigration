@@ -11,11 +11,11 @@ public class HashTagDocumentMigration(IElasticClient elasticClient)
     private readonly string _elasticIndex = ElasticHelper.GetHashtagIndex(Setting.TANK_ES_INDEX);
 
     private const string QUERY_TANK_HASH_TAG_SQL = $"""
-                                                   SELECT "{nameof(TempHashtagDocument.Id)}",
-                                                          "{nameof(TempHashtagDocument.Name)}",
-                                                          "{nameof(TempHashtagDocument.RelationBlogCount)}"
-                                                   FROM "Hashtag"
-                                                   """;
+                                                    SELECT "{nameof(TempHashtagDocument.Id)}",
+                                                           "{nameof(TempHashtagDocument.Name)}",
+                                                           "{nameof(TempHashtagDocument.RelationBlogCount)}"
+                                                    FROM "Hashtag"
+                                                    """;
 
     public async Task MigrationAsync(CancellationToken cancellationToken = new())
     {
@@ -23,12 +23,12 @@ public class HashTagDocumentMigration(IElasticClient elasticClient)
                                                                     {
                                                                         Query = new MatchAllQuery()
                                                                     }, cancellationToken);
-        
+
         if (!deleteResponse.IsValid && deleteResponse.OriginalException is not null)
         {
             throw new Exception(deleteResponse.OriginalException.Message);
         }
-        
+
         TempHashtagDocument[] documents;
 
         await using (var cn = new NpgsqlConnection(Setting.TANK_CONNECTION))
@@ -46,8 +46,8 @@ public class HashTagDocumentMigration(IElasticClient elasticClient)
 
 
         var response = await elasticClient.BulkAsync(descriptor => descriptor.IndexMany(hashTagDocuments, (des, doc) => des.Index(_elasticIndex)
-                                                                                                                             .Id(tempHashtagDic[doc.Name])
-                                                                                                                             .Document(doc)), cancellationToken);
+                                                                                                                           .Id(tempHashtagDic[doc.Name])
+                                                                                                                           .Document(doc)), cancellationToken);
 
         if (!response.IsValid && response.OriginalException is not null)
         {

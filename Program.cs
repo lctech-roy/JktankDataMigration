@@ -7,7 +7,6 @@ using JKTankDataMigration.Helpers;
 using Mapster;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 using Nest;
 using Netcorext.Algorithms;
 
@@ -80,10 +79,10 @@ var token = new CancellationTokenSource().Token;
 Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
 Thread.CurrentThread.CurrentUICulture = CultureInfo.InvariantCulture;
 
-// Blog會員
+// // Blog會員
 // await CommonHelper.WatchTimeAsync(nameof(memberMigration), async () => await memberMigration.MigrationAsync(token));
 // await CommonHelper.WatchTimeAsync(nameof(migration.ExecuteMemberAsync), () => migration.ExecuteMemberAsync());
-
+//
 // // 日誌分類
 // CommonHelper.WatchTime(nameof(blogCategoryMigration), () => blogCategoryMigration.Migration());
 // await CommonHelper.WatchTimeAsync(nameof(migration.ExecuteMemberBlogCategoryAsync), async () => await migration.ExecuteMemberBlogCategoryAsync());

@@ -1,1 +1,2 @@
-DELETE FROM "HotTagHashtag";
+DELETE
+FROM "HotTagHashtag";

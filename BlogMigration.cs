@@ -64,23 +64,21 @@ public class BlogMigration
                                                     Setting.COPY_ENTITY_SUFFIX;
 
     private static readonly string QueryBlogSql = $"""
-                                                    SELECT b.blogid AS {nameof(OldBlog.Id)}, b.subject AS {nameof(OldBlog.Title)} ,b.classid AS {nameof(OldBlog.CategoryId)}, status AS {nameof(OldBlog.IsReview)},
-                                                           friend AS {nameof(OldBlog.OldVisibleType)}, bf.message AS {nameof(OldBlog.OldContent)},
-                                                           bf.tag as {nameof(OldBlog.OldTags)}, b.viewnum AS {nameof(OldBlog.ViewCount)}, b.favtimes AS {nameof(OldBlog.FavoriteCount)},
-                                                           b.replynum AS {nameof(OldBlog.CommentCount)}, b.click1 AS {nameof(OldBlog.ComeByReactCount)}, b.click2 AS {nameof(OldBlog.AmazingReactCount)},
-                                                           b.click3 AS {nameof(OldBlog.ShakeHandsReactCount)}, b.click4 AS {nameof(OldBlog.FlowerReactCount)}, b.click5 AS {nameof(OldBlog.ConfuseReactCount)},
-                                                           b.uid AS {nameof(OldBlog.Uid)}, b.dateline AS {nameof(OldBlog.DateLine)}
-                                                           FROM pre_home_blog b
-                                                           LEFT JOIN pre_home_blogfield bf ON b.blogid = bf.blogid
-                                                           {(Setting.TestBlogId.HasValue ? ($"WHERE b.blogid = {Setting.TestBlogId}") : "")}
-                                                           ORDER BY b.blogid
-                                                           LIMIT {LIMIT} OFFSET @Offset 
-                                                    """;
+                                                   SELECT b.blogid AS {nameof(OldBlog.Id)}, b.subject AS {nameof(OldBlog.Title)} ,b.classid AS {nameof(OldBlog.CategoryId)}, status AS {nameof(OldBlog.IsReview)},
+                                                          friend AS {nameof(OldBlog.OldVisibleType)}, bf.message AS {nameof(OldBlog.OldContent)},
+                                                          bf.tag as {nameof(OldBlog.OldTags)}, b.viewnum AS {nameof(OldBlog.ViewCount)}, b.favtimes AS {nameof(OldBlog.FavoriteCount)},
+                                                          b.replynum AS {nameof(OldBlog.CommentCount)}, b.click1 AS {nameof(OldBlog.ComeByReactCount)}, b.click2 AS {nameof(OldBlog.AmazingReactCount)},
+                                                          b.click3 AS {nameof(OldBlog.ShakeHandsReactCount)}, b.click4 AS {nameof(OldBlog.FlowerReactCount)}, b.click5 AS {nameof(OldBlog.ConfuseReactCount)},
+                                                          b.uid AS {nameof(OldBlog.Uid)}, b.dateline AS {nameof(OldBlog.DateLine)}
+                                                          FROM pre_home_blog b
+                                                          LEFT JOIN pre_home_blogfield bf ON b.blogid = bf.blogid
+                                                          {(Setting.TestBlogId.HasValue ? $"WHERE b.blogid = {Setting.TestBlogId}" : "")}
+                                                          ORDER BY b.blogid
+                                                          LIMIT {LIMIT} OFFSET @Offset
+                                                   """;
 
     private static readonly ConcurrentDictionary<string, int> HashTagCountDic = new();
     private static readonly ConcurrentDictionary<long, int> MassageBlogCountDic = new();
-
-    // private static readonly ISnowflake HashTagSnowflake = new SnowflakeJavaScriptSafeInteger(1);
 
     private const string BLOG_PATH = $"{Setting.INSERT_DATA_PATH}/{nameof(Blog)}";
     private const string BLOG_STATISTIC_PATH = $"{Setting.INSERT_DATA_PATH}/{nameof(BlogStatistic)}";
@@ -93,7 +91,7 @@ public class BlogMigration
     public async Task MigrationAsync(CancellationToken cancellationToken)
     {
         var sql = QueryBlogSql;
-        
+
         _massageArticleIdHash = !Setting.TestBlogId.HasValue ? NewForumHelper.GetMassageArticleIdHash(null) : null;
 
         FileHelper.RemoveFiles(new[]
@@ -242,8 +240,6 @@ public class BlogMigration
                                                                        if (!string.IsNullOrEmpty(matchWidth))
                                                                        {
                                                                            width = Convert.ToInt32(matchWidth);
-
-                                                                           continue;
                                                                        }
                                                                    }
 
@@ -328,7 +324,7 @@ public class BlogMigration
                                              .Where(x => !string.IsNullOrEmpty(x))
                                              .Distinct().ToArray();
 
-            long? articleId = (matchMassageIds.Length == 1) ? Convert.ToInt64(matchMassageIds.First()) : null;
+            long? articleId = matchMassageIds.Length == 1 ? Convert.ToInt64(matchMassageIds.First()) : null;
 
             if (Setting.TestBlogId.HasValue && articleId.HasValue)
                 _massageArticleIdHash = NewForumHelper.GetMassageArticleIdHash(articleId.Value);
@@ -359,7 +355,7 @@ public class BlogMigration
                                              1 => VisibleType.Friend,
                                              _ => VisibleType.OnlyMe
                                          },
-                           Title =  ToDecodeTitle(oldBlog.Title),
+                           Title = ToDecodeTitle(oldBlog.Title),
                            IsPinned = false,
                            Content = content,
                            Cover = coverId,
@@ -455,7 +451,7 @@ public class BlogMigration
 
         return tags.ToArray();
     }
-    
+
     private static string ToDecodeTitle(string title)
     {
         return !string.IsNullOrEmpty(title) ? WebUtility.HtmlDecode(title) : title;

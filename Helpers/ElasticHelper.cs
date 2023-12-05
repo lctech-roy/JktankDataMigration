@@ -18,7 +18,7 @@ public static class ElasticHelper
 
         return GetIndex(prefix, documentName);
     }
-    
+
     public static string GetHashtagIndex(string? prefix = null)
     {
         const string documentName = nameof(Hashtag);
@@ -34,7 +34,9 @@ public static class ElasticHelper
     }
 
     private static string GetIndex(string? prefix, string documentName)
-        => prefix.IsEmpty()
-               ? documentName.ToLower()
-               : $"{prefix}-{documentName.ToLower()}";
+    {
+        return prefix.IsEmpty()
+                   ? documentName.ToLower()
+                   : $"{prefix}-{documentName.ToLower()}";
+    }
 }

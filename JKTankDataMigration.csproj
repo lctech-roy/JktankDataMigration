@@ -1,50 +1,50 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <OutputType>Exe</OutputType>
-    <TargetFramework>net8.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-    <RootNamespace>JKTankDataMigration</RootNamespace>
-  </PropertyGroup>
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>net8.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <RootNamespace>JKTankDataMigration</RootNamespace>
+    </PropertyGroup>
 
-  <ItemGroup>
-<!--    <ProjectReference Include="..\Lctech.Jkf.Forum.Core\Lctech.Jkf.Forum.Core.csproj" />-->
-    <PackageReference Include="Hashids.net" Version="1.7.0" />
-    <PackageReference Include="Lctech.Jkf.Forum.Core" Version="1.0.0-dev.*" GeneratePathProperty="true" />
-    <ProjectReference Include="..\Lctech.Attachment\src\Lctech.Attachment.Core\Lctech.Attachment.Core.csproj" />
-    <ProjectReference Include="..\Lctech.JKTank\src\Lctech.JKTank.Core\Lctech.JKTank.Core.csproj" />
-  </ItemGroup>
+    <ItemGroup>
+        <!--    <ProjectReference Include="..\Lctech.Jkf.Forum.Core\Lctech.Jkf.Forum.Core.csproj" />-->
+        <PackageReference Include="Hashids.net" Version="1.7.0"/>
+        <PackageReference Include="Lctech.Jkf.Forum.Core" Version="1.0.0-dev.*" GeneratePathProperty="true"/>
+        <ProjectReference Include="..\Lctech.Attachment\src\Lctech.Attachment.Core\Lctech.Attachment.Core.csproj"/>
+        <ProjectReference Include="..\Lctech.JKTank\src\Lctech.JKTank.Core\Lctech.JKTank.Core.csproj"/>
+    </ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Dapper" Version="2.0.123" />
-    <PackageReference Include="Microsoft.VisualStudio.Threading" Version="16.9.60" />
-    <PackageReference Include="MySql.EntityFrameworkCore" Version="7.0.*" />
-    <PackageReference Include="MySqlConnector" Version="2.2.5" />
-    <PackageReference Include="Netcorext.Algorithms.Snowflake" Version="1.0.0" />
-    <PackageReference Include="Netcorext.Extensions.Hash" Version="1.0.0" />
-    <PackageReference Include="Npgsql" Version="8.0.*" />
-    <PackageReference Include="Polly" Version="7.2.3" />
-    <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="7.0.*" />
-    <PackageReference Include="Slapper.AutoMapper" Version="2.0.5" />
-    <PackageReference Include="Netcorext.Extensions.Linq" Version="1.0.1-dev.*" />
-    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.*" />
-    <PackageReference Include="NEST" Version="7.17.*" />
-    <PackageReference Include="Mapster" Version="7.3.*" />
-    <PackageReference Include="Netcorext.Extensions.Mapster.Protobufs" Version="1.0.0-dev.*" />
-  </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="Dapper" Version="2.0.123"/>
+        <PackageReference Include="Microsoft.VisualStudio.Threading" Version="16.9.60"/>
+        <PackageReference Include="MySql.EntityFrameworkCore" Version="7.0.*"/>
+        <PackageReference Include="MySqlConnector" Version="2.2.5"/>
+        <PackageReference Include="Netcorext.Algorithms.Snowflake" Version="1.0.0"/>
+        <PackageReference Include="Netcorext.Extensions.Hash" Version="1.0.0"/>
+        <PackageReference Include="Npgsql" Version="8.0.*"/>
+        <PackageReference Include="Polly" Version="7.2.3"/>
+        <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="7.0.*"/>
+        <PackageReference Include="Slapper.AutoMapper" Version="2.0.5"/>
+        <PackageReference Include="Netcorext.Extensions.Linq" Version="1.0.1-dev.*"/>
+        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.*"/>
+        <PackageReference Include="NEST" Version="7.17.*"/>
+        <PackageReference Include="Mapster" Version="7.3.*"/>
+        <PackageReference Include="Netcorext.Extensions.Mapster.Protobufs" Version="1.0.0-dev.*"/>
+    </ItemGroup>
 
-  <ItemGroup>
-    <Compile Remove="ScriptInsert\**" />
-  </ItemGroup>
+    <ItemGroup>
+        <Compile Remove="ScriptInsert\**"/>
+    </ItemGroup>
 
-  <ItemGroup>
-    <EmbeddedResource Remove="ScriptInsert\**" />
-  </ItemGroup>
+    <ItemGroup>
+        <EmbeddedResource Remove="ScriptInsert\**"/>
+    </ItemGroup>
 
-  <ItemGroup>
-    <None Remove="ScriptInsert\**" />
-  </ItemGroup>
+    <ItemGroup>
+        <None Remove="ScriptInsert\**"/>
+    </ItemGroup>
 
 
 </Project>

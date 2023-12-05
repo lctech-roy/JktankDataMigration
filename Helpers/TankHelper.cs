@@ -26,8 +26,8 @@ public class TankHelper
 
         return hashSet;
     }
-    
-     ///<summary>
+
+    ///<summary>
     ///在tank內的所有member
     ///</summary>
     public static HashSet<long> GetMemberIdHash()
@@ -78,7 +78,7 @@ public class TankHelper
     {
         const string sql = """
                            SELECT "Id",COUNT("Id") AS FollowerCount
-                           FROM "MemberRelation" 
+                           FROM "MemberRelation"
                            WHERE "IsFollower" = true
                            GROUP BY "Id"
                            """;
@@ -96,11 +96,11 @@ public class TankHelper
 
         return hashSet;
     }
-    
+
     ///<summary>
     ///在tank blog內的所有Special Tag
     ///</summary>
-    public static Dictionary<long,long[]> GetBlogSpecialTagsDic()
+    public static Dictionary<long, long[]> GetBlogSpecialTagsDic()
     {
         const string sql = """
                            SELECT bst."Id",bst."SpecialTagId" FROM "BlogSpecialTag" bst
@@ -121,11 +121,11 @@ public class TankHelper
 
         return blogSpecialTagsDic;
     }
-    
+
     ///<summary>
     ///取得所有member角色
     ///</summary>
-    public static Dictionary<long,long[]> GetAuthUserRoleDic()
+    public static Dictionary<long, long[]> GetAuthUserRoleDic()
     {
         const string sql = """
                            SELECT "Id","RoleId" FROM "UserRole"

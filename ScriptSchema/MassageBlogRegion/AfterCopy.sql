@@ -1,1 +1,2 @@
-ANALYZE "MassageBlogRegion";
+ANALYZE
+"MassageBlogRegion";

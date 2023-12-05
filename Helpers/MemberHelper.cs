@@ -1,6 +1,5 @@
 using Dapper;
 using MySql.Data.MySqlClient;
-using Npgsql;
 
 namespace JKTankDataMigration.Helpers;
 
@@ -16,14 +15,14 @@ public class MemberHelper
                                              using var conn = new MySqlConnection(Setting.OLD_FORUM_CONNECTION);
 
                                              var dic = conn.Query<(long memberId, long dateline)>(sql)
-                                                             .ToDictionary(t => t.memberId, t =>  DateTimeOffset.FromUnixTimeSeconds(t.dateline));
+                                                           .ToDictionary(t => t.memberId, t => DateTimeOffset.FromUnixTimeSeconds(t.dateline));
 
                                              return dic;
                                          });
 
         return dic;
     }
-    
+
     public static HashSet<long> GetLifeStyleMemberHash()
     {
         const string sql = @"SELECT * from pre_hidespace";
@@ -41,7 +40,7 @@ public class MemberHelper
 
         return memberHash;
     }
-    
+
     public static long[] GetNotInCenterMemberIds()
     {
         const string sql = @"SELECT pcm.uid FROM pre_common_member pcm
@@ -49,21 +48,20 @@ public class MemberHelper
                              WHERE pum.uid is null";
 
         var memberIds = CommonHelper.WatchTime(nameof(GetNotInCenterMemberIds)
-                                              , () =>
-                                                {
-                                                    using var conn = new MySqlConnection(Setting.OLD_FORUM_CONNECTION);
+                                             , () =>
+                                               {
+                                                   using var conn = new MySqlConnection(Setting.OLD_FORUM_CONNECTION);
 
-                                                    var memberIds = conn.Query<long>(sql)
-                                                                         .ToArray();
+                                                   var memberIds = conn.Query<long>(sql)
+                                                                       .ToArray();
 
-                                                    return memberIds;
-                                                });
+                                                   return memberIds;
+                                               });
 
         return memberIds;
     }
-    
 
-    
+
     ///<summary>
     ///封鎖帳號
     ///</summary>
@@ -83,7 +81,7 @@ public class MemberHelper
 
         return hashSet;
     }
-    
+
     ///<summary>
     ///有在blog發過文的帳號
     ///</summary>

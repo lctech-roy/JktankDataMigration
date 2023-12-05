@@ -80,7 +80,7 @@ public class CommentMigration
                               CreationDate = createDate,
                               ModificationDate = createDate
                           };
-            
+
             var matchReply = RegexHelper.CommentReplyRegex.Matches(content).FirstOrDefault();
 
             if (matchReply != null)
@@ -91,15 +91,15 @@ public class CommentMigration
 
                 //如果有巢狀引言, 則取最後一個author content eg: commentId = 17983712
                 var lastContentMatch = RegexHelper.CommentMultipleReplyRegex.Matches(content).FirstOrDefault();
-                
+
                 if (lastContentMatch != null)
                 {
                     authorContent = lastContentMatch.Groups[RegexHelper.AUTHOR_CONTENT_GROUP].Value.Replace("\n", "\r\n").Trim();
                 }
-                
-                var parentComment = blogComments.FirstOrDefault(x => x.Author.DisplayName == author && 
-                                                                     x.Content.Replace("\r",string.Empty).Replace("\n",string.Empty).TrimEnd('.').Trim() == 
-                                                                     authorContent.Replace("\r",string.Empty).Replace("\n",string.Empty).TrimEnd('.').Trim());
+
+                var parentComment = blogComments.FirstOrDefault(x => x.Author.DisplayName == author &&
+                                                                     x.Content.Replace("\r", string.Empty).Replace("\n", string.Empty).TrimEnd('.').Trim() ==
+                                                                     authorContent.Replace("\r", string.Empty).Replace("\n", string.Empty).TrimEnd('.').Trim());
 
                 if (parentComment == null)
                 {

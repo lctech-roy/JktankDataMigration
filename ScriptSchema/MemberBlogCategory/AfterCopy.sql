@@ -1,3 +1,4 @@
-ANALYZE "MemberBlogCategory";
+ANALYZE
+"MemberBlogCategory";
 
 
