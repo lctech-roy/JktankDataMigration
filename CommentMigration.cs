@@ -2,7 +2,7 @@ using System.Text;
 using JKTankDataMigration.Extensions;
 using JKTankDataMigration.Helpers;
 using Lctech.JKTank.Core.Domain.Entities;
-using Lctech.JKTank.Core.Domain.Enums;
+using Lctech.JKTank.Core.Enums;
 using MySql.Data.MySqlClient;
 using static System.Int32;
 

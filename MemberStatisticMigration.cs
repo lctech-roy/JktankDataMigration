@@ -3,7 +3,7 @@ using Dapper;
 using JKTankDataMigration.Extensions;
 using JKTankDataMigration.Helpers;
 using Lctech.JKTank.Core.Domain.Entities;
-using Lctech.JKTank.Core.Domain.Enums;
+using Lctech.JKTank.Core.Enums;
 using Npgsql;
 
 namespace JKTankDataMigration;

@@ -34,7 +34,6 @@ public class RegexHelper
 
     // include href
     private const string MASSAGE_URL_PATTERN = $@"https?://www\.(jkf\.io|jkforum\.net)/(thread-(?<{TID_GROUP}>\d+)-\d+-\d+\.html|forum\.php\?mod=(misc|post|viewthread)\S*&tid=(?<{TID_GROUP}>\d+)|group\/\d+\?action=preview&tid=(?<{TID_GROUP}>\d+))";
-
     public static readonly Regex ImgSmileyRegex = new(IMG_SMILEY_PATTERN, RegexOptions.Compiled | RegexOptions.IgnoreCase);
     public static readonly Regex ImgSrcUrlPattern = new(IMG_SRC_URL_PATTERN, RegexOptions.Compiled | RegexOptions.IgnoreCase);
     public static readonly Regex ImgSrcRegex = new(IMG_SRC_PATTERN, RegexOptions.Compiled | RegexOptions.IgnoreCase);

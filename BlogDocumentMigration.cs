@@ -4,7 +4,7 @@ using Lctech.JKTank.Core.Domain.Entities;
 using Nest;
 using Netcorext.Extensions.Commons;
 using Npgsql;
-using Blog = Lctech.JKTank.Core.Domain.Documents.Blog;
+using Blog = Lctech.JKTank.Core.Documents.Blog;
 
 namespace JKTankDataMigration;
 

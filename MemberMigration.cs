@@ -5,7 +5,7 @@ using JKTankDataMigration.Helpers;
 using JKTankDataMigration.Models;
 using Lctech.JKTank.Core;
 using Lctech.JKTank.Core.Domain.Entities;
-using Lctech.JKTank.Core.Domain.Enums;
+using Lctech.JKTank.Core.Enums;
 using MySql.Data.MySqlClient;
 using Netcorext.Extensions.Hash;
 using Polly;

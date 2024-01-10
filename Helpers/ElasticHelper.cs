@@ -1,4 +1,4 @@
-using Lctech.JKTank.Core.Domain.Documents;
+using Lctech.JKTank.Core.Documents;
 using Netcorext.Extensions.Commons;
 
 namespace JKTankDataMigration.Helpers;

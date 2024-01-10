@@ -1,6 +1,6 @@
 using Dapper;
 using JKTankDataMigration.Helpers;
-using Lctech.JKTank.Core.Domain.Documents;
+using Lctech.JKTank.Core.Documents;
 using Nest;
 using Npgsql;
 

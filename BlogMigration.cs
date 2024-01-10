@@ -8,7 +8,7 @@ using JKTankDataMigration.Helpers;
 using JKTankDataMigration.Models;
 using Lctech.Attachment.Core.Domain.Entities;
 using Lctech.JKTank.Core.Domain.Entities;
-using Lctech.JKTank.Core.Domain.Enums;
+using Lctech.JKTank.Core.Enums;
 using MySql.Data.MySqlClient;
 using Polly;
 using static System.Int32;

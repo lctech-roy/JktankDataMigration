@@ -3,7 +3,7 @@ using JKTankDataMigration.Helpers;
 using Lctech.JKTank.Core.Domain.Entities;
 using Nest;
 using Npgsql;
-using Member = Lctech.JKTank.Core.Domain.Documents.Member;
+using Member = Lctech.JKTank.Core.Documents.Member;
 
 namespace JKTankDataMigration;
 
