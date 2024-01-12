@@ -14,16 +14,16 @@ public static class Setting
     public const string OLD_FORUM_CONNECTION = "Host=34.80.4.149;Port=3306;Username=migrationUser;Password=A|5~9R}Olfs}@)/M;Database=newjk;Pooling=True;maximumpoolsize=80;default command timeout=300;TreatTinyAsBoolean=false;sslmode=none;";
 
     //v2 dev
-    private const string HOST = "35.189.163.100";
-    private const string USER_NAME = "postgres";
-    private const string PASSWORD = "+^s_yRQc|JuYN4hr";
-    private const string PORT = "30201";
-
-    //v2 stage
     // private const string HOST = "35.189.163.100";
     // private const string USER_NAME = "postgres";
-    // private const string PASSWORD = "pkE5WfqQ6PKD";
-    // private const string PORT = "30203";
+    // private const string PASSWORD = "+^s_yRQc|JuYN4hr";
+    // private const string PORT = "30201";
+
+    //v2 stage
+    private const string HOST = "35.189.163.100";
+    private const string USER_NAME = "postgres";
+    private const string PASSWORD = "pkE5WfqQ6PKD";
+    private const string PORT = "30203";
 
     public const string TANK_CONNECTION = $"Host={HOST};Port={PORT};Username={USER_NAME};Password={PASSWORD};Database=lctech_jktank;Timeout=1024;CommandTimeout=1800;Maximum Pool Size=80;SSL Mode=Require;Trust Server Certificate=true;Include Error Detail=true";
     public const string TANK_ATTACHMENT_CONNECTION = $"Host={HOST};Port={PORT};Username={USER_NAME};Password={PASSWORD};Database=lctech_attachment;Timeout=1024;CommandTimeout=1800;Maximum Pool Size=80;SSL Mode=Require;Trust Server Certificate=true;Include Error Detail=true";
@@ -56,5 +56,7 @@ public static class Setting
     public const string TANK_ES_PASSWORD = "NXRvZDVvY0JDd284cFNTREM2U2Y6WHJpU3VIWnhTRUdHdmE2YkVqc0xkdw==";
     public const int TANK_ES_BATCH_SIZE = 5000;
 
+    public const string FORUM_DOMAIN_URL = "https://www.dev.jkforum.one";
+    
     public static readonly long? TestBlogId = null; // 1019128
 }

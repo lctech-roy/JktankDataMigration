@@ -57,7 +57,7 @@ public class BlogDocumentMigration(IElasticClient elasticClient)
                                                        b."{nameof(TempBlogDocument.LastEditDate)}",
                                                        b."{nameof(TempBlogDocument.MassageBlogId)}",
                                                        msb."{nameof(MassageBlog.RegionId)}" AS {nameof(TempBlogDocument.MassageBlogRegionId)},
-                                                       msb."{nameof(MassageBlog.RelationBlogCount)}" AS {nameof(TempBlogDocument.MassageBlogRelationBlogCount)},
+                                                       msb."{nameof(MassageBlog.Image)}" AS {nameof(TempBlogDocument.Image)},
                                                        msb."{nameof(MassageBlog.ExpirationDate)}" AS {nameof(TempBlogDocument.MassageBlogExpirationDate)},
                                                        b."{nameof(TempBlogDocument.Disabled)}"
                                                        FROM "Blog" b
@@ -108,11 +108,14 @@ public class BlogDocumentMigration(IElasticClient elasticClient)
 
         var updateDocuments = documentGroup.First(x => !x.Key).Select(x =>
                                                                       {
+                                                                          var hasImage = !string.IsNullOrWhiteSpace(x.Image);
+                                                                          
                                                                           var blogDocument = (Blog)x;
 
                                                                           blogDocument.Title = KeywordHelper.ReplaceWords(blogDocument.Title);
                                                                           blogDocument.Content = KeywordHelper.ReplaceWords(blogDocument.Content);
-
+                                                                          blogDocument.MassageBlogHasImage = hasImage;
+                                                                          
                                                                           if (UserRoleDic.TryGetValue(blogDocument.CreatorId, out var roleIds))
                                                                               blogDocument.CreatorRoleIds = roleIds;
 
@@ -154,5 +157,6 @@ public class BlogDocumentMigration(IElasticClient elasticClient)
     private class TempBlogDocument : Blog
     {
         public bool Disabled { get; set; }
+        public string? Image { get; set; }
     }
 }

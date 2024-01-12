@@ -17,12 +17,14 @@ public class MemberMigration
     private static readonly string UserExtendDataKey = Constants.EXTEND_DATA_SOURCE_KEY.ToUpper();
     private static readonly string UserExtendDataValue = Constants.EXTEND_DATA_AUTH_FRONTEND_SOURCE_VALUE.ToUpper();
     private const string EXTERNAL_LOGIN_PROVIDER = "Pan";
-    private const long DEFAULT_ROLE_ID = 2;
+    private const long MASSAGE_ROLE_ID = 2;
+    private const long LIFE_STYLE_ROLE_ID = 3;
     private const long BANNED_TO_POST_ROLE_ID = 98;
     private const long BLOCK_ROLE_ID = 99;
 
     private static readonly DateTimeOffset DefaultRoleExpireDate = DateTimeOffset.MaxValue;
     private static readonly Dictionary<long, DateTimeOffset> MemberFirstPostDateDic = MemberHelper.GetMemberFirstPostDateDic();
+    private static readonly HashSet<long> LifeStyleMemberHash = MemberHelper.GetLifeStyleMemberHash();
 
     private const string COPY_MEMBER_PREFIX = $"COPY \"{nameof(Member)}\" " +
                                               $"(\"{nameof(Member.Id)}\",\"{nameof(Member.DisplayName)}\",\"{nameof(Member.NormalizedDisplayName)}\"" +
@@ -248,8 +250,14 @@ public class MemberMigration
                                    user.LastSignInDate.ToCopyValue(), user.LastSignInIp.ToCopyText(), user.Disabled,
                                    createDate, 0, createDate, 0, 0);
 
-            userRoleSb.AppendValueLine(memberId, DEFAULT_ROLE_ID, DefaultRoleExpireDate,
-                                       createDate, 0, createDate, 0, 0);
+            if (LifeStyleMemberHash.Contains(memberId))
+                userRoleSb.AppendValueLine(memberId, LIFE_STYLE_ROLE_ID, DefaultRoleExpireDate,
+                                           createDate, 0, createDate, 0, 0);
+            else
+            {
+                userRoleSb.AppendValueLine(memberId, MASSAGE_ROLE_ID, DefaultRoleExpireDate,
+                                           createDate, 0, createDate, 0, 0);
+            }
 
 
             switch (oldMember.GroupId)

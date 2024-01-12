@@ -20,6 +20,8 @@ public class BlogMigration
     private static readonly HashSet<long> ProhibitMemberIdHash = MemberHelper.GetProhibitMemberIdHash();
     private static readonly HashSet<long> LifeStyleMemberHash = MemberHelper.GetLifeStyleMemberHash();
     private static readonly HashSet<long> MemberIdHash = TankHelper.GetMemberIdHash();
+    private const string FORUM_IMAGE_URL = Setting.FORUM_DOMAIN_URL + "/attachment/";
+    private const string FORUM_MASSAGE_URL = Setting.FORUM_DOMAIN_URL + "/board/1128/";
 
     private HashSet<long>? _massageArticleIdHash;
 
@@ -60,7 +62,7 @@ public class BlogMigration
 
     private const string COPY_MASSAGE_BLOG_PREFIX = $"COPY \"{nameof(MassageBlog)}\" " +
                                                     $"(\"{nameof(MassageBlog.Id)}\",\"{nameof(MassageBlog.RegionId)}\",\"{nameof(MassageBlog.RelationBlogCount)}\",\"{nameof(MassageBlog.ExpirationDate)}\"" +
-                                                    $",\"{nameof(MassageBlog.Title)}\",\"{nameof(MassageBlog.Description)}\",\"{nameof(MassageBlog.CoverId)}\"" +
+                                                    $",\"{nameof(MassageBlog.Title)}\",\"{nameof(MassageBlog.Description)}\",\"{nameof(MassageBlog.Image)}\",,\"{nameof(MassageBlog.Url)}\"" +
                                                     Setting.COPY_ENTITY_SUFFIX;
 
     private static readonly string QueryBlogSql = $"""
@@ -162,12 +164,15 @@ public class BlogMigration
 
             foreach (var massageBlog in massageBlogs)
             {
+                massageBlog.Title = ToDecodeTitle(massageBlog.Title ?? string.Empty);
                 massageBlog.RelationBlogCount = MassageBlogCountDic[massageBlog.Id];
                 massageBlog.ModificationDate = massageBlog.CreationDate;
                 massageBlog.ModifierId = massageBlog.CreatorId;
+                massageBlog.Image = FORUM_IMAGE_URL + massageBlog.CoverId;
+                massageBlog.Url = FORUM_MASSAGE_URL + massageBlog.Id;
 
                 massageBlogSb.AppendValueLine(massageBlog.Id, massageBlog.RegionId.ToCopyValue(), massageBlog.RelationBlogCount, massageBlog.ExpirationDate.ToCopyValue(),
-                                              massageBlog.Title.ToCopyText(), massageBlog.Description.ToCopyText(), massageBlog.CoverId.ToCopyValue(),
+                                              massageBlog.Title.ToCopyText(), massageBlog.Description.ToCopyText(), massageBlog.Image.ToCopyText(), massageBlog.Url.ToCopyText(),
                                               massageBlog.CreationDate, massageBlog.CreatorId, massageBlog.ModificationDate, massageBlog.ModifierId, 0);
             }
 
@@ -333,14 +338,6 @@ public class BlogMigration
                                        ? articleId
                                        : null;
 
-            if (massageArticleId.HasValue)
-            {
-                if (MassageBlogCountDic.ContainsKey(massageArticleId.Value))
-                    MassageBlogCountDic[massageArticleId.Value] += 1;
-                else
-                    MassageBlogCountDic.TryAdd(massageArticleId.Value, 1);
-            }
-
             var blog = new Blog
                        {
                            Id = blogId,
@@ -372,6 +369,29 @@ public class BlogMigration
                            TidinessScore = 5,
                            AverageScore = 5
                        };
+
+            if (blog is { Subject: BlogSubject.Massage, VisibleType: VisibleType.Public or VisibleType.Friend }
+             && !blog.Status.Contains(BlogStatus.Block) && !blog.Status.Contains(BlogStatus.PendingReview))
+            {
+                foreach (var tag in blog.Hashtags)
+                {
+                    if (HashTagCountDic.ContainsKey(tag))
+                        HashTagCountDic[tag] += 1;
+                    else
+                        HashTagCountDic.TryAdd(tag, 1);
+                }
+            }
+
+            if (massageArticleId.HasValue &&
+                blog.VisibleType is VisibleType.Public or VisibleType.Friend &&
+                !blog.Status.Contains(BlogStatus.Block) &&
+                !blog.Status.Contains(BlogStatus.PendingReview))
+            {
+                if (MassageBlogCountDic.ContainsKey(massageArticleId.Value))
+                    MassageBlogCountDic[massageArticleId.Value] += 1;
+                else
+                    MassageBlogCountDic.TryAdd(massageArticleId.Value, 1);
+            }
 
             var copyStatusArrayStr = $"{{{string.Join(",", blog.Status.Select(x => (int)x))}}}";
 
@@ -437,16 +457,12 @@ public class BlogMigration
 
             if (tagStr[i] != '\t') continue;
 
-            var tag = tagStr.Substring(starPoint, i - starPoint);
-            tags.Add(tag.Trim());
+            var tag = tagStr.Substring(starPoint, i - starPoint).Trim();
 
             if (string.IsNullOrWhiteSpace(tag))
                 continue;
 
-            if (HashTagCountDic.ContainsKey(tag))
-                HashTagCountDic[tag] += 1;
-            else
-                HashTagCountDic.TryAdd(tag, 1);
+            tags.Add(tag);
         }
 
         return tags.ToArray();
