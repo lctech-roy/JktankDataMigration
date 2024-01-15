@@ -16,6 +16,7 @@ public class Migration
     {
         const string memberSchemaPath = $"{SCHEMA_PATH}/{nameof(Member)}";
         const string memberPath = $"{Setting.INSERT_DATA_PATH}/{nameof(Member)}";
+        const string memberIpAddressPath = $"{Setting.INSERT_DATA_PATH}/{nameof(MemberIpAddress)}";
         const string memberProfilePath = $"{Setting.INSERT_DATA_PATH}/{nameof(MemberProfile)}";
 
         const string userSchemaPath = $"{SCHEMA_PATH}/{nameof(User)}";
@@ -30,6 +31,7 @@ public class Migration
 
                                       cn.ExecuteCommandByPath($"{memberSchemaPath}/{BEFORE_FILE_NAME}");
                                       cn.ExecuteAllCopyFiles(memberPath);
+                                      cn.ExecuteAllCopyFiles(memberIpAddressPath);
                                       cn.ExecuteAllCopyFiles(memberProfilePath);
                                       cn.ExecuteCommandByPath($"{memberSchemaPath}/{AFTER_FILE_NAME}");
                                   });

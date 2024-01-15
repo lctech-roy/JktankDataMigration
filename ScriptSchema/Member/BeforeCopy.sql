@@ -1,3 +1,6 @@
+ALTER TABLE "MemberIpAddress"
+DROP
+CONSTRAINT IF EXISTS "FK_MemberIpAddress_Member_MemberId";
 ALTER TABLE "MemberProfile"
 DROP
 CONSTRAINT IF EXISTS "FK_MemberProfile_Member_Id";
@@ -43,11 +46,14 @@ DROP
 CONSTRAINT IF EXISTS "FK_Order_Member_CreatorId";
 
 TRUNCATE "Member";
+TRUNCATE "MemberIpAddress";
 TRUNCATE "MemberProfile";
 
 ALTER TABLE "MemberStatistic"
     SET UNLOGGED;
 ALTER TABLE "MemberRelation"
+    SET UNLOGGED;
+ALTER TABLE "MemberIpAddress"
     SET UNLOGGED;
 ALTER TABLE "MemberProfile"
     SET UNLOGGED;

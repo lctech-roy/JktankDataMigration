@@ -5,7 +5,9 @@ using JKTankDataMigration.Helpers;
 using JKTankDataMigration.Models;
 using Lctech.JKTank.Core;
 using Lctech.JKTank.Core.Domain.Entities;
+using Lctech.JKTank.Core.Domain.Enums;
 using Lctech.JKTank.Core.Enums;
+using Lctech.JKTank.Core.Helpers;
 using MySql.Data.MySqlClient;
 using Netcorext.Extensions.Hash;
 using Polly;
@@ -31,6 +33,10 @@ public class MemberMigration
                                               $",\"{nameof(Member.ParentId)}\",\"{nameof(Member.PrivacyType)}\",\"{nameof(Member.Birthday)}\",\"{nameof(Member.Avatar)}\"" +
                                               $",\"{nameof(Member.PersonalProfile)}\",\"{nameof(Member.WarningCount)}\",\"{nameof(Member.Disabled)}\"" +
                                               $",\"{nameof(Member.WarningExpirationDate)}\",\"{nameof(Member.FirstPostDate)}\"" + Setting.COPY_ENTITY_SUFFIX;
+
+    private const string COPY_MEMBER_IP_ADDRESS_PREFIX = $"COPY \"{nameof(MemberIpAddress)}\" " +
+                                                         $"(\"{nameof(MemberIpAddress.Id)}\",\"{nameof(MemberIpAddress.MemberId)}\",\"{nameof(MemberIpAddress.ResourceId)}\",\"{nameof(MemberIpAddress.Key)}\"" +
+                                                         $",\"{nameof(MemberIpAddress.IpAddress)}\",\"{nameof(MemberIpAddress.IpAddressNumber)}\"" + Setting.COPY_ENTITY_SUFFIX;
 
     private const string COPY_MEMBER_PROFILE_PREFIX = $"COPY \"{nameof(MemberProfile)}\" " +
                                                       $"(\"{nameof(MemberProfile.Id)}\",\"{nameof(MemberProfile.PhoneNumber)}\",\"{nameof(MemberProfile.Email)}\",\"{nameof(MemberProfile.PhoneId)}\"" +
@@ -168,6 +174,7 @@ public class MemberMigration
     private void Execute(IReadOnlyList<long> uids, IEnumerable<OldMember> members)
     {
         var memberSb = new StringBuilder();
+        var memberIpAddressSb = new StringBuilder();
         var memberProfileSb = new StringBuilder();
         var userSb = new StringBuilder();
         var userRoleSb = new StringBuilder();
@@ -193,6 +200,13 @@ public class MemberMigration
                              FirstPostDate = MemberFirstPostDateDic.TryGetValue(memberId, out var value) ? value : null,
                              Disabled = oldMember.GroupId == 5
                          };
+
+            var memberIpAddress = new MemberIpAddress
+                                  {
+                                      Key = IpAddressUsageTypes.Register.ToString(),
+                                      IpAddress = oldMember.RegIp ?? string.Empty,
+                                      IpAddressNumber = Convert.ToDecimal(IpHelper.ConvertToNumber(oldMember.RegIp ?? string.Empty).ToString()),
+                                  };
 
             var memberProfile = new MemberProfile
                                 {
@@ -236,6 +250,9 @@ public class MemberMigration
                                      member.PersonalProfile.ToCopyValue(), member.WarningCount, member.Disabled,
                                      member.WarningExpirationDate.ToCopyValue(), member.FirstPostDate.ToCopyValue(),
                                      createDate, 0, createDate, 0, 0);
+
+            memberIpAddressSb.AppendValueLine(memberId, memberId, memberId, memberIpAddress.Key, memberIpAddress.IpAddress.ToCopyText(),
+                                              memberIpAddress.IpAddressNumber, createDate, 0, createDate, 0, 0);
 
             memberProfileSb.AppendValueLine(memberId, memberProfile.PhoneNumber.ToCopyValue(), memberProfile.Email.ToCopyText(),
                                             memberProfile.PhoneId.ToCopyValue(), memberProfile.ObjectId.ToCopyValue(), memberProfile.RegisterIp.ToCopyValue(),
@@ -283,6 +300,7 @@ public class MemberMigration
 
         FileHelper.WriteToFile($"{Setting.INSERT_DATA_PATH}/{nameof(Member)}", $"{uids[0]}-{uids[^1]}.sql", COPY_MEMBER_PREFIX, memberSb);
         FileHelper.WriteToFile($"{Setting.INSERT_DATA_PATH}/{nameof(MemberProfile)}", $"{uids[0]}-{uids[^1]}.sql", COPY_MEMBER_PROFILE_PREFIX, memberProfileSb);
+        FileHelper.WriteToFile($"{Setting.INSERT_DATA_PATH}/{nameof(MemberIpAddress)}", $"{uids[0]}-{uids[^1]}.sql", COPY_MEMBER_IP_ADDRESS_PREFIX, memberIpAddressSb);
         FileHelper.WriteToFile($"{Setting.INSERT_DATA_PATH}/{nameof(User)}", $"{uids[0]}-{uids[^1]}.sql", COPY_USER_PREFIX, userSb);
         FileHelper.WriteToFile($"{Setting.INSERT_DATA_PATH}/{nameof(UserRole)}", $"{uids[0]}-{uids[^1]}.sql", COPY_USER_ROLE_DATA_PREFIX, userRoleSb);
         FileHelper.WriteToFile($"{Setting.INSERT_DATA_PATH}/{nameof(UserExtendData)}", $"{uids[0]}-{uids[^1]}.sql", COPY_USER_EXTEND_DATA_PREFIX, userExtendDataSb);

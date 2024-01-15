@@ -4,6 +4,8 @@ ALTER TABLE "MemberStatistic"
     SET LOGGED;
 ALTER TABLE "MemberRelation"
     SET LOGGED;
+ALTER TABLE "MemberIpAddress"
+    SET LOGGED;
 ALTER TABLE "MemberProfile"
     SET LOGGED;
 ALTER TABLE "MemberTopic"
@@ -11,6 +13,8 @@ ALTER TABLE "MemberTopic"
 ALTER TABLE "MemberTimeline"
     SET LOGGED;
 
+ALTER TABLE "MemberIpAddress"
+    ADD CONSTRAINT "FK_MemberIpAddress_Member_MemberId" FOREIGN KEY ("MemberId") REFERENCES "public"."Member"("Id") ON DELETE CASCADE;
 ALTER TABLE "MemberProfile"
     ADD CONSTRAINT "FK_MemberProfile_Member_Id" FOREIGN KEY ("Id") REFERENCES "public"."Member" ("Id") ON DELETE CASCADE;
 ALTER TABLE "Blog"
@@ -25,14 +29,10 @@ ALTER TABLE "MemberFavorite"
     ADD CONSTRAINT "FK_MemberFavorite_Member_Id" FOREIGN KEY ("Id") REFERENCES "public"."Member" ("Id") ON DELETE CASCADE;
 ALTER TABLE "MemberRelation"
     ADD CONSTRAINT "FK_MemberRelation_Member_RelatedMemberId" FOREIGN KEY ("RelatedMemberId") REFERENCES "public"."Member" ("Id") ON DELETE CASCADE,
-    ADD CONSTRAINT "FK_MemberRelation_Member_Id" FOREIGN KEY ("Id") REFERENCES "public"."Member"("Id") ON
-DELETE
-CASCADE;
+    ADD CONSTRAINT "FK_MemberRelation_Member_Id" FOREIGN KEY ("Id") REFERENCES "public"."Member"("Id") ON DELETE CASCADE;
 ALTER TABLE "MemberJPointsHistory"
     ADD CONSTRAINT "FK_MemberJPointsHistory_Member_MemberId" FOREIGN KEY ("MemberId") REFERENCES "public"."Member" ("Id") ON DELETE CASCADE,
-    ADD CONSTRAINT "FK_MemberJPointsHistory_Member_TradingMemberId" FOREIGN KEY ("TradingMemberId") REFERENCES "public"."Member"("Id") ON
-DELETE
-CASCADE;
+    ADD CONSTRAINT "FK_MemberJPointsHistory_Member_TradingMemberId" FOREIGN KEY ("TradingMemberId") REFERENCES "public"."Member"("Id") ON DELETE CASCADE;
 ALTER TABLE "MemberStatistic"
     ADD CONSTRAINT "FK_MemberStatistic_Member_Id" FOREIGN KEY ("Id") REFERENCES "public"."Member" ("Id") ON DELETE CASCADE;
 ALTER TABLE "MemberTimeline"
@@ -46,6 +46,8 @@ ALTER TABLE "Order"
 
 ANALYZE
 "Member";
+ANALYZE
+"MemberIpAddress";
 ANALYZE
 "MemberProfile";
 
