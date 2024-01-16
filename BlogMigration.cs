@@ -62,7 +62,7 @@ public class BlogMigration
 
     private const string COPY_MASSAGE_BLOG_PREFIX = $"COPY \"{nameof(MassageBlog)}\" " +
                                                     $"(\"{nameof(MassageBlog.Id)}\",\"{nameof(MassageBlog.RegionId)}\",\"{nameof(MassageBlog.RelationBlogCount)}\",\"{nameof(MassageBlog.ExpirationDate)}\"" +
-                                                    $",\"{nameof(MassageBlog.Title)}\",\"{nameof(MassageBlog.Description)}\",\"{nameof(MassageBlog.Image)}\",,\"{nameof(MassageBlog.Url)}\"" +
+                                                    $",\"{nameof(MassageBlog.Title)}\",\"{nameof(MassageBlog.Description)}\",\"{nameof(MassageBlog.Image)}\",\"{nameof(MassageBlog.Url)}\"" +
                                                     Setting.COPY_ENTITY_SUFFIX;
 
     private static readonly string QueryBlogSql = $"""
@@ -381,16 +381,31 @@ public class BlogMigration
                         HashTagCountDic.TryAdd(tag, 1);
                 }
             }
-
-            if (massageArticleId.HasValue &&
-                blog.VisibleType is VisibleType.Public or VisibleType.Friend &&
-                !blog.Status.Contains(BlogStatus.Block) &&
-                !blog.Status.Contains(BlogStatus.PendingReview))
+            else
             {
-                if (MassageBlogCountDic.ContainsKey(massageArticleId.Value))
-                    MassageBlogCountDic[massageArticleId.Value] += 1;
+                foreach (var tag in blog.Hashtags)
+                {
+                    if (!HashTagCountDic.ContainsKey(tag))
+                        HashTagCountDic.TryAdd(tag, 0);
+                }
+            }
+
+            if (massageArticleId.HasValue)
+            {
+                if (blog.VisibleType is VisibleType.Public or VisibleType.Friend &&
+                    !blog.Status.Contains(BlogStatus.Block) &&
+                    !blog.Status.Contains(BlogStatus.PendingReview))
+                {
+                    if (MassageBlogCountDic.ContainsKey(massageArticleId.Value))
+                        MassageBlogCountDic[massageArticleId.Value] += 1;
+                    else
+                        MassageBlogCountDic.TryAdd(massageArticleId.Value, 1);
+                }
                 else
-                    MassageBlogCountDic.TryAdd(massageArticleId.Value, 1);
+                {
+                    if (!MassageBlogCountDic.ContainsKey(massageArticleId.Value))
+                        MassageBlogCountDic.TryAdd(massageArticleId.Value, 0);
+                }
             }
 
             var copyStatusArrayStr = $"{{{string.Join(",", blog.Status.Select(x => (int)x))}}}";
