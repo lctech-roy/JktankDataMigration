@@ -46,7 +46,7 @@ public class CommentDocumentMigration(IElasticClient elasticClient)
 
         foreach (var document in documents)
         {
-            document.Content = KeywordHelper.ReplaceWords(document.Content);
+            document.Content = KeywordHelper.ReplaceEsWords(document.Content);
         }
 
         var offset = 0;

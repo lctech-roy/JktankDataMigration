@@ -57,9 +57,9 @@ public class HotTagMigration
 
         var hotHasTagNames = defaultHotTags.SelectMany(x => x.HashtagNames).Distinct().ToArray();
 
-        var hasTagSql = QUERY_HASH_TAG + $" ({string.Join(",", hotHasTagNames.Select(x => $"'{x}'"))})";
+        var hashTagSql = QUERY_HASH_TAG + $" ({string.Join(",", hotHasTagNames.Select(x => $"'{x}'"))})";
 
-        var hashTagDic = cn.Query<(long Id, string Name)>(hasTagSql).ToDictionary(x => x.Name, x => x.Id);
+        var hashTagDic = cn.Query<(long Id, string Name)>(hashTagSql).ToDictionary(x => x.Name, x => x.Id);
 
         var hotHashTagSb = new StringBuilder();
         var hashTagSb = new StringBuilder();
@@ -93,20 +93,20 @@ public class HotTagMigration
         FileHelper.WriteToFile(HOT_TAG_PATH, $"{nameof(HotTag)}{nameof(Hashtag)}.sql", COPY_HOT_HASH_TAG_PREFIX, hotHashTagSb);
     }
 
-    private class DefautHotTag
+    private class DefaultHotTag
     {
         public long Id { get; set; }
         public string Name { get; set; } = default!;
         public string[] HashtagNames { get; set; } = Array.Empty<string>();
     }
 
-    private static DefautHotTag[] GetDefaultHotTags()
+    private static DefaultHotTag[] GetDefaultHotTags()
     {
-        DefautHotTag[] defaultHotTags =
+        DefaultHotTag[] defaultHotTags =
         {
             new()
             {
-                Id = 10,
+                Id = 403565045350400,
                 Name = "我愛個工",
                 HashtagNames = new[]
                                {
@@ -119,7 +119,7 @@ public class HotTagMigration
             },
             new()
             {
-                Id = 20,
+                Id = 403565087293441,
                 Name = "北部大推",
                 HashtagNames = new[]
                                {
@@ -134,7 +134,7 @@ public class HotTagMigration
             },
             new()
             {
-                Id = 30,
+                Id = 403565120847874,
                 Name = "高顏值",
                 HashtagNames = new[]
                                {
@@ -146,7 +146,7 @@ public class HotTagMigration
             },
             new()
             {
-                Id = 40,
+                Id = 403565150208002,
                 Name = "海外",
                 HashtagNames = new[]
                                {
@@ -160,7 +160,7 @@ public class HotTagMigration
             },
             new()
             {
-                Id = 50,
+                Id = 403565179568130,
                 Name = "重口味",
                 HashtagNames = new[]
                                {
@@ -175,7 +175,7 @@ public class HotTagMigration
             },
             new()
             {
-                Id = 60,
+                Id = 403565204733955,
                 Name = "巨乳",
                 HashtagNames = new[]
                                {
@@ -185,7 +185,7 @@ public class HotTagMigration
             },
             new()
             {
-                Id = 70,
+                Id = 403565234094083,
                 Name = "技術一流",
                 HashtagNames = new[]
                                {
@@ -197,7 +197,7 @@ public class HotTagMigration
             },
             new()
             {
-                Id = 80,
+                Id = 403565263454212,
                 Name = "台中",
                 HashtagNames = new[]
                                {

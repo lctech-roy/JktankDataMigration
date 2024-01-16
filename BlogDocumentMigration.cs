@@ -55,14 +55,16 @@ public class BlogDocumentMigration(IElasticClient elasticClient)
                                                        m."{nameof(Member.DisplayName)}" AS {nameof(TempBlogDocument.CreatorName)},
                                                        b."{nameof(TempBlogDocument.CreationDate)}",
                                                        b."{nameof(TempBlogDocument.LastEditDate)}",
+                                                       msb."{nameof(MassageBlog.Image)}" AS {nameof(TempBlogDocument.Image)},
                                                        b."{nameof(TempBlogDocument.MassageBlogId)}",
                                                        msb."{nameof(MassageBlog.RegionId)}" AS {nameof(TempBlogDocument.MassageBlogRegionId)},
-                                                       msb."{nameof(MassageBlog.Image)}" AS {nameof(TempBlogDocument.Image)},
+                                                       msbg."{nameof(MassageBlogRegion.Name)}" AS {nameof(TempBlogDocument.MassageBlogRegion)},
                                                        msb."{nameof(MassageBlog.ExpirationDate)}" AS {nameof(TempBlogDocument.MassageBlogExpirationDate)},
                                                        b."{nameof(TempBlogDocument.Disabled)}"
                                                        FROM "Blog" b
                                                        LEFT JOIN "BlogStatistic" bs ON b."Id" = bs."Id"
                                                        LEFT JOIN "MassageBlog" msb ON b."MassageBlogId" = msb."Id"
+                                                       LEFT JOIN "MassageBlogRegion" msbg ON msb."RegionId" = msbg."Id"
                                                        LEFT JOIN "Member" m ON b."CreatorId" = m."Id"
                                                        LEFT JOIN "MemberBlogCategory" mbc ON b."CategoryId" = mbc."Id"
                                                 """;
@@ -106,23 +108,27 @@ public class BlogDocumentMigration(IElasticClient elasticClient)
             }
         }
 
-        var updateDocuments = documentGroup.First(x => !x.Key).Select(x =>
+        var updateDocuments = documentGroup.First(x => !x.Key).Select(tempBlogDoc =>
                                                                       {
-                                                                          var hasImage = !string.IsNullOrWhiteSpace(x.Image);
-                                                                          
-                                                                          var blogDocument = (Blog)x;
+                                                                          var hasImage = !string.IsNullOrWhiteSpace(tempBlogDoc.Image);
+                                                                          var lastEditDate = tempBlogDoc.LastEditDate ?? DateTimeOffset.MinValue;
+                                                                          var massageBlogExpirationDate = tempBlogDoc.MassageBlogExpirationDate ?? DateTimeOffset.MinValue;
 
-                                                                          blogDocument.Title = KeywordHelper.ReplaceWords(blogDocument.Title);
-                                                                          blogDocument.Content = KeywordHelper.ReplaceWords(blogDocument.Content);
-                                                                          blogDocument.MassageBlogHasImage = hasImage;
-                                                                          
-                                                                          if (UserRoleDic.TryGetValue(blogDocument.CreatorId, out var roleIds))
-                                                                              blogDocument.CreatorRoleIds = roleIds;
+                                                                          var blogDoc = (Blog)tempBlogDoc;
 
-                                                                          if (BlogSpecialTagsDic.TryGetValue(blogDocument.Id, out var specialTags))
-                                                                              blogDocument.SpecialTags = specialTags;
+                                                                          blogDoc.Title = KeywordHelper.ReplaceEsWords(blogDoc.Title);
+                                                                          blogDoc.Content = KeywordHelper.ReplaceEsWords(blogDoc.Content);
+                                                                          blogDoc.MassageBlogHasImage = hasImage;
+                                                                          blogDoc.LastEditDate = lastEditDate;
+                                                                          blogDoc.MassageBlogExpirationDate = massageBlogExpirationDate;
 
-                                                                          return blogDocument;
+                                                                          if (UserRoleDic.TryGetValue(blogDoc.CreatorId, out var roleIds))
+                                                                              blogDoc.CreatorRoleIds = roleIds;
+
+                                                                          if (BlogSpecialTagsDic.TryGetValue(blogDoc.Id, out var specialTags))
+                                                                              blogDoc.SpecialTags = specialTags;
+
+                                                                          return blogDoc;
                                                                       }).ToArray();
 
         var offset = 0;
@@ -158,5 +164,7 @@ public class BlogDocumentMigration(IElasticClient elasticClient)
     {
         public bool Disabled { get; set; }
         public string? Image { get; set; }
+        public new DateTimeOffset? LastEditDate { get; set; }
+        public new DateTimeOffset? MassageBlogExpirationDate { get; set; }
     }
 }

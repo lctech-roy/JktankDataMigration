@@ -12,7 +12,7 @@ public static class KeywordHelper
     private static readonly Regex RegexHtml = new(@"<\/?[^>]+>", RegexOptions.Compiled | RegexOptions.Multiline | RegexOptions.IgnoreCase);
     private static readonly Regex RegexEncodeHtml = new(@"&[^;]+;", RegexOptions.Compiled | RegexOptions.Multiline | RegexOptions.IgnoreCase);
 
-    public static string ReplaceWords(string content)
+    public static string ReplaceEsWords(string content)
     {
         if (string.IsNullOrWhiteSpace(content))
             return content;
