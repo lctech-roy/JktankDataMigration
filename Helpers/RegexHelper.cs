@@ -48,6 +48,7 @@ public class RegexHelper
 
     public static readonly Regex HtmlRegex = new(HTML_PATTERN, RegexOptions.Compiled | RegexOptions.IgnoreCase);
     public static readonly Regex HrefRegex = new(HREF_PATTERN, RegexOptions.Compiled | RegexOptions.IgnoreCase);
+    public static readonly Regex SymbolAndSpaceRegex = new(@"\W", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
     public static readonly Dictionary<int, string> FontSizeDic = new()
                                                                  {
