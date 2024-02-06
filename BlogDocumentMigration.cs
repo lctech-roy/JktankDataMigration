@@ -60,13 +60,15 @@ public class BlogDocumentMigration(IElasticClient elasticClient)
                                                        msb."{nameof(MassageBlog.RegionId)}" AS {nameof(TempBlogDocument.MassageBlogRegionId)},
                                                        msbg."{nameof(MassageBlogRegion.Name)}" AS {nameof(TempBlogDocument.MassageBlogRegion)},
                                                        msb."{nameof(MassageBlog.ExpirationDate)}" AS {nameof(TempBlogDocument.MassageBlogExpirationDate)},
-                                                       b."{nameof(TempBlogDocument.Disabled)}"
+                                                       b."{nameof(TempBlogDocument.Disabled)}",
+                                                       br."{nameof(BlogReview.CommentReviewStatus)}" AS {nameof(TempBlogDocument.CommentReviewStatus)}
                                                        FROM "Blog" b
                                                        LEFT JOIN "BlogStatistic" bs ON b."Id" = bs."Id"
                                                        LEFT JOIN "MassageBlog" msb ON b."MassageBlogId" = msb."Id"
                                                        LEFT JOIN "MassageBlogRegion" msbg ON msb."RegionId" = msbg."Id"
                                                        LEFT JOIN "Member" m ON b."CreatorId" = m."Id"
                                                        LEFT JOIN "MemberBlogCategory" mbc ON b."CategoryId" = mbc."Id"
+                                                       LEFT JOIN "BlogReview" br ON b."Id" = br."Id"
                                                 """;
 
     public async Task MigrationAsync(CancellationToken cancellationToken = new())
