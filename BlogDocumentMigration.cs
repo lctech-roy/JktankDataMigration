@@ -24,8 +24,6 @@ public class BlogDocumentMigration(IElasticClient elasticClient)
                                                        b."{nameof(TempBlogDocument.Title)}",
                                                        b."{nameof(TempBlogDocument.Content)}",
                                                        b."{nameof(TempBlogDocument.Cover)}",
-                                                       bs."{nameof(TempBlogDocument.ObtainTotalJPoints)}",
-                                                       bs."{nameof(TempBlogDocument.CommentCount)}",
                                                        bs."{nameof(TempBlogDocument.HotScore)}",
                                                        bs."{nameof(TempBlogDocument.ViewCount)}",
                                                        bs."{nameof(TempBlogDocument.DonateCount)}",
@@ -61,7 +59,8 @@ public class BlogDocumentMigration(IElasticClient elasticClient)
                                                        msbg."{nameof(MassageBlogRegion.Name)}" AS {nameof(TempBlogDocument.MassageBlogRegion)},
                                                        msb."{nameof(MassageBlog.ExpirationDate)}" AS {nameof(TempBlogDocument.MassageBlogExpirationDate)},
                                                        b."{nameof(TempBlogDocument.Disabled)}",
-                                                       br."{nameof(BlogReview.CommentReviewStatus)}" AS {nameof(TempBlogDocument.CommentReviewStatus)}
+                                                       br."{nameof(BlogReview.CommentReviewStatus)}" AS {nameof(TempBlogDocument.CommentReviewStatus)},
+                                                       br."{nameof(BlogReview.BlogReviewStatus)}" AS {nameof(TempBlogDocument.BlogReviewStatus)}
                                                        FROM "Blog" b
                                                        LEFT JOIN "BlogStatistic" bs ON b."Id" = bs."Id"
                                                        LEFT JOIN "MassageBlog" msb ON b."MassageBlogId" = msb."Id"
