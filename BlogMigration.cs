@@ -32,7 +32,7 @@ public class BlogMigration
                                             $",\"{nameof(Blog.VisibleType)}\",\"{nameof(Blog.Title)}\",\"{nameof(Blog.Content)}\",\"{nameof(Blog.Cover)}\"" +
                                             $",\"{nameof(Blog.IsPinned)}\",\"{nameof(Blog.Price)}\",\"{nameof(Blog.Conclusion)}\",\"{nameof(Blog.MediaCount)}\"" +
                                             $",\"{nameof(Blog.MassageBlogId)}\",\"{nameof(Blog.Hashtags)}\",\"{nameof(Blog.LastStatusModificationDate)}\",\"{nameof(Blog.Disabled)}\"" +
-                                            $",\"{nameof(Blog.ServiceScore)}\",\"{nameof(Blog.AppearanceScore)}\",\"{nameof(Blog.ConversationScore)}\",\"{nameof(Blog.TidinessScore)}\",\"{nameof(Blog.AverageScore)}\"" +
+                                            $",\"{nameof(Blog.ServiceScore)}\",\"{nameof(Blog.AppearanceScore)}\",\"{nameof(Blog.ConversationScore)}\",\"{nameof(Blog.TidinessScore)}\",\"{nameof(Blog.AverageScore)}\",\"{nameof(Blog.LastEditDate)}\"" +
                                             Setting.COPY_ENTITY_SUFFIX;
 
     private const string COPY_BLOG_MEDIA_PREFIX = $"COPY \"{nameof(BlogMedia)}\" " +
@@ -418,7 +418,7 @@ public class BlogMigration
                                    (int)blog.VisibleType, blog.Title.ToCopyText(), blog.Content.ToCopyText(), blog.Cover.ToCopyValue(),
                                    blog.IsPinned, blog.Price, blog.Conclusion.ToCopyText(), blog.MediaCount, blog.MassageBlogId.ToCopyValue(),
                                    blog.Hashtags.ToCopyArray(), blog.LastStatusModificationDate.ToCopyValue(), blog.Disabled,
-                                   blog.ServiceScore, blog.AppearanceScore, blog.ConversationScore, blog.TidinessScore, blog.AverageScore,
+                                   blog.ServiceScore, blog.AppearanceScore, blog.ConversationScore, blog.TidinessScore, blog.AverageScore, createDate,
                                    createDate, memberId, createDate, memberId, 0);
 
             var blogStatistic = new BlogStatistic

@@ -76,7 +76,7 @@ public class BlogDocumentMigration(IElasticClient elasticClient)
                                                                     {
                                                                         Query = new MatchAllQuery()
                                                                     }, cancellationToken);
-
+        
         if (!deleteResponse.IsValid && deleteResponse.OriginalException is not null)
         {
             throw new Exception(deleteResponse.OriginalException.Message);
