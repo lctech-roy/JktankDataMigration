@@ -13,7 +13,7 @@ public class CommentMigration
     private const string COPY_COMMENT_PREFIX = $"COPY \"{nameof(Comment)}\" " +
                                                $"(\"{nameof(Comment.Id)}\",\"{nameof(Comment.BlogId)}\",\"{nameof(Comment.ParentId)}\",\"{nameof(Comment.Type)}\"" +
                                                $",\"{nameof(Comment.DonateJPoints)}\",\"{nameof(Comment.Level)}\",\"{nameof(Comment.Content)}\",\"{nameof(Comment.ReplyCount)}\"" +
-                                               $",\"{nameof(Comment.LikeCount)}\",\"{nameof(Comment.TotalLikeCount)}\",\"{nameof(Comment.SortingIndex)}\",\"{nameof(Comment.Hierarchy)}\"" +
+                                               $",\"{nameof(Comment.LikeCount)}\",\"{nameof(Comment.TotalLikeCount)}\",\"{nameof(Comment.SortingIndex)}\"" +
                                                $",\"{nameof(Comment.Disabled)}\",\"{nameof(Comment.LastEditDate)}\"" + Setting.COPY_ENTITY_SUFFIX;
 
     private const string QUERY_COMMENT_SQL = @"SELECT id AS BlogId, cid AS Id, message AS Content, status AS Disabled, dateline, authorid AS MemberId, author AS Author
@@ -107,7 +107,6 @@ public class CommentMigration
 
                     comment.Level = 1;
                     comment.Content = replierContent;
-                    comment.Hierarchy = new[] { commentId };
                 }
                 else
                 {
@@ -116,14 +115,12 @@ public class CommentMigration
                     comment.ParentId = parentComment.Id;
                     comment.Level = parentComment.Level + 1 > 2 ? 2 : parentComment.Level + 1;
                     comment.Content = replierContent;
-                    comment.Hierarchy = parentComment.Hierarchy.Append(commentId).ToArray();
                 }
             }
             else
             {
                 comment.Level = 1;
                 comment.Content = content.Trim();
-                comment.Hierarchy = new[] { commentId };
             }
 
             var blogIdChanged = blogId != previousBlogId;
@@ -139,7 +136,7 @@ public class CommentMigration
 
                     commentSb.AppendValueLine(blogComment.Id, blogComment.BlogId, blogComment.ParentId.ToCopyValue(), (int)blogComment.Type,
                                               blogComment.DonateJPoints, blogComment.Level, blogComment.Content.ToCopyText(), blogComment.ReplyCount,
-                                              blogComment.LikeCount, blogComment.TotalLikeCount, blogComment.SortingIndex, blogComment.Hierarchy.ToCopyArray(),
+                                              blogComment.LikeCount, blogComment.TotalLikeCount, blogComment.SortingIndex,
                                               blogComment.Disabled, blogComment.LastEditDate.ToCopyValue(), blogComment.CreationDate, blogComment.CreatorId, blogComment.ModificationDate, blogComment.ModifierId, 0);
                 }
             }
