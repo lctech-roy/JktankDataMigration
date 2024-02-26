@@ -374,7 +374,7 @@ public class BlogMigration
              && !blog.Status.Contains(BlogStatus.Block) && !blog.Status.Contains(BlogStatus.PendingReview))
             {
                 var lowerHashTags = blog.Hashtags.Select(x => x.ToLower()).ToArray();
-                
+
                 foreach (var tag in lowerHashTags)
                 {
                     if (HashTagCountDic.ContainsKey(tag))
@@ -386,7 +386,7 @@ public class BlogMigration
             else
             {
                 var lowerHashTags = blog.Hashtags.Select(x => x.ToLower()).ToArray();
-                
+
                 foreach (var tag in lowerHashTags)
                 {
                     if (!HashTagCountDic.ContainsKey(tag))
@@ -398,7 +398,8 @@ public class BlogMigration
             {
                 if (blog.VisibleType is VisibleType.Public or VisibleType.Friend &&
                     !blog.Status.Contains(BlogStatus.Block) &&
-                    !blog.Status.Contains(BlogStatus.PendingReview))
+                    !blog.Status.Contains(BlogStatus.PendingReview) &&
+                    blog.Subject != BlogSubject.LifeStyle)
                 {
                     if (MassageBlogCountDic.ContainsKey(massageArticleId.Value))
                         MassageBlogCountDic[massageArticleId.Value] += 1;
@@ -479,13 +480,13 @@ public class BlogMigration
             var tag = tagStr.Substring(starPoint, i - starPoint);
 
             tag = RegexHelper.SymbolAndSpaceRegex.Replace(tag, "");
-            
+
             if (string.IsNullOrWhiteSpace(tag))
                 continue;
-            
+
             tags.Add(tag);
         }
-        
+
         return tags.ToArray();
     }
 
