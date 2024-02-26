@@ -77,16 +77,20 @@ public class MemberMigration
     private const string QUERY_MEMBER = $@"SELECT pum.uid AS {nameof(OldMember.Id)}, pum.username AS {nameof(OldMember.DisplayName)},
                                            pcm.avatarstatus AS {nameof(OldMember.AvatarStatus)},pum.email AS {nameof(OldMember.Email)},
                                            pum.regdate AS {nameof(OldMember.RegDate)},pum.regip AS {nameof(OldMember.RegIp)},
-                                           pcm.groupid AS {nameof(OldMember.GroupId)}
-                                           FROM pre_ucenter_members pum 
+                                           pcm.groupid AS {nameof(OldMember.GroupId)},
+                                           pcmfh.privacy AS {nameof(OldMember.Privacy)}
+                                           FROM pre_ucenter_members pum
+                                           LEFT JOIN pre_common_member_field_home pcmfh ON pcmfh.uid = pum.uid
                                            LEFT JOIN pre_common_member pcm ON pcm.uid = pum.uid
                                            WHERE pum.uid IN @ids";
 
     private const string QUERY_ADDITIONAL_MEMBER = $@"SELECT pcm.uid AS {nameof(OldMember.Id)}, pcm.username AS {nameof(OldMember.DisplayName)},
                                                      pcm.avatarstatus AS {nameof(OldMember.AvatarStatus)},pcm.email AS {nameof(OldMember.Email)},
                                                      pcm.regdate AS {nameof(OldMember.RegDate)},pcms.regip AS {nameof(OldMember.RegIp)},
-                                                     pcm.groupid AS {nameof(OldMember.GroupId)}
+                                                     pcm.groupid AS {nameof(OldMember.GroupId)},
+                                                     pcmfh.privacy AS {nameof(OldMember.Privacy)}
                                                      FROM pre_common_member pcm 
+                                                     LEFT JOIN pre_common_member_field_home pcmfh ON pcmfh.uid = pcm.uid
                                                      LEFT JOIN pre_common_member_status pcms ON pcms.uid = pcm.uid
                                                      WHERE pcm.uid IN @ids";
 
@@ -185,13 +189,15 @@ public class MemberMigration
         {
             var createDate = DateTimeOffset.FromUnixTimeSeconds(oldMember.RegDate);
             var memberId = oldMember.Id;
-
+            var match = RegexHelper.BlogViewPrivacyRegex.Match(oldMember.Privacy ?? string.Empty);
+            var privacyType = match.Success && int.Parse(match.Groups[1].Value) == 1 ? PrivacyType.Private : PrivacyType.Public;
+            
             var member = new Member
                          {
                              DisplayName = oldMember.DisplayName,
                              NormalizedDisplayName = oldMember.DisplayName.ToUpper(),
                              ParentId = null,
-                             PrivacyType = PrivacyType.Public,
+                             PrivacyType = privacyType,
                              Birthday = null,
                              Avatar = GetAvatar(memberId, oldMember.AvatarStatus),
                              PersonalProfile = null,

@@ -9,4 +9,5 @@ public class OldMember
     public long RegDate { get; set; }
     public string? RegIp { get; set; }
     public long? GroupId { get; set; }
+    public string? Privacy { get; set; }
 }

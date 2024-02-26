@@ -19,6 +19,7 @@ public class RegexHelper
     public const string AUTHOR_CONTENT_GROUP = "authorContent";
     public const string REPLIER_CONTENT_GROUP = "replierContent";
 
+    private const string BLOG_VIEW_PRIVACY_PATTERN = @"s:4:""view"";a:\d+:{[^}]*s:4:""blog"";i:(\d);";
     private const string IMG_SMILEY_PATTERN = """<img src=["'](?:https?://www.(?:jkf\.io|jkforum\.net)/)?(?:static/image/smiley/comcom|image/face)/(\d+)\.gif["'].*?>""";
     private const string IMG_SRC_URL_PATTERN = $"""<img [^>]*?src="(?<{URL_GROUP}>.*?)">""";
     private const string IMG_SRC_PATTERN = """<img [^>]*?src=["']https?:.+?["'].*?>""";
@@ -34,6 +35,8 @@ public class RegexHelper
 
     // include href
     private const string MASSAGE_URL_PATTERN = $@"https?://www\.(jkf\.io|jkforum\.net)/(thread-(?<{TID_GROUP}>\d+)-\d+-\d+\.html|forum\.php\?mod=(misc|post|viewthread)\S*&tid=(?<{TID_GROUP}>\d+)|group\/\d+\?action=preview&tid=(?<{TID_GROUP}>\d+))";
+    
+    public static readonly Regex BlogViewPrivacyRegex = new(BLOG_VIEW_PRIVACY_PATTERN, RegexOptions.Compiled | RegexOptions.IgnoreCase);
     public static readonly Regex ImgSmileyRegex = new(IMG_SMILEY_PATTERN, RegexOptions.Compiled | RegexOptions.IgnoreCase);
     public static readonly Regex ImgSrcUrlPattern = new(IMG_SRC_URL_PATTERN, RegexOptions.Compiled | RegexOptions.IgnoreCase);
     public static readonly Regex ImgSrcRegex = new(IMG_SRC_PATTERN, RegexOptions.Compiled | RegexOptions.IgnoreCase);
