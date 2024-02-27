@@ -15,7 +15,7 @@ public class BlogReactMigration
                                                   $"(\"{nameof(BlogReact.Id)}\",\"{nameof(BlogReact.Type)}\"" +
                                                   Setting.COPY_ENTITY_SUFFIX;
 
-    private static readonly string QueryBlogReactSql = @"SELECT uid, id , clickid ,dateline FROM pre_home_clickuser 
+    private const string QUERY_BLOG_REACT_SQL = @"SELECT uid, id , clickid ,dateline FROM pre_home_clickuser 
                                                           WHERE idtype = 'blogid' ORDER BY dateline DESC";
 
     private const string BLOG_REACT_PATH = $"{Setting.INSERT_DATA_PATH}/{nameof(BlogReact)}";
@@ -30,7 +30,7 @@ public class BlogReactMigration
 
         await conn.OpenAsync(cancellationToken);
 
-        await using var command = new MySqlCommand(QueryBlogReactSql, conn);
+        await using var command = new MySqlCommand(QUERY_BLOG_REACT_SQL, conn);
 
         var reader = await command.ExecuteReaderAsync(cancellationToken);
 
@@ -44,10 +44,8 @@ public class BlogReactMigration
             if (!BlogIdHash.Contains(id))
                 continue;
 
-            if (distinctHash.Contains((id, memberId)))
+            if (!distinctHash.Add((id, memberId)))
                 continue;
-
-            distinctHash.Add((id, memberId));
 
             var clickId = reader.GetInt32(2);
             var dateLine = reader.GetInt64(3);

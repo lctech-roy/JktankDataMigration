@@ -144,7 +144,7 @@ public class CommentMigration
             if (blogIdChanged)
             {
                 previousBlogId = blogId;
-                blogComments = new List<Comment>();
+                blogComments = [];
             }
 
             blogComments.Add(comment);
@@ -168,7 +168,8 @@ public class CommentMigration
         {
             return RegexHelper.ImgSmileyRegex.Replace(content, innerMatch =>
                                                                {
-                                                                   TryParse(innerMatch.Groups[1].Value, out var emojiId);
+                                                                   if (!TryParse(innerMatch.Groups[1].Value, out var emojiId))
+                                                                       return string.Empty;
 
                                                                    var emoji = EmojiHelper.EmojiDic.GetValueOrDefault(emojiId, string.Empty);
 

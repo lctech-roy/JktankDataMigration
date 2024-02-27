@@ -48,10 +48,8 @@ public class MemberFavoriteMigration
             if (!MemberIdHash.Contains(memberId))
                 continue;
 
-            if (distinctHash.Contains((memberId, blogId)))
+            if (!distinctHash.Add((memberId, blogId)))
                 continue;
-
-            distinctHash.Add((memberId, blogId));
 
             var dateLine = reader.GetInt64(2);
 

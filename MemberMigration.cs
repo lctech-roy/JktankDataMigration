@@ -169,7 +169,7 @@ public class MemberMigration
         var command = new CommandDefinition(QUERY_ADDITIONAL_MEMBER, new { ids = additionMemberIds }, cancellationToken: cancellationToken);
         var members = (await cnn.QueryAsync<OldMember>(command)).ToArray();
 
-        if (!members.Any())
+        if (members.Length == 0)
             return;
 
         Execute(members.Select(x => x.Id).ToArray(), members);
@@ -189,8 +189,30 @@ public class MemberMigration
         {
             var createDate = DateTimeOffset.FromUnixTimeSeconds(oldMember.RegDate);
             var memberId = oldMember.Id;
-            var match = RegexHelper.BlogViewPrivacyRegex.Match(oldMember.Privacy ?? string.Empty);
-            var privacyType = match.Success && int.Parse(match.Groups[1].Value) == 1 ? PrivacyType.Private : PrivacyType.Public;
+            var privacyType = PrivacyType.Public;
+
+            var matchPrivacyType = RegexHelper.BlogViewPrivacyRegex.Match(oldMember.Privacy ?? string.Empty);
+
+            if (matchPrivacyType.Success)
+            {
+                var matchValue = int.Parse(matchPrivacyType.Groups[1].Value);
+
+                switch (matchValue)
+                {
+                    case 1:
+                        privacyType = PrivacyType.Private;
+
+                        break;
+                    case 0 or 3:
+                        privacyType = PrivacyType.Public;
+
+                        break;
+                    default:
+                        Console.WriteLine($"Uid:{oldMember.Id}, MatchValue:{matchValue}");
+
+                        break;
+                }
+            }
             
             var member = new Member
                          {
@@ -313,7 +335,7 @@ public class MemberMigration
         FileHelper.WriteToFile($"{Setting.INSERT_DATA_PATH}/{nameof(UserExternalLogin)}", $"{uids[0]}-{uids[^1]}.sql", COPY_USER_EXTERNAL_LOGIN_PREFIX, userExternalLoginSb);
     }
 
-    private string? GetAvatar(long jkfId, bool? avatarStatus = null)
+    private static string? GetAvatar(long jkfId, bool? avatarStatus = null)
     {
         if (avatarStatus is false)
         {
@@ -321,7 +343,7 @@ public class MemberMigration
         }
 
         var uid = $"{jkfId:000000000}";
-        var dir1 = uid.Substring(0, 3);
+        var dir1 = uid[..3];
         var dir2 = uid.Substring(3, 2);
         var dir3 = uid.Substring(5, 2);
         var dir4 = uid.Substring(uid.Length - 2, 2);
