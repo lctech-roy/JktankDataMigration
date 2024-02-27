@@ -172,7 +172,7 @@ public class MemberMigration
         if (members.Length == 0)
             return;
 
-        Execute(members.Select(x => x.Id).ToArray(), members);
+        Execute(members.Where(x => x.Id != 4339704).Select(x => x.Id).ToArray(), members);
     }
 
     private void Execute(IReadOnlyList<long> uids, IEnumerable<OldMember> members)
@@ -213,7 +213,7 @@ public class MemberMigration
                         break;
                 }
             }
-            
+
             var member = new Member
                          {
                              DisplayName = oldMember.DisplayName,
