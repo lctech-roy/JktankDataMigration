@@ -343,9 +343,9 @@ public class BlogMigration
                            Id = blogId,
                            Subject = subject,
                            CategoryId = oldBlog.CategoryId == 0 ? null : oldBlog.CategoryId,
-                           Status = ProhibitMemberIdHash.Contains(memberId) ? new[] { BlogStatus.Block } :
-                                    oldBlog.IsReview ? new[] { BlogStatus.PendingReview } :
-                                    new[] { BlogStatus.Normal },
+                           Status = ProhibitMemberIdHash.Contains(memberId) ? [BlogStatus.Block] :
+                                    oldBlog.IsReview ? [BlogStatus.PendingReview] :
+                                    [BlogStatus.Normal],
                            VisibleType = oldBlog.OldVisibleType switch
                                          {
                                              0 => VisibleType.Public,
@@ -361,7 +361,6 @@ public class BlogMigration
                            MediaCount = matchCount,
                            MassageBlogId = massageArticleId,
                            Hashtags = GetTags(oldBlog.OldTags),
-                           LastStatusModificationDate = null,
                            Disabled = false,
                            ServiceScore = 5,
                            AppearanceScore = 5,
@@ -369,6 +368,8 @@ public class BlogMigration
                            TidinessScore = 5,
                            AverageScore = 5
                        };
+
+            blog.LastEditDate = blog.Status.Any(x => x is BlogStatus.Block or BlogStatus.PendingReview) ? createDate : null;
 
             if (blog is { Subject: BlogSubject.Massage, VisibleType: VisibleType.Public or VisibleType.Friend }
              && !blog.Status.Contains(BlogStatus.Block) && !blog.Status.Contains(BlogStatus.PendingReview))
