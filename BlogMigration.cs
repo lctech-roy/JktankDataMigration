@@ -369,7 +369,7 @@ public class BlogMigration
                            AverageScore = 5
                        };
 
-            blog.LastEditDate = blog.Status.Any(x => x is BlogStatus.Block or BlogStatus.PendingReview) ? createDate : null;
+            blog.LastStatusModificationDate = blog.Status.Any(x => x is BlogStatus.Block or BlogStatus.PendingReview) ? createDate : null;
 
             if (blog is { Subject: BlogSubject.Massage, VisibleType: VisibleType.Public or VisibleType.Friend }
              && !blog.Status.Contains(BlogStatus.Block) && !blog.Status.Contains(BlogStatus.PendingReview))
