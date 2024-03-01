@@ -344,7 +344,7 @@ public class BlogMigration
                            Subject = subject,
                            CategoryId = oldBlog.CategoryId == 0 ? null : oldBlog.CategoryId,
                            Status = ProhibitMemberIdHash.Contains(memberId) ? [BlogStatus.Block] :
-                                    oldBlog.IsReview ? [BlogStatus.PendingReview] :
+                                    oldBlog.IsReview ? [BlogStatus.Block] :
                                     [BlogStatus.Normal],
                            VisibleType = oldBlog.OldVisibleType switch
                                          {
@@ -369,7 +369,7 @@ public class BlogMigration
                            AverageScore = 5
                        };
 
-            blog.LastStatusModificationDate = blog.Status.Any(x => x is BlogStatus.Block or BlogStatus.PendingReview) ? createDate : null;
+            blog.LastStatusModificationDate = blog.Status.Contains(BlogStatus.Block) ? createDate : null;
 
             if (blog is { Subject: BlogSubject.Massage, VisibleType: VisibleType.Public or VisibleType.Friend }
              && !blog.Status.Contains(BlogStatus.Block) && !blog.Status.Contains(BlogStatus.PendingReview))
