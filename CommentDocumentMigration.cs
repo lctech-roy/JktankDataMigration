@@ -15,12 +15,17 @@ public class CommentDocumentMigration(IElasticClient elasticClient)
                                                           c."{nameof(Comment.BlogId)}",
                                                           c."{nameof(Comment.Type)}",
                                                           b."Disabled" AS {nameof(Comment.BlogDisabled)},
+                                                          b."VisibleType" AS {nameof(Comment.BlogVisibleType)},
+                                                          b."Subject" AS {nameof(Comment.BlogSubject)},
+                                                          br."CommentReviewStatus" AS {nameof(Comment.ReviewStatus)},
                                                           c."{nameof(Comment.Content)}",
                                                           c."{nameof(Comment.CreatorId)}",
                                                           m."DisplayName" AS {nameof(Comment.CreatorName)},
-                                                          c."{nameof(Comment.CreationDate)}"
+                                                          c."{nameof(Comment.CreationDate)}",
+                                                          c."{nameof(Comment.LastEditDate)}"
                                                           FROM "Comment" c
                                                           INNER JOIN "Blog" b ON b."Id" = c."BlogId"
+                                                          INNER JOIN "BlogReview" br ON br."Id" = c."BlogId"
                                                           LEFT JOIN "Member" m ON c."CreatorId" = m."Id"
                                                           WHERE c."Disabled" = FALSE
                                                    """;

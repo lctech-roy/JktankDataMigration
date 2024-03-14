@@ -59,7 +59,6 @@ public class BlogDocumentMigration(IElasticClient elasticClient)
                                                        msbg."{nameof(MassageBlogRegion.Name)}" AS {nameof(TempBlogDocument.MassageBlogRegion)},
                                                        msb."{nameof(MassageBlog.ExpirationDate)}" AS {nameof(TempBlogDocument.MassageBlogExpirationDate)},
                                                        b."{nameof(TempBlogDocument.Disabled)}",
-                                                       br."{nameof(BlogReview.CommentReviewStatus)}" AS {nameof(TempBlogDocument.CommentReviewStatus)},
                                                        br."{nameof(BlogReview.BlogReviewStatus)}" AS {nameof(TempBlogDocument.BlogReviewStatus)}
                                                        FROM "Blog" b
                                                        LEFT JOIN "BlogStatistic" bs ON b."Id" = bs."Id"
