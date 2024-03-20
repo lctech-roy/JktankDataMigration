@@ -17,6 +17,7 @@ public class CommentDocumentMigration(IElasticClient elasticClient)
                                                           b."Disabled" AS {nameof(Comment.BlogDisabled)},
                                                           b."VisibleType" AS {nameof(Comment.BlogVisibleType)},
                                                           b."Subject" AS {nameof(Comment.BlogSubject)},
+                                                          br."LastCommentEditDate" AS {nameof(Comment.LastCommentEditDate)},
                                                           br."CommentReviewStatus" AS {nameof(Comment.ReviewStatus)},
                                                           c."{nameof(Comment.Content)}",
                                                           c."{nameof(Comment.CreatorId)}",
